@@ -1,0 +1,9 @@
+FROM plt-initial
+
+ADD . /home/plt-tests
+WORKDIR /home/plt-tests
+RUN docker/check_plt_repo.sh
+RUN rm -rf build && mkdir build && cd build && cmake ..
+RUN cd build && make -j8
+
+
