@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.8)
+cmake_minimum_required (VERSION 3.5)
 project (plt)
 
 # Directories
@@ -18,8 +18,13 @@ IF(CMAKE_COMPILER_IS_GNUCC)
 ENDIF(CMAKE_COMPILER_IS_GNUCC)
 
 
+# Generate headers
+set(DIA2CODE "${PROJECT_SOURCE_DIR}/dia2code/dia2code-0.8.7/dia2code/dia2code")
+exec_program(${DIA2CODE} ARGS -d ../src -t cpp ../src/state.dia)
+
 # Sources
 file(GLOB_RECURSE main_sources src/*.cpp)
+
 
 # Executables
 add_executable(run ${main_sources})
