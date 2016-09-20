@@ -12,9 +12,12 @@ void testSFML() {
 #include "state.hpp"
 
 using namespace std;
+using namespace state;
 
 int main(int argc,char* argv[]) 
 {
+    Exemple exemple;
+    exemple.setX(3);
 
     cout << "It works !" << endl;
 
