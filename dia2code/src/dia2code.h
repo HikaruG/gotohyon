@@ -18,6 +18,10 @@
 #ifndef DIA2CODE_H
 #define DIA2CODE_H
 
+#define NO_NAMESPACE_SINGLE_FILE
+#define VERBOSE_LEVEL 0
+
+
 #define  _GNU_SOURCE
 #include <string.h>
 #include <ctype.h>
@@ -40,6 +44,9 @@
 #define DSO_PREFIX "generate_code_"
 #define DSO_SUFFIX ".so"
 #endif
+
+void debug( int level, char *fmt, ... );
+void debug_setlevel( int newlevel );
 
 #define kind_str(A)   ((A)=='1'?"in":((A)=='2'?"in/out":((A)=='3'?"out":"???")))
 
@@ -174,6 +181,7 @@ typedef umlclassnode * umlclasslist;
 
 struct namenode {
    char *name;
+   char *package;
    struct namenode *next;
 };
 typedef struct namenode namenode;
@@ -216,7 +224,7 @@ void * my_malloc( size_t size );
 
 umlpackagelist make_package_list( umlpackage * package);
 
-umlclasslist list_classes(umlclasslist current_class, batch *b);
+umlclasslist list_classes(umlclasslist current_class, batch *b, int withRef);
 
 char *create_package_dir(const batch *batch, umlpackage *pkg);
 
@@ -309,5 +317,9 @@ param_list *d2c_parameter_find(char *name);
 int indent_count;
 int indent_open_brace_on_newline;
 int generate_backup;
+
+#ifndef MAXNAMLEN
+#define MAXNAMLEN 256
+#endif
 
 #endif

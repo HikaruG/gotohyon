@@ -9,10 +9,11 @@
 
 extern namelist includes;
 
-extern int have_include (char *name);
-extern void add_include (char *name);
+extern int have_include (char *name,char* package);
+extern void add_include (char *name,char* package);
 extern void push_include (umlclassnode *node);
 extern void determine_includes (declaration *d, batch *b);
+extern void determine_referenced_classes (declaration *d, batch *b);
 
 #endif  /* INCLUDES_H */
 

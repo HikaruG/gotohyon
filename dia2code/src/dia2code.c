@@ -334,6 +334,35 @@ void pboth (char *msg, ...)
 char *file_ext = NULL;
 char *body_file_ext = NULL;
 
+#ifdef OS_WINDOWS
+void    createDirectories(const char* path) {
+}
+#else
+#include <sys/stat.h>
+void    createDirectories(const char* path) {
+    if (*path == '\0')
+        return;
+    struct stat buffer;
+    // path does not exists
+    if (stat(path,&buffer) != 0) {
+        const char* slash_pos = strrchr(path,'/');
+        if (slash_pos) {
+            size_t pos = slash_pos - path;
+            if (pos >= 0x1000) {
+            	return;
+            }
+            char tmp[0x1000];
+            strncpy(tmp,path,pos);
+            tmp[pos] = '\0';
+            createDirectories(tmp);
+        }
+        if (mkdir(path,ACCESSPERMS) != 0) {
+        	return;
+        }
+    }
+}
+#endif
+
 FILE * open_outfile (char *filename, batch *b)
 {
     static char outfilename[BIG_BUFFER];
@@ -355,6 +384,11 @@ FILE * open_outfile (char *filename, batch *b)
     }
 
     sprintf (outfilename, "%s/%s", b->outdir, filename);
+    char tmp[BIG_BUFFER];
+    strcpy(tmp,outfilename);
+    char* slash = strrchr(tmp,'/');
+    *slash = 0;
+    createDirectories(tmp);
     o = fopen (outfilename, "r");
     if (o != NULL && !b->clobber) {
         fclose (o);

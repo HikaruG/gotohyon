@@ -131,7 +131,7 @@ under certain conditions; read the COPYING file for details.\n";
 
     generator = NULL;
     generators[0] = generate_code_cpp;
-    generators[1] = generate_code_java;
+/*    generators[1] = generate_code_java;
     generators[2] = generate_code_c;
     generators[3] = generate_code_sql;
     generators[4] = generate_code_ada;
@@ -142,7 +142,7 @@ under certain conditions; read the COPYING file for details.\n";
     generators[9] = generate_code_csharp;
     generators[10] = generate_code_php_five;
     generators[11] = generate_code_ruby;
-    generators[12] = generate_code_as3;
+    generators[12] = generate_code_as3;*/
 
 
     if (argc < 2) {

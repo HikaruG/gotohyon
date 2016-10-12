@@ -14,6 +14,8 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+#include <dirent.h>
+
 #include "dia2code.h"
 #define NEW_KLASS(c) ((c*)malloc(sizeof(c)))
 
@@ -107,8 +109,18 @@ namelist find_classes(umlclasslist current_class, batch *b) {
 
 umlclasslist find_by_name(umlclasslist list, const char * name ) {
     if ( name != NULL && strlen(name) > 0 ) {
+        char tmp[MAXNAMLEN];
+        char* dots = strstr(name,"::");
         while ( list != NULL ) {
-            if ( ! strcmp(name, list->key->name) ) {
+            if (dots) {
+                if (list->key->package) {
+                    sprintf(tmp,"%s::%s",list->key->package->name,list->key->name);
+                    if (!strcmp(name, tmp)) {
+                        return list;
+                    }
+                }
+            }
+            else if ( ! strcmp(name, list->key->name) ) {
                 return list;
             }
             list = list->next;
@@ -141,10 +153,51 @@ umlclasslist append ( umlclasslist list, umlclassnode * class ) {
     }
 }
 
+void simplify_typename(char* out,char* name,int withRef) {
+    strcpy(out,name);
+    while(1) {
+        size_t n = strlen(out);
+        if (withRef) {
+            if (out[n-1] == '&' || out[n-1] == '*') {
+                out[n-1] = 0;
+                continue;
+            }
+        }
+        if (out[n-1] == ' ') {
+            out[n-1] = 0;
+            continue;
+        }
+        if (strstr(out,"const ") == out) {
+            for (size_t i=6;i<=n;i++) {
+                out[i-6] = out[i];
+            }
+            continue;
+        }
+        break;
+    }
+}
+
+int removeTemplate(char* out,char* name,int withRef) {
+    char* inf = strchr(name,'<');
+    char* sup = strrchr(name,'>');
+    if (inf && sup) {
+        char tmp[MAXNAMLEN];
+        char* p = tmp;
+        inf ++;
+        while (inf<sup) {
+            *p++ = *inf++;
+        }
+        *p = 0;
+        simplify_typename(out,tmp,withRef);
+        return 1;
+    }
+    return 0;
+}
+
 /* Returns a freshly constructed list of the classes that are used
    by the given class AND are themselves in the classlist of the
    given batch */
-umlclasslist list_classes(umlclasslist current_class, batch *b) {
+umlclasslist list_classes(umlclasslist current_class, batch *b,int withRef) {
     umlclasslist parents, dependencies;
     umlassoclist associations;
     umlattrlist umla, tmpa;
@@ -152,13 +205,21 @@ umlclasslist list_classes(umlclasslist current_class, batch *b) {
     umlclasslist result = NULL;
     umlclasslist classes = b->classlist;
     umlclasslist tmpnode = NULL;
+    char tmptypename[MAXNAMLEN];
 
     umla = current_class->key->attributes;
     while ( umla != NULL) {
         if ( strlen(umla->key.type) > 0 ) {
-            tmpnode = find_by_name(classes, umla->key.type);
-            if ( tmpnode && ! find_by_name(result, umla->key.type)) {
+            simplify_typename(tmptypename,umla->key.type,withRef);
+            tmpnode = find_by_name(classes, tmptypename);
+            if ( tmpnode && ! find_by_name(result, tmptypename)) {
                 result = append(result, tmpnode);
+            }
+            if (removeTemplate(tmptypename,umla->key.type,withRef)) {
+                tmpnode = find_by_name(classes, tmptypename);
+                if ( tmpnode && ! find_by_name(result, tmptypename)) {
+                    result = append(result, tmpnode);
+                }                
             }
         }
         umla = umla->next;
@@ -166,15 +227,23 @@ umlclasslist list_classes(umlclasslist current_class, batch *b) {
 
     umlo = current_class->key->operations;
     while ( umlo != NULL) {
-        tmpnode = find_by_name(classes, umlo->key.attr.type);
-        if ( tmpnode && ! find_by_name(result, umlo->key.attr.type)) {
+        simplify_typename(tmptypename,umlo->key.attr.type,withRef);
+        tmpnode = find_by_name(classes, tmptypename);
+        if ( tmpnode && ! find_by_name(result, tmptypename)) {
             result = append(result, tmpnode);
         }
         tmpa = umlo->key.parameters;
         while (tmpa != NULL) {
-            tmpnode = find_by_name(classes, tmpa->key.type);
-            if ( tmpnode && ! find_by_name(result, tmpa->key.type)) {
+            simplify_typename(tmptypename,tmpa->key.type,withRef);
+            tmpnode = find_by_name(classes, tmptypename);
+            if ( tmpnode && ! find_by_name(result, tmptypename)) {
                 result = append(result, tmpnode);
+            }
+            if (removeTemplate(tmptypename,tmpa->key.type,withRef)) {
+                tmpnode = find_by_name(classes, tmptypename);
+                if ( tmpnode && ! find_by_name(result, tmptypename)) {
+                    result = append(result, tmpnode);
+                }
             }
             tmpa = tmpa->next;
         }

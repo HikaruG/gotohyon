@@ -138,7 +138,7 @@ push (umlclassnode *node, batch *b)
     l_tmp->next = tmp_classes;
     tmp_classes = l_tmp;
     
-    used_classes = list_classes (node, b);
+    used_classes = list_classes (node, b, 0);
     /* Make sure all classes that this one depends on are already pushed. */
     tmpnode = used_classes;
     while (tmpnode != NULL) {

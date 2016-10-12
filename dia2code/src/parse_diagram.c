@@ -136,7 +136,7 @@ void make_depend ( umlclasslist classlist, char * dependent, char * dependee) {
     umldependent = find(classlist, dependent);
     umldependee = find(classlist, dependee);
     if ( umldependent != NULL && umldependee != NULL) {
-        adddependency(umldependent, umldependee);
+        adddependency(umldependee,umldependent);
     }
 }
 

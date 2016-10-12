@@ -3,7 +3,7 @@
 HEADERS:=$(shell find src -type f -name '*.h')
 DIA2CODE_DIR:=./dia2code
 
-all: | clean dia2code configure build run
+all: | clean dia2code configure build
 
 clean:
 	@rm -rf bin build ${HEADERS}
@@ -24,7 +24,7 @@ configure:
 build:
 	@make -s -j4 -C build
 
-run:
+run: build
 	./bin/run
 
 test:
@@ -32,7 +32,10 @@ test:
 	docker build -t plt-build -f docker/plt-build .
 	./docker/run_docker_x11.sh plt-build
 
+dia2code-archive: distclean
+	@zip -r ../dia2code.zip dia2code
+
 start-kit: distclean
-	@tar -czvf ../plt-start-kit.tar.gz CMakeLists.txt Makefile .gitignore dia2code src docker rapport res
+	@zip -r ../plt-start-kit.zip CMakeLists.txt Makefile .gitignore src docker rapport res dia2code
 
 .PHONY: configure build clean run test start-kit
