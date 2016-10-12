@@ -1,4 +1,3 @@
-#include <dirent.h>
 
 #include "includes.h"
 

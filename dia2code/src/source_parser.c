@@ -10,23 +10,6 @@
 #include "dia2code.h"
 #include "source_parser.h"
 
-char *
-strndup (const char *s, size_t n)
-{
-  char *result;
-  size_t len = strlen (s);
-
-  if (n < len)
-    len = n;
-
-  result = (char *) malloc (len + 1);
-  if (!result)
-    return 0;
-
-  result[len] = '\0';
-  return (char *) memcpy (result, s, len);
-}
-
 /*  block with heterogen or unknown content */
 #define SP_AT_MISC  1
 /* block containing an atribute definition */

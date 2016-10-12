@@ -220,46 +220,6 @@ umlattrlist copy_attributes(umlattrlist src)
 }
 
 
-/**
- * create a directory hierarchy for the package name 
- * batch.outdir is taken as root directory 
- * works with java-like package naming convention 
- * the directory path is stored in pkg->directory
- * eg. org.foo.bar will create directory tree org/foo/bar
- * @param the current batch
- * @param the package pointer
- * @return the full directory path eg. "<outdir>/org/foo/bar"
- * 
- */
-char *create_package_dir( const batch *batch, umlpackage *pkg )
-{
-    char *fulldirname, *dirname, fulldirnamedup[BIG_BUFFER];
-    int ret;
-    /* created directories permissions */
-    mode_t dir_mask = S_IRUSR | S_IWUSR | S_IXUSR;
-    if (pkg == NULL) {
-        return NULL;
-    }
-    if (batch->buildtree == 0 || pkg->name == NULL) {
-        pkg->directory = batch->outdir;
-    } else {
-        fulldirname = (char*)my_malloc(BIG_BUFFER);
-        sprintf(fulldirname, "%s", batch->outdir);
-        dirname = strdup(pkg->name);
-        dirname = strtok( dirname, "." );
-        while (dirname != NULL) {
-            sprintf( fulldirnamedup, "%s/%s", fulldirname, dirname );
-            sprintf( fulldirname, "%s", fulldirnamedup );
-            /* TODO : should create only if not existent */
-            ret = mkdir( fulldirname, dir_mask );
-            dirname = strtok( NULL, "." );
-        }
-        /* set the package directory used later for source file creation */
-        pkg->directory = fulldirname;
-    }
-    return pkg->directory;
-}
-
 void set_number_of_spaces_for_one_indentation(int n)
 {
     number_of_spaces_for_one_indentation = n;
@@ -334,11 +294,6 @@ void pboth (char *msg, ...)
 char *file_ext = NULL;
 char *body_file_ext = NULL;
 
-#ifdef OS_WINDOWS
-void    createDirectories(const char* path) {
-}
-#else
-#include <sys/stat.h>
 void    createDirectories(const char* path) {
     if (*path == '\0')
         return;
@@ -356,12 +311,18 @@ void    createDirectories(const char* path) {
             tmp[pos] = '\0';
             createDirectories(tmp);
         }
+        printf("Create '%s'\n",path);
+#ifdef __unix__
         if (mkdir(path,ACCESSPERMS) != 0) {
-        	return;
+            return;
         }
+#else
+        if (mkdir(path) != 0) {
+            return;
+        }
+#endif
     }
 }
-#endif
 
 FILE * open_outfile (char *filename, batch *b)
 {
@@ -1038,3 +999,99 @@ char *find_diaoid( const char *buf, char **newpos  )
 }
 
 
+#ifndef __unix__
+char *
+strndup (const char *s, size_t n)
+{
+  char *result;
+  size_t len = strlen (s);
+
+  if (n < len)
+    len = n;
+
+  result = (char *) malloc (len + 1);
+  if (!result)
+    return 0;
+
+  result[len] = '\0';
+  return (char *) memcpy (result, s, len);
+}
+
+#endif
+
+#ifdef ENABLE_FILE_UPDATE_ON_CHANGE
+void update_file_if_changed(batch *b,char* filename) {
+    // filename must end with '~'
+    char newfilename[1024];
+    sprintf (newfilename, "%s/%s", b->outdir, filename);
+    size_t n = strlen(newfilename);
+    if (newfilename[n-1] != '~') {
+        fprintf (stderr, "Error: filename '%s' does not end with '~'\n", newfilename);
+        return;
+    }
+
+    
+    // Read content of current filename
+    char curfilename[1024];
+    strcpy(curfilename,newfilename);
+    curfilename[n-1] = 0;
+    FILE* file = fopen(curfilename,"rb");
+    if (!file) { // No file, rename new one
+        printf("Create '%s'\n",curfilename);
+        if (rename(newfilename,curfilename) !=0) {
+            fprintf (stderr, "Error: cant rename file '%s' to '%s'\n", newfilename,curfilename);
+        };
+        return;
+    }
+    fseek(file, 0, SEEK_END); 
+    size_t cursize = ftell(file);
+    fseek(file, 0, SEEK_SET); 
+    char* curcontent = (char*)malloc(cursize);
+    if (fread(curcontent,1,cursize,file) != cursize) {
+        fprintf (stderr, "Error: cant read file '%s'\n", curfilename);
+        fclose(file);
+        exit(2);
+    }
+    if (fclose(file) != 0) {
+        fprintf (stderr, "Error: cant close file '%s'\n", curfilename);
+        exit(2);
+    }
+
+    
+    
+    // Read content of new filename
+    FILE* newfile = fopen(newfilename,"rb");
+    if (!newfile) {
+        fprintf (stderr, "Error: cant open file '%s'\n", newfilename);
+        exit(2);
+    }
+    fseek(newfile, 0, SEEK_END); 
+    size_t newsize = ftell(newfile);
+    fseek(newfile, 0, SEEK_SET); 
+    char* newcontent = (char*)malloc(newsize);
+    if (fread(newcontent,1,newsize,newfile) != newsize) {
+        fprintf (stderr, "Error: cant read file '%s'\n", newfilename);
+        fclose(newfile);
+        exit(2);
+    }
+    if (fclose(newfile) != 0) {
+        fprintf (stderr, "Error: cant close file '%s'\n", newfilename);
+        exit(2);
+    }
+    
+    if (cursize != newsize || memcmp(curcontent,newcontent,cursize) != 0) {
+        printf("Update '%s'\n",curfilename);
+        if (rename(newfilename,curfilename) != 0) {
+            fprintf(stderr,"Error cant rename '%s' to '%s'\n",newfilename,curfilename);
+        }
+    }
+    else {        
+        if (remove(newfilename) != 0) {
+            fprintf(stderr,"Error cant delete '%s', errno=%d\n",newfilename,errno);
+        }
+    }
+        
+    free(curcontent);
+    free(newcontent);
+}
+#endif

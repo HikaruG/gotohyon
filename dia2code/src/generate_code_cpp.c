@@ -572,67 +572,6 @@ gen_decl (declaration *d)
     }
 }
 
-void 
-update_file_if_changed(batch *b,char* filename) {
-    // filename must end with '~'
-    char newfilename[1024];
-    sprintf (newfilename, "%s/%s", b->outdir, filename);
-    size_t n = strlen(newfilename);
-    if (newfilename[n-1] != '~') {
-        fprintf (stderr, "Error: filename '%s' does not end with '~'\n", newfilename);
-        return;
-    }
-
-    // Read content of current filename
-    char curfilename[1024];
-    strcpy(curfilename,newfilename);
-    curfilename[n-1] = 0;
-    FILE* file = fopen(curfilename,"r");
-    if (!file) { // No file, rename new one
-        printf("Create '%s'\n",curfilename);
-        if (rename(newfilename,curfilename) < 0) {
-            fprintf (stderr, "Error: cant rename file '%s' to '%s'\n", newfilename,curfilename);
-        };
-        return;
-    }
-    fseek(file, 0, SEEK_END); 
-    size_t cursize = ftell(file);
-    fseek(file, 0, SEEK_SET); 
-    char* curcontent = (char*)malloc(cursize);
-    if (fread(curcontent,1,cursize,file) != cursize) {
-        fprintf (stderr, "Error: cant read file '%s'\n", curfilename);
-        exit(2);
-    }
-    fclose(file);
-
-    // Read content of new filename
-    FILE* newfile = fopen(newfilename,"r");
-    if (!newfile) {
-        fprintf (stderr, "Error: cant open file '%s'\n", newfilename);
-        exit(2);
-    }
-    fseek(newfile, 0, SEEK_END); 
-    size_t newsize = ftell(newfile);
-    fseek(newfile, 0, SEEK_SET); 
-    char* newcontent = (char*)malloc(newsize);
-    if (fread(newcontent,1,newsize,newfile) != newsize) {
-        fprintf (stderr, "Error: cant read file '%s'\n", newfilename);
-        exit(2);
-    }
-    fclose(newfile);
-    
-    if (cursize != newsize || memcmp(curcontent,newcontent,cursize) != 0) {
-        printf("Update '%s'\n",curfilename);
-        rename(newfilename,curfilename);
-    }
-    else {
-        remove(newfilename);
-    }
-        
-    free(curcontent);
-    free(newcontent);
-}
-
 struct stdlib_includes {
    int string;
    int stdint;
@@ -756,7 +695,12 @@ gen_namespace(batch *b, declaration *nsd) {
         /////////////////////////////////////
         // Header file
         
+#ifdef ENABLE_FILE_UPDATE_ON_CHANGE
         sprintf(filename, "%s/%s.%s~", nsname, name, file_ext);
+#else
+        sprintf(filename, "%s/%s.%s", nsname, name, file_ext);
+        printf("Create '%s'\n",filename);
+#endif
 #if VERBOSE_LEVEL >= 1
         printf("\ngen_namespace(): generate file '%s'\n", filename);
 #endif
@@ -868,7 +812,9 @@ gen_namespace(batch *b, declaration *nsd) {
         print("#endif\n");
         fclose(spec);
 
+#ifdef ENABLE_FILE_UPDATE_ON_CHANGE
         update_file_if_changed(b, filename);
+#endif
 
         /////////////////////////////////////
         // Source file
@@ -956,7 +902,12 @@ generate_code_cpp (batch *b)
             printf("generate_code_cpp(): file '%s'",name);
 #endif
         }
+#ifdef ENABLE_FILE_UPDATE_ON_CHANGE
         sprintf (filename, "%s.%s~", name, file_ext);
+#else
+        sprintf (filename, "%s.%s", name, file_ext);
+        printf("Create '%s'\n",filename);
+#endif
 
         spec = open_outfile (filename, b);
         if (spec == NULL) {
@@ -1006,7 +957,9 @@ generate_code_cpp (batch *b)
         print("#endif\n");
         fclose (spec);
 
+#ifdef ENABLE_FILE_UPDATE_ON_CHANGE
         update_file_if_changed(b,filename);
+#endif
         
         d = d->next;
     }
