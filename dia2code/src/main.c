@@ -73,6 +73,7 @@ int main(int argc, char **argv) {
     int clobber = 1;   /*  Overwrite files while generating code*/
     char *infile = NULL;    /* The input file */
     namelist classestogenerate = NULL;
+    namelist namespacestogenerate = NULL;
     namelist sqloptions = NULL;
     int classmask = 0, parameter = 0, buildtree = 0;
     /* put to 1 in the params loop if the generator accepts buildtree option */
@@ -106,6 +107,9 @@ under certain conditions; read the COPYING file for details.\n";
     -cl <classlist>      Generate code only for the classes specified in\n\
                          the comma-separated <classlist>. \n\
                          E.g: Base,Derived.\n\
+    -ns <namespaces>     Generate code only for the namespaces specified in\n\
+                         the comma-separated <namespaces>. \n\
+                         E.g: core,driver.\n\
     -v                   Invert the class list selection.  When used \n\
                          without -cl prevents any file from being created\n\
     -ext <extension>     Use <extension> as the file extension.\n\
@@ -178,6 +182,8 @@ under certain conditions; read the COPYING file for details.\n";
                 parameter = 8;
             } else if ( eq (argv[i], "-sqlx") ) {
                 parameter = 9;
+            } else if ( eq (argv[i], "-ns") ) {
+                parameter = 10;
             } else if ( eq("-h", argv[i]) || eq("--help", argv[i]) ) {
                 printf("%s\nUsage: %s %s\n\n%s\n", notice, argv[0], help, bighelp);
                 exit(0);
@@ -191,33 +197,6 @@ under certain conditions; read the COPYING file for details.\n";
             parameter = 0;
             if ( eq (argv[i], "cpp") ) {
                 generator = generators[0];
-            } else if ( eq (argv[i], "java") ) {
-                generator = generators[1];
-                generator_buildtree = 1;
-            } else if ( eq (argv[i], "c") ) {
-                generator = generators[2];
-            } else if ( eq (argv[i], "sql") ) {
-                generator = generators[3];
-            } else if ( eq (argv[i], "ada") ) {
-                generator = generators[4];
-            } else if ( eq (argv[i], "python") ) {
-                generator = generators[5];
-            } else if ( eq (argv[i], "php") ) {
-                generator = generators[6];
-                generator_buildtree = 1;
-            } else if ( eq (argv[i], "shp") ) {
-                generator = generators[7];
-            } else if ( eq (argv[i], "idl") ) {
-                generator = generators[8];
-            } else if ( eq (argv[i], "csharp") ) {
-                generator = generators[9];
-            } else if ( eq(argv[i], "php5") ) {
-                generator = generators[10];
-            } else if ( eq(argv[i], "ruby") ) {
-                generator = generators[11];
-            } else if ( eq(argv[i], "as3") ) {
-                generator = generators[12];
-                generator_buildtree = 1;
             } else {
 #ifdef DSO
                 generator = find_dia2code_module(argv[i]);
@@ -264,6 +243,10 @@ parameter = -1;   /* error */
             sqloptions = parse_sql_options(argv[i]);
             parameter = 0;
             break;
+        case 10:   /* Which classes to consider */
+            namespacestogenerate = parse_class_names(argv[i]);
+            parameter = 0;
+            break;
 
         }
     }
@@ -308,6 +291,7 @@ parameter = -1;   /* error */
     thisbatch->license = license;
     thisbatch->clobber = clobber;
     thisbatch->classes = classestogenerate;
+    thisbatch->namespaces = namespacestogenerate;
     thisbatch->sqlopts = sqloptions;
     thisbatch->mask = classmask;
     thisbatch->buildtree = buildtree;

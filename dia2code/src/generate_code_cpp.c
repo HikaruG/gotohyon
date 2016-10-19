@@ -890,6 +890,10 @@ generate_code_cpp (batch *b)
 
         if (d->decl_kind == dk_module) {
             name = d->u.this_module->pkg->name;
+            if (b->namespaces && !is_present(b->namespaces,name)) {
+                d = d->next;
+                continue;
+            }
 #ifdef NO_NAMESPACE_SINGLE_FILE
 #if VERBOSE_LEVEL >= 1
             printf("generate_code_cpp(): call gen_namespace for file '%s'\n",name);
@@ -908,7 +912,7 @@ generate_code_cpp (batch *b)
         sprintf (filename, "%s.%s", name, file_ext);
         printf("Create '%s'\n",filename);
 #endif
-
+        
         spec = open_outfile (filename, b);
         if (spec == NULL) {
             d = d->next;
