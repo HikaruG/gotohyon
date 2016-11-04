@@ -29,8 +29,8 @@ run: build
 
 test:
 	docker build -t plt-initial -f docker/plt-initial .
-	docker build -t plt-build -f docker/plt-build .
-	./docker/run_docker_x11.sh plt-build
+	./docker/validate.sh plt-test
+	./docker/run_docker_bash.sh plt-test
 
 dia2code-archive: distclean
 	@zip -r ../dia2code.zip dia2code

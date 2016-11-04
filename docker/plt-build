@@ -1,9 +1,0 @@
-FROM plt-initial
-
-ADD . /home/plt-tests
-WORKDIR /home/plt-tests
-RUN docker/check_plt_repo.sh
-RUN make
-
-
-

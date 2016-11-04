@@ -17,7 +17,7 @@ using namespace state;
 int main(int argc,char* argv[]) 
 {
     Exemple exemple;
-    exemple.setX(3);
+    exemple.setX(2);
 
     cout << "It works !" << endl;
 
