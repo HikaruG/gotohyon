@@ -723,6 +723,15 @@ gen_namespace(batch *b, declaration *nsd) {
             struct stdlib_includes si;
             memset(&si, 0, sizeof (struct stdlib_includes));
 
+            // Parents
+            if (d->u.this_class->parents != NULL) {
+                umlclasslist parent = d->u.this_class->parents;
+                while (parent != NULL) {
+                    print_include_stdlib(&si, fqname (parent, 0));
+                    parent = parent->next;
+                }
+            }
+
             // Attributes
             umlattrlist umla = d->u.this_class->key->attributes;
             while (umla != NULL) {
@@ -902,6 +911,11 @@ generate_code_cpp (batch *b)
 #endif
         } else {         /* dk_class */
             name = d->u.this_class->key->name;
+            /* Do not generate headers for classes without a namespace (unsupported) */
+            if (b->namespaces) {
+                d = d->next;
+                continue;                
+            }
 #if VERBOSE_LEVEL >= 1
             printf("generate_code_cpp(): file '%s'",name);
 #endif
