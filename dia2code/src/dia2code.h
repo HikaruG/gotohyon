@@ -324,8 +324,11 @@ void debug_setlevel( int newlevel );
 #ifdef __unix__
 #define ENABLE_FILE_UPDATE_ON_CHANGE
 #else
-#define MAXNAMLEN 1024
 char* strndup (const char *s, size_t n);
+#endif
+
+#ifndef MAXNAMLEN
+#define MAXNAMLEN 1024
 #endif
 
 #ifdef ENABLE_FILE_UPDATE_ON_CHANGE
