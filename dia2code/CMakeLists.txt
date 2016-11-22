@@ -24,6 +24,7 @@ include_directories("/users/perm/gosselin/lib/libxml2/include/libxml2")
 set(LIBXML2_LIBRARIES "/users/perm/gosselin/lib/libxml2/lib/libxml2.so")
 else($ENV{MACHINE_ENSEA})
 find_package (LibXml2 REQUIRED)
+include_directories(${LIBXML2_INCLUDE_DIR})
 endif($ENV{MACHINE_ENSEA})
 endif(WIN32)
 
