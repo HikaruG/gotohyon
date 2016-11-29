@@ -136,6 +136,11 @@ while read -r file; do
     if [[ "$MIME" == 'text/'* ]]; then
         continue;
     fi
+    if [[ "$MIME" == 'inode/x-empty' ]]; then
+        if [[ "$file" == *'.h' ]] || [[ "$file" == *'.hpp' ]] || [[ "$file" == *'.c' ]] || [[ "$file" == *'.cpp' ]]; then
+            continue;
+        fi
+    fi
     if [[ "$MIME" = 'application/pdf' ]]; then
         continue;
     fi

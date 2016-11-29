@@ -310,6 +310,8 @@ gen_class (umlclassnode *node)
                     emit ("static ");
                 }
                 emit ("%s %s", umla->key.type, umla->key.name);
+                if (strlen (umla->key.value) > 0)
+                    print (" = %s", umla->key.value);
                 emit (";\n");
                 umla = umla->next;
             }
@@ -513,8 +515,7 @@ gen_decl (declaration *d)
             check_umlattr (&umla->key, name);
             print ("%s %s", cppname (umla->key.type), umla->key.name);
             if (strlen (umla->key.value) > 0)
-                fprintf (stderr, "%s/%s: ignoring value\n",
-                                 name, umla->key.name);
+                print (" = %s", umla->key.value);
             emit (";\n");
             umla = umla->next;
         }
