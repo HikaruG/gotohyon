@@ -49,7 +49,7 @@ run_command 'Lance un nouveau conteneur' docker run \
     --workdir='/home/plt' \
     --network='none' \
     --name "$TEAM_CONTAINER" \
-    --env="DISPLAY" \
+    --env="DISPLAY=$DISPLAY" \
     --volume="/etc/group:/etc/group:ro" \
     --volume="/etc/passwd:/etc/passwd:ro" \
     --volume="/etc/shadow:/etc/shadow:ro" \
@@ -91,8 +91,8 @@ if [ -z "$IGNORE_CHECK_REPO" ]; then
     fi
 fi
 
-if [ -d dia2code ]; then
-    run_command 'Compile dia2code (cd dia2code && ./build.sh)' docker exec --user=$(id -u $USER):$(id -g $USER) "$TEAM_CONTAINER" /bin/bash -c 'cd /home/plt/dia2code && ./build.sh'
+if [ -d extern ]; then
+    run_command 'Compile les dépendances externes (make extern)' docker exec --user=$(id -u $USER):$(id -g $USER) "$TEAM_CONTAINER" /bin/bash -c 'cd /home/plt && make extern'
     if [ $? -ne 0 ]; then
         exit 2;
     fi

@@ -1,7 +1,0 @@
-FROM ubuntu:16.04
-
-RUN apt-get update
-RUN apt-get install -y file git cmake g++ tar xz-utils gzip bzip2 zip unzip libpthread-stubs0-dev libsfml-dev libxml2-dev
-RUN apt-get install -y evince gedit
-
-

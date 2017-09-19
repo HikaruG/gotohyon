@@ -58,14 +58,16 @@ for file in $FILES; do
     if [[ "$file" == "docker" ]]; then
         continue;
     fi
+    if [[ "$file" == "extern" ]]; then
+        continue;
+    fi
     if [[ "$file" == "res" ]]; then
         continue;
     fi
-    if [[ "$file" == "check_repo.sh" ]]; then
+    if [[ "$file" == "lib" ]]; then
         continue;
     fi
-    if [[ "$file" == "dia2code" ]]; then
-        DIA2CODE_FOUND=1
+    if [[ "$file" == "check_repo.sh" ]]; then
         continue;
     fi
     echo "Le fichier '$file' n'a rien à faire dans la racine du dépôt" 1>&2
@@ -88,29 +90,6 @@ if [ -z "$RAPPORT_FOUND" ]; then
     EXIT_STATUS=2
 fi
 
-# Check dia2code folder
-if [ ! -z "$DIA2CODE_FOUND" ]; then
-    FILES=$(ls -1 dia2code)||exit 2
-    for file in $FILES; do
-        if [[ "$file" == "src" ]]; then
-            continue;
-        fi
-        if [[ "$file" == "build.sh" ]]; then
-            continue;
-        fi
-        if [[ "$file" == "build.bat" ]]; then
-            continue;
-        fi
-        if [[ "$file" == "CMakeLists.txt" ]]; then
-            continue;
-        fi
-        if [[ "$file" == "libxml2" ]]; then
-            continue;
-        fi
-        echo "Le fichier '$file' n'a rien à faire dans le dossier dia2code" 1>&2
-        EXIT_STATUS=2
-    done
-fi
 
 # Check file types
 while read -r file; do
@@ -141,17 +120,22 @@ while read -r file; do
             continue;
         fi
     fi
-    if [[ "$MIME" = 'application/pdf' ]]; then
+    if [[ "$file" == "./Rapport.pdf" ]]; then
         continue;
     fi
-    if [[ "$MIME" = 'application/x-archive' ]]; then
-        continue;
-    fi
-    if [[ "$MIME" = 'application/x-dosexec' ]]; then
-        continue;
+    if [[ "$file" == './lib/'* ]]; then
+        if [[ "$MIME" = 'application/x-archive' ]]; then
+            continue;
+        fi
+        if [[ "$MIME" = 'application/x-dosexec' ]]; then
+            continue;
+        fi
     fi
     if [[ "$file" == './rapport/'* ]] || [[ "$file" == './res/'* ]]; then
         if [[ "$MIME" = 'image/'* ]]; then
+            continue;
+        fi
+        if [[ "$MIME" = 'application/pdf' ]]; then
             continue;
         fi
     fi
