@@ -2,3 +2,5 @@
 build
 bin
 nbproject
+src/shared/state/*.h
+src/shared/*.h
