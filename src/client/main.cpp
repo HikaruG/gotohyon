@@ -16,13 +16,25 @@ void testSFML() {
 using namespace std;
 using namespace state;
 
+void test();
+
 int main(int argc,char* argv[]) 
 {   
     if ( argc > 1 ){
         if ( !strcmp(argv[1],"hello") ){
             cout << "It works !" << endl;
         }
+        if ( !strcmp(argv[1],"state") ){
+            cout << "launching test sequence" << endl;
+            test();
+        }
     }
 
     return 0;
+}
+
+void test()
+{
+    Map test_map = Map(2,3,{0,0,0,0,0,0});
+    cout << "map sucessfully instanciated" << endl;
 }

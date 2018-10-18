@@ -5,11 +5,11 @@
 
 using namespace state;
 
-GameObject::GameObject(unsigned int gameobject_id, unsigned int player_id, state::Position pos, state::Property property)
+GameObject::GameObject(unsigned int gameobject_id, unsigned int player_ids, state::Position pos, state::Property property)
 {
     this->game_object_id = gameobject_id;
     this->game_object_property = property;
-    this->player_id = player_id;
+    this->player_id = player_ids;
     this->object_position = pos;
 
     this->health_bar = this->game_object_property.get_health_max();
@@ -20,9 +20,9 @@ GameObject::GameObject(unsigned int gameobject_id, unsigned int player_id, state
 bool GameObject::takeDamage (int damage)
 {
     this->health_bar -= damage;
-    if (health_bar <= 0)
+    if (this->health_bar <= 0)
     {
-        is_destroyed = true;
+        this->is_destroyed = true;
     }
     return true;
 }

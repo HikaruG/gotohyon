@@ -12,9 +12,10 @@ Map::Map (unsigned int X, unsigned int Y, std::vector<int> terrain_int)
 
 }
 
-bool Map::addGameObject (GameObject NewObject)
+bool Map::addGameObject (unsigned int player_id, Position pos, bool is_static, int type)
 {
 
+    return true;
 }
 
 bool Map::getTerrain (unsigned int X, unsigned int Y, Terrain * terrain)
@@ -37,4 +38,5 @@ bool Map::getGameObject (unsigned int X, unsigned int Y, std::vector<GameObject>
 bool Map::removeGameObject (unsigned int game_object_id)
 {
 
+    return true;
 }
