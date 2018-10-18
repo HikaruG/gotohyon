@@ -43,7 +43,7 @@ bool Map::addGameObject (unsigned int player_id, Position pos, bool is_static, i
         Building new_b = Building(static_cast<unsigned int>(list_game_object.size()),player_id, pos, statics[type],
                                   static_cast<BuildingType>(type));
 
-        list_game_object.emplace_back(new_b);
+        list_game_object.emplace_back(&new_b);
     }
     else{
         Unit new_u = Unit(10,static_cast<unsigned int>(list_game_object.size()),player_id, pos, units[type],
@@ -69,7 +69,7 @@ bool Map::getGameObject (unsigned int X, unsigned int Y, std::vector<GameObject>
     {
         if(list_game_object[GOind]->getPosition() == looking_for)
         {
-            game_objects->emplace_back(list_game_object[GOind]);
+            game_objects->emplace_back(&list_game_object[GOind]);
         }
     }
     return true;
