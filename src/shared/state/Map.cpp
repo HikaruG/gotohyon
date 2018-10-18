@@ -69,7 +69,7 @@ bool Map::getGameObject (unsigned int X, unsigned int Y, std::vector<GameObject>
     {
         if(list_game_object[GOind]->getPosition() == looking_for)
         {
-            game_objects->emplace_back(&list_game_object[GOind]);
+            game_objects->emplace_back(*list_game_object[GOind]);
         }
     }
     return true;
