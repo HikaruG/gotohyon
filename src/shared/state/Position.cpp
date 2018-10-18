@@ -25,4 +25,5 @@ bool Position::getPostion(unsigned int *ptr_X, unsigned int *ptr_Y) {
 bool Position::setPosition(unsigned int newX, unsigned int newY) {
     positionX = newX;
     positionY = newY;
+    return true;
 }
