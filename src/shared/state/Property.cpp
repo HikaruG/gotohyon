@@ -25,6 +25,7 @@ Property& Property::operator=(const state::Property& orig) {
     this->attack = orig.attack;
     this->defense = orig.defense;
     this->health_max = orig.health_max;
+    return *this;
 }
 
 unsigned int Property::get_attack() {

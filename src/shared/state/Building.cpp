@@ -5,7 +5,7 @@
 
 using namespace state;
 
-Building::Building (bool can_attack, unsigned int gameobject_id, unsigned int player_id, state::Position pos, state::Property prop, state::BuildingType build_type)
+Building::Building (unsigned int gameobject_id, unsigned int player_id, state::Position pos, state::Property prop, state::BuildingType build_type)
 :GameObject(gameobject_id,player_id,pos, prop)
 {
     if(prop.get_attack() == 0)

@@ -26,3 +26,15 @@ bool GameObject::takeDamage (int damage)
     }
     return true;
 }
+
+Position GameObject::getPosition () {
+    return this->object_position;
+}
+bool GameObject::setPosition (Position new_position) {
+    this->object_position = new_position;
+    return true;
+}
+
+unsigned int GameObject::getGame_object_id() const {
+    return this->game_object_id;
+}

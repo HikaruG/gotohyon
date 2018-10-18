@@ -27,3 +27,7 @@ bool Position::setPosition(unsigned int newX, unsigned int newY) {
     positionY = newY;
     return true;
 }
+
+bool Position::operator==(const state::Position orig_pos) {
+    return orig_pos.positionX == this->positionX && orig_pos.positionY == this->positionY;
+}
