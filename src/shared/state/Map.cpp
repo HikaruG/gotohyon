@@ -83,8 +83,7 @@ bool Map::moveGameObject (unsigned int game_object_id, Position new_position)
     {
         if(list_game_object[GOind]->getGame_object_id() == game_object_id)
         {
-            list_game_object[GOind]->setPosition(new_position);
-            return true;
+            return list_game_object[GOind]->setPosition(new_position);
         }
     }
     return false;

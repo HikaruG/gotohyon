@@ -16,6 +16,7 @@ Building::Building (unsigned int gameobject_id, unsigned int player_id, state::P
         can_attack = true;
     }
     type = build_type;
+    this->is_static = true;
 }
 
 const BuildingType Building::getBuildingType (){

@@ -64,11 +64,21 @@ bool test()
     vector<GameObject*> *lgo = new vector<GameObject*>;
     test_map.getGameObject(0,0,lgo);
     cout<<"number of item in 0,0:"<<lgo->size()<<endl;
-    cout<<"damaging ! "<<endl;
-    (*lgo)[0]->takeDamage(12);
-    int health;
-    (*lgo)[0]->getHealth(&health);
-    cout<<"lgo health:"<<health<<endl;
+    cout<<"damaging everyone ! "<<endl;
+    for(int i =0; i< lgo->size();i++) {
+        (*lgo)[i]->takeDamage(12);
+        int health;
+        (*lgo)[i]->getHealth(&health);
+        cout << "lgo health:" << health << endl;
+    }
+    cout<<"moving everyone !? "<<endl;
+    Position new_position = Position(1,0);
+    for(int i =0; i< lgo->size();i++) {
+        if(test_map.moveGameObject((*lgo)[i]->getGame_object_id(),new_position))
+        {
+            cout<<"successfully moved "<<(*lgo)[i]->getGame_object_id()<<endl;
+        }
+    }
     cout << "dope" << endl;
     return true;
 }

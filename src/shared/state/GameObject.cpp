@@ -32,6 +32,10 @@ Position GameObject::getPosition () {
     return this->object_position;
 }
 bool GameObject::setPosition (Position new_position) {
+    if(this->is_static)
+    {
+        return false;
+    }
     this->object_position = new_position;
     return true;
 }
