@@ -26,32 +26,33 @@ Map::Map (unsigned int X, unsigned int Y, std::vector<int> terrain_int)
 
 bool Map::addGameObject (unsigned int player_id, Position pos, bool is_static, int type)
 {
-    Property farmer = Property("unit_1",10,10,100);
-    Property infantry = Property("unit_2",10,10,100);
-    Property archer = Property("unit_3",10,10,100);
+    Property farmer = Property("unit_farmer",10,10,100);
+    Property infantry = Property("unit_infantry",10,10,100);
+    Property archer = Property("unit_archer",10,10,100);
 
-    Property mine = Property("building_1",10,10,100);
-    Property farm = Property("building_2",10,10,100);
-    Property turret = Property("building_3",10,10,100);
-    Property town = Property("building_4",10,10,100);
-    Property barrack = Property("building_5",10,10,100);
+    Property mine = Property("building_mine",10,10,100);
+    Property farm = Property("building_farm",10,10,100);
+    Property turret = Property("building_turret",10,10,100);
+    Property town = Property("building_town",10,10,100);
+    Property barrack = Property("building_barrack",10,10,100);
 
     std::vector<Property> statics = {mine,farm,turret,town, barrack};
     std::vector<Property> units = {farmer,infantry, archer};
 
     if(is_static)
     {
-        Building new_b = Building(static_cast<unsigned int>(list_game_object.size()),player_id, pos, statics[type],
+        Building * new_b = new Building(static_cast<unsigned int>(list_game_object.size()),player_id, pos, statics[type],
                                   static_cast<BuildingType>(type));
 
-        list_game_object.emplace_back(&new_b);
+        list_game_object.push_back(new_b);
     }
-    else{
-        Unit new_u = Unit(10,static_cast<unsigned int>(list_game_object.size()),player_id, pos, units[type],
-                                  static_cast<UnitType>(type));
+    else {
+        Unit * new_u = new Unit(10, static_cast<unsigned int>(list_game_object.size()), player_id, pos, units[type],
+                          static_cast<UnitType>(type));
 
-        list_game_object.emplace_back(&new_u);
+        list_game_object.push_back(new_u);
     }
+
     return true;
 }
 
@@ -63,14 +64,14 @@ bool Map::getTerrain (unsigned int X, unsigned int Y, Terrain * terrain)
     return true;
 }
 
-bool Map::getGameObject (unsigned int X, unsigned int Y, std::vector<GameObject> * game_objects)
+bool Map::getGameObject (unsigned int X, unsigned int Y, std::vector<GameObject*> * game_objects)
 {
     Position looking_for = Position(X,Y);
-    for(int GOind = 0; GOind < list_game_object.size(); GOind ++)
+    for(unsigned int GOind = 0; GOind < list_game_object.size(); GOind ++)
     {
         if(list_game_object[GOind]->getPosition() == looking_for)
         {
-            game_objects->emplace_back(*list_game_object[GOind]);
+            game_objects->push_back(list_game_object[GOind]);
         }
     }
     return true;

@@ -41,15 +41,34 @@ bool test()
     Map test_map = Map(2,3,{0,0,0,0,0,0});
     cout << "map sucessfully instanciated" << endl;
     Position default_pos = Position(0,0);
-    cout << "trying to put a mine in 0,0" << endl;
+    cout << "trying to put a mine and an infantry in 0,0" << endl;
     if(test_map.addGameObject(1,default_pos,true, 1))
     {
-        cout<<"it worked !"<<endl;
+        cout<<"mine is set up !"<<endl;
     }
     else
     {
         cout<<"bug !"<<endl;
         return false;
     }
+
+    if(test_map.addGameObject(1,default_pos,false, 1))
+    {
+        cout<<"infantry is set up !"<<endl;
+    }
+    else
+    {
+        cout<<"bug !"<<endl;
+        return false;
+    }
+    vector<GameObject*> *lgo = new vector<GameObject*>;
+    test_map.getGameObject(0,0,lgo);
+    cout<<"number of item in 0,0:"<<lgo->size()<<endl;
+    cout<<"damaging ! "<<endl;
+    (*lgo)[0]->takeDamage(12);
+    int health;
+    (*lgo)[0]->getHealth(&health);
+    cout<<"lgo health:"<<health<<endl;
+    cout << "dope" << endl;
     return true;
 }

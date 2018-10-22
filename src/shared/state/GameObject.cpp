@@ -2,6 +2,7 @@
 // Created by ben on 15/10/18.
 //
 #include "GameObject.h"
+#include <iostream>
 
 using namespace state;
 
@@ -37,4 +38,9 @@ bool GameObject::setPosition (Position new_position) {
 
 unsigned int GameObject::getGame_object_id() const {
     return this->game_object_id;
+}
+
+bool GameObject::getHealth(int *health) {
+    *health = health_bar;
+    return true;
 }
