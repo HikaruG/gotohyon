@@ -1,6 +1,7 @@
 //
 // Created by ben on 15/10/18.
 //
+#include <iostream>
 #include "Map.h"
 #include "Building.h"
 #include "Unit.h"
