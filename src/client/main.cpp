@@ -108,7 +108,7 @@ bool test_render(){
     sf::VertexArray m_vertices;
     sf::Texture m_tileset;
 
-    if (!m_tileset.loadFromFile("../tileset.png")) {
+    if (!m_tileset.loadFromFile("/media/sf_dossier_commun/tileset.png")) {
         return false;
     }
 
@@ -116,18 +116,24 @@ bool test_render(){
     // define the level with an array of tile indices
     const int level[] =
             {
-                    0, 0, 0, 0, 0,
-                    0, 1, 1, 1, 1,
-                    1, 1, 0, 0, 0,
-                    0, 1, 0, 0, 2,
-                    0, 0, 1, 0, 3,
+                    0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                    0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0,
+                    1, 1, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3,
+                    0, 1, 0, 0, 2, 0, 3, 3, 3, 0, 1, 1, 1, 0, 0, 0,
+                    0, 1, 1, 0, 3, 3, 3, 0, 0, 0, 1, 1, 1, 2, 0, 0,
+                    0, 0, 1, 0, 3, 0, 2, 2, 0, 0, 1, 1, 1, 1, 2, 0,
+                    2, 0, 1, 0, 3, 0, 2, 2, 2, 0, 1, 1, 1, 1, 1, 1,
+                    0, 0, 1, 0, 3, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1,
             };
+
 
     const int* tiles = level;
     // create the tilemap from the level definition
 
     m_vertices.setPrimitiveType(sf::Quads);
     m_vertices.resize(width * height * 4);
+
+    sf::Transform transform;
 
 
     for (unsigned int i = 0; i < width; ++i)
@@ -144,23 +150,28 @@ bool test_render(){
             sf::Vertex* quad = &m_vertices[(i + j * width) * 4];
 
             // define its 4 corners
-            quad[0].position = sf::Vector2f(i * t_map.x, j * t_map.y);
-            quad[1].position = sf::Vector2f((i + 1) * t_map.x, j * t_map.y);
-            quad[2].position = sf::Vector2f((i + 1) * t_map.x, (j + 1) * t_map.y);
-            quad[3].position = sf::Vector2f(i * t_map.x, (j + 1) * t_map.y);
+            quad[0].position = sf::Vector2f(i * t_map.x, (j * t_map.y)/2);
+            quad[1].position = sf::Vector2f((i + 1) * t_map.x, (j * t_map.y)/2);
+            quad[2].position = sf::Vector2f((i + 1) * t_map.x, ((j + 1) * t_map.y)/2);
+            quad[3].position = sf::Vector2f(i * t_map.x, ((j + 1) * t_map.y)/2);
 
             // define its 4 texture coordinates
-            quad[0].texCoords = sf::Vector2f(tu * t_map.x, tv * t_map.y);
-            quad[1].texCoords = sf::Vector2f((tu + 1) * t_map.x, tv * t_map.y);
-            quad[2].texCoords = sf::Vector2f((tu + 1) * t_map.x, (tv + 1) * t_map.y);
-            quad[3].texCoords = sf::Vector2f(tu * t_map.x, (tv + 1) * t_map.y);
+            quad[0].texCoords = sf::Vector2f(tu * t_map.x, (tv * t_map.y)/2);
+            quad[1].texCoords = sf::Vector2f((tu + 1) * t_map.x, (tv * t_map.y)/2);
+            quad[2].texCoords = sf::Vector2f((tu + 1) * t_map.x, ((tv + 1) * t_map.y)/2);
+            quad[3].texCoords = sf::Vector2f(tu * t_map.x, ((tv + 1) * t_map.y)/2);
         }
+        //t_map.rotate(45);
+
 
     sf::RenderStates r_states;
     sf::Transformable my_transformation;
 
+
     // apply the transform
+    //my_transformation.rotate(45);
     r_states.transform *= my_transformation.getTransform();
+
 
     // apply the tileset texture
     r_states.texture = &m_tileset;
