@@ -23,6 +23,58 @@ int main(int argc,char* argv[])
     if ( argc > 1 ){
         if ( !strcmp(argv[1],"hello") ){
             cout << "It works !" << endl;
+
+
+            // create the window
+            sf::RenderWindow window(sf::VideoMode(800, 600), "My window");
+
+
+
+            // create a quad
+            sf::VertexArray quad(sf::Quads, 4);
+
+
+// define it as a rectangle, located at (10, 10) and with size 100x100
+            quad[0].position = sf::Vector2f(10, 10);
+            quad[1].position = sf::Vector2f(110, 10);
+            quad[2].position = sf::Vector2f(110, 110);
+            quad[3].position = sf::Vector2f(10, 110);
+
+// define its texture area to be a 25x50 rectangle starting at (0, 0)
+            quad[0].texCoords = sf::Vector2f(0, 0);
+            quad[1].texCoords = sf::Vector2f(25, 0);
+            quad[2].texCoords = sf::Vector2f(25, 50);
+            quad[3].texCoords = sf::Vector2f(0, 50);
+
+
+
+
+            // run the program as long as the window is open
+            while (window.isOpen())
+            {
+                // check all the window's events that were triggered since the last iteration of the loop
+                sf::Event event;
+                while (window.pollEvent(event))
+                {
+                    // "close requested" event: we close the window
+                    if (event.type == sf::Event::Closed)
+                        window.close();
+                }
+
+                // clear the window with black color
+                window.clear(sf::Color::Black);
+
+                // draw everything here...
+                window.draw(quad);
+
+                // end the current frame
+                window.display();
+            }
+
+
+
+
+
         }
         if ( !strcmp(argv[1],"state") ){
             cout << "launching test sequence" << endl;
