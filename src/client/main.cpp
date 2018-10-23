@@ -17,70 +17,26 @@ using namespace std;
 using namespace state;
 
 bool test_state();
+bool test_render();
 
 int main(int argc,char* argv[]) 
 {   
     if ( argc > 1 ){
         if ( !strcmp(argv[1],"hello") ){
             cout << "It works !" << endl;
-
-
-            // create the window
-            sf::RenderWindow window(sf::VideoMode(800, 600), "My window");
-
-
-
-            // create a quad
-            sf::VertexArray quad(sf::Quads, 4);
-
-
-// define it as a rectangle, located at (10, 10) and with size 100x100
-            quad[0].position = sf::Vector2f(10, 10);
-            quad[1].position = sf::Vector2f(110, 10);
-            quad[2].position = sf::Vector2f(110, 110);
-            quad[3].position = sf::Vector2f(10, 110);
-
-// define its texture area to be a 25x50 rectangle starting at (0, 0)
-            quad[0].texCoords = sf::Vector2f(0, 0);
-            quad[1].texCoords = sf::Vector2f(25, 0);
-            quad[2].texCoords = sf::Vector2f(25, 50);
-            quad[3].texCoords = sf::Vector2f(0, 50);
-
-
-
-
-            // run the program as long as the window is open
-            while (window.isOpen())
-            {
-                // check all the window's events that were triggered since the last iteration of the loop
-                sf::Event event;
-                while (window.pollEvent(event))
-                {
-                    // "close requested" event: we close the window
-                    if (event.type == sf::Event::Closed)
-                        window.close();
-                }
-
-                // clear the window with black color
-                window.clear(sf::Color::Black);
-
-                // draw everything here...
-                window.draw(quad);
-
-                // end the current frame
-                window.display();
-            }
-
-
-
-
-
         }
         if ( !strcmp(argv[1],"state") ){
             cout << "launching test sequence" << endl;
             if(test_state())
             {
                 cout<<"tests successful"<< endl;
+            }
+        }
+
+        if( !strcmp(argv[1],"render") ) {
+            cout << "launching render sequence" << endl;
+            if (test_render()) {
+                cout << "tests successful" << endl;
             }
         }
     }
@@ -140,4 +96,97 @@ bool test_state()
 
     cout << "dope" << endl;
     return true;
+}
+
+bool test_render(){
+    size_t width = 16;
+    size_t height = 8;
+
+    // create the window
+    sf::RenderWindow window(sf::VideoMode(512, 256), "Tilemap");
+    sf::Vector2u t_map = sf::Vector2u(32,32);
+    sf::VertexArray m_vertices;
+    sf::Texture m_tileset;
+
+    if (!m_tileset.loadFromFile("../tileset.png")) {
+        return false;
+    }
+
+
+    // define the level with an array of tile indices
+    const int level[] =
+            {
+                    0, 0, 0, 0, 0,
+                    0, 1, 1, 1, 1,
+                    1, 1, 0, 0, 0,
+                    0, 1, 0, 0, 2,
+                    0, 0, 1, 0, 3,
+            };
+
+    const int* tiles = level;
+    // create the tilemap from the level definition
+
+    m_vertices.setPrimitiveType(sf::Quads);
+    m_vertices.resize(width * height * 4);
+
+
+    for (unsigned int i = 0; i < width; ++i)
+        for (unsigned int j = 0; j < height; ++j)
+        {
+            // get the current tile number
+            int tileNumber = tiles[i + j * width];
+
+            // find its position in the tileset texture
+            int tu = tileNumber % (m_tileset.getSize().x / t_map.x);
+            int tv = tileNumber / (m_tileset.getSize().x / t_map.x);
+
+            // get a pointer to the current tile's quad
+            sf::Vertex* quad = &m_vertices[(i + j * width) * 4];
+
+            // define its 4 corners
+            quad[0].position = sf::Vector2f(i * t_map.x, j * t_map.y);
+            quad[1].position = sf::Vector2f((i + 1) * t_map.x, j * t_map.y);
+            quad[2].position = sf::Vector2f((i + 1) * t_map.x, (j + 1) * t_map.y);
+            quad[3].position = sf::Vector2f(i * t_map.x, (j + 1) * t_map.y);
+
+            // define its 4 texture coordinates
+            quad[0].texCoords = sf::Vector2f(tu * t_map.x, tv * t_map.y);
+            quad[1].texCoords = sf::Vector2f((tu + 1) * t_map.x, tv * t_map.y);
+            quad[2].texCoords = sf::Vector2f((tu + 1) * t_map.x, (tv + 1) * t_map.y);
+            quad[3].texCoords = sf::Vector2f(tu * t_map.x, (tv + 1) * t_map.y);
+        }
+
+    sf::RenderStates r_states;
+    sf::Transformable my_transformation;
+
+    // apply the transform
+    r_states.transform *= my_transformation.getTransform();
+
+    // apply the tileset texture
+    r_states.texture = &m_tileset;
+
+
+
+    // run the program as long as the window is open
+    while (window.isOpen())
+    {
+        // check all the window's events that were triggered since the last iteration of the loop
+        sf::Event event;
+        while (window.pollEvent(event))
+        {
+            // "close requested" event: we close the window
+            if (event.type == sf::Event::Closed)
+                window.close();
+        }
+
+        // clear the window with black color
+        window.clear(sf::Color::Black);
+
+        // draw everything here...
+        window.draw(m_vertices,r_states);
+
+        // end the current frame
+        window.display();
+    }
+
 }
