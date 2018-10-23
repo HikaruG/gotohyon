@@ -16,7 +16,7 @@ void testSFML() {
 using namespace std;
 using namespace state;
 
-bool test();
+bool test_state();
 
 int main(int argc,char* argv[]) 
 {   
@@ -26,7 +26,7 @@ int main(int argc,char* argv[])
         }
         if ( !strcmp(argv[1],"state") ){
             cout << "launching test sequence" << endl;
-            if(test())
+            if(test_state())
             {
                 cout<<"tests successful"<< endl;
             }
@@ -36,7 +36,7 @@ int main(int argc,char* argv[])
     return 0;
 }
 
-bool test()
+bool test_state()
 {
     Map test_map = Map(2,3,{0,0,0,0,0,0});
     cout << "map sucessfully instanciated" << endl;
@@ -78,7 +78,14 @@ bool test()
         {
             cout<<"successfully moved "<<(*lgo)[i]->getGame_object_id()<<endl;
         }
+        else{
+            cout<<"actually i can't move "<<(*lgo)[i]->getGame_object_id()<<endl;
+            Property *prop = new Property();
+            (*lgo)[i]->getProperty(prop);
+            cout << "it's a "<<prop->getStringType()<<" that i can't move !"<<endl;
+        }
     }
+
     cout << "dope" << endl;
     return true;
 }

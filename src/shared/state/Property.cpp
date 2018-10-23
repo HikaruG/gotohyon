@@ -28,14 +28,18 @@ Property& Property::operator=(const state::Property& orig) {
     return *this;
 }
 
-unsigned int Property::get_attack() {
+unsigned int Property::getAttack() {
     return this->attack;
 }
 
-unsigned int Property::get_defense() {
+unsigned int Property::getDefense() {
     return this->defense;
 }
 
-unsigned int Property::get_health_max() {
+unsigned int Property::getHealthMax() {
     return this->health_max;
+}
+
+std::string Property::getStringType() {
+    return type_game_object;
 }

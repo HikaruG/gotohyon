@@ -88,3 +88,10 @@ bool Map::moveGameObject (unsigned int game_object_id, Position new_position)
     }
     return false;
 }
+
+Map::~Map() {
+    for (int i = 0; i >list_game_object.size();i++)
+    {
+        delete list_game_object[i];
+    }
+}

@@ -13,7 +13,7 @@ GameObject::GameObject(unsigned int gameobject_id, unsigned int player_ids, stat
     this->player_id = player_ids;
     this->object_position = pos;
 
-    this->health_bar = this->game_object_property.get_health_max();
+    this->health_bar = this->game_object_property.getHealthMax();
     this->is_destroyed = false;
 }
 
@@ -46,5 +46,10 @@ unsigned int GameObject::getGame_object_id() const {
 
 bool GameObject::getHealth(int *health) {
     *health = health_bar;
+    return true;
+}
+
+bool GameObject::getProperty(state::Property *prop) {
+    *prop = this->game_object_property;
     return true;
 }
