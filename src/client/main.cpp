@@ -100,8 +100,8 @@ bool test_state()
 
 bool test_render1(){
     //size of the level
-    size_t width = 16;
-    size_t height = 16;
+    size_t width = 2;
+    size_t height = 2;
 
 
     //size of the window
@@ -109,17 +109,17 @@ bool test_render1(){
     size_t y_window = 1024;
     // create the window
     sf::RenderWindow window(sf::VideoMode(x_window, y_window), "Tilemap");
-    sf::Vector2u t_map = sf::Vector2u(32,32);
+    sf::Vector2u t_map = sf::Vector2u(64,32);
     sf::VertexArray m_vertices;
     sf::Texture m_tileset;
 
-    if (!m_tileset.loadFromFile("../tileset.png")) {
+    if (!m_tileset.loadFromFile("../src/tileset.png")) {
         return false;
     }
 
 
     // define the level with an array of tile indices
-    const int level[] =
+    /*const int level[] =
             {
                     0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                     0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0,
@@ -138,7 +138,12 @@ bool test_render1(){
                     0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0,
                     0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
             };
-
+*/
+    const int level[] =
+            {
+                0,1,
+                2,3
+            };
 
     const int* tiles = level;
     // create the tilemap from the level definition
@@ -163,16 +168,16 @@ bool test_render1(){
             sf::Vertex* quad = &m_vertices[(i + j * width) * 4];
 
             // define its 4 corners
-            quad[0].position = sf::Vector2f((i * t_map.x), (j * t_map.y)/2);
-            quad[1].position = sf::Vector2f(((i + 1) * t_map.x), (j * t_map.y)/2);
-            quad[2].position = sf::Vector2f(((i + 1) * t_map.x), ((j + 1) * t_map.y)/2);
-            quad[3].position = sf::Vector2f((i * t_map.x), ((j + 1) * t_map.y)/2);
+            quad[0].position = sf::Vector2f(((i * t_map.x) + (j * (-1) * t_map.x)) / 2, ((i + j) * t_map.y) / 2);
+            quad[1].position = sf::Vector2f(((i * t_map.x) + (j * (-1) * t_map.x)) / 2 + t_map.x, ((i + j) * t_map.y)/2);
+            quad[2].position = sf::Vector2f(((i * t_map.x) + (j * (-1) * t_map.x)) / 2, ((i + j) * t_map.y) / 2 + t_map.y);
+            quad[3].position = sf::Vector2f(((i * t_map.x) + (j * (-1) * t_map.x)) / 2 + t_map.x, ((i + j) * t_map.y) / 2 + t_map.y);
 
             // define its 4 texture coordinates
-            quad[0].texCoords = sf::Vector2f((tu * t_map.x), (tv * t_map.y)/2);
-            quad[1].texCoords = sf::Vector2f(((tu + 1) * t_map.x), (tv * t_map.y)/2);
-            quad[2].texCoords = sf::Vector2f(((tu + 1) * t_map.x), ((tv + 1) * t_map.y)/2);
-            quad[3].texCoords = sf::Vector2f((tu * t_map.x), ((tv + 1) * t_map.y)/2);
+            quad[0].texCoords = sf::Vector2f(((tu * t_map.x) + (tv * (-1) * t_map.x)) / 2, ((tv + tu) * t_map.y) / 2);
+            quad[1].texCoords = sf::Vector2f(((tu * t_map.x) + (tv * (-1) * t_map.x)) / 2 + t_map.x, ((tv + tu) * t_map.y) / 2);
+            quad[2].texCoords = sf::Vector2f(((tu * t_map.x) + (tv * (-1) * t_map.x)) / 2, ((tv + tu) * t_map.y) / 2 + t_map.y);
+            quad[3].texCoords = sf::Vector2f(((tu * t_map.x) + (tv * (-1) * t_map.x)) / 2 + t_map.x, ((tv + tu) * t_map.y) / 2 + t_map.y);
         }
 
 
@@ -181,11 +186,11 @@ bool test_render1(){
 
 
     //rotates the map 45°
-    my_transformation.rotate(45);
+    //my_transformation.rotate(45);
     //set the origin of the map to the top center of the window
-    my_transformation.move(x_window/2,y_window/16);
+    my_transformation.move(x_window/2,y_window/2);
     //scales the map to resize it
-    my_transformation.scale(1,2);
+    //my_transformation.scale(1,2);
     // apply the transform
     r_states.transform *= my_transformation.getTransform();
 
