@@ -5,4 +5,5 @@ nbproject
 src/shared/state/*.h
 src/client/render/*.h
 src/shared/*.h
+src/client/*.h
 .idea
