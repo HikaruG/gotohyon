@@ -20,7 +20,7 @@ State::State(unsigned int player_number)
         :game_map(1,1,{0})
 {
     this->player_nbr = player_number;
-    day_nbr = 0;
+    day_count = 0;
     current_player = 0;
 }
 
