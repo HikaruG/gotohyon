@@ -41,7 +41,7 @@ file(GLOB_RECURSE shared_sources src/shared/*.cpp)
 
 
 # Executables
-add_executable(client ${client_sources} ${shared_sources} src/client/render/BuildingLayer.cpp)
+add_executable(client ${client_sources} ${shared_sources} src/client/render/Layer.cpp src/client/render/Surface.cpp src/client/render/StateLayer.cpp src/client/render/TerrainLayer.cpp src/client/render/Tile.cpp src/client/render/TerrainTileSet.cpp src/client/render/TileSet.cpp src/client/render/StateTileSet.cpp src/client/render/GameObjectLayer.cpp src/client/render/GameObjectTileSet.cpp)
 #add_executable(server ${server_sources} ${shared_sources} ${jsoncpp_sources})
 
 # SFML
