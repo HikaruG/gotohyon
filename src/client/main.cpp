@@ -17,10 +17,10 @@ using namespace std;
 using namespace state;
 
 bool test_state();
-bool test_render();
+bool test_render1();
 
-int main(int argc,char* argv[]) 
-{   
+int main(int argc,char* argv[])
+{
     if ( argc > 1 ){
         if ( !strcmp(argv[1],"hello") ){
             cout << "It works !" << endl;
@@ -35,7 +35,7 @@ int main(int argc,char* argv[])
 
         if( !strcmp(argv[1],"render") ) {
             cout << "launching render sequence" << endl;
-            if (test_render()) {
+            if (test_render1()) {
                 cout << "tests successful" << endl;
             }
         }
@@ -98,17 +98,22 @@ bool test_state()
     return true;
 }
 
-bool test_render(){
+bool test_render1(){
+    //size of the level
     size_t width = 16;
-    size_t height = 8;
+    size_t height = 16;
 
+
+    //size of the window
+    size_t x_window = 1024;
+    size_t y_window = 1024;
     // create the window
-    sf::RenderWindow window(sf::VideoMode(512, 256), "Tilemap");
+    sf::RenderWindow window(sf::VideoMode(x_window, y_window), "Tilemap");
     sf::Vector2u t_map = sf::Vector2u(32,32);
     sf::VertexArray m_vertices;
     sf::Texture m_tileset;
 
-    if (!m_tileset.loadFromFile("/media/sf_dossier_commun/tileset.png")) {
+    if (!m_tileset.loadFromFile("../tileset.png")) {
         return false;
     }
 
@@ -124,6 +129,14 @@ bool test_render(){
                     0, 0, 1, 0, 3, 0, 2, 2, 0, 0, 1, 1, 1, 1, 2, 0,
                     2, 0, 1, 0, 3, 0, 2, 2, 2, 0, 1, 1, 1, 1, 1, 1,
                     0, 0, 1, 0, 3, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1,
+                    0, 0, 1, 0, 3, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1,
+                    2, 0, 1, 0, 3, 0, 2, 2, 2, 0, 1, 1, 1, 1, 1, 1,
+                    0, 0, 1, 0, 3, 0, 2, 2, 0, 0, 1, 1, 1, 1, 2, 0,
+                    0, 1, 1, 0, 3, 3, 3, 0, 0, 0, 1, 1, 1, 2, 0, 0,
+                    0, 1, 0, 0, 2, 0, 3, 3, 3, 0, 1, 1, 1, 0, 0, 0,
+                    1, 1, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3,
+                    0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
             };
 
 
@@ -150,26 +163,30 @@ bool test_render(){
             sf::Vertex* quad = &m_vertices[(i + j * width) * 4];
 
             // define its 4 corners
-            quad[0].position = sf::Vector2f(i * t_map.x, (j * t_map.y)/2);
-            quad[1].position = sf::Vector2f((i + 1) * t_map.x, (j * t_map.y)/2);
-            quad[2].position = sf::Vector2f((i + 1) * t_map.x, ((j + 1) * t_map.y)/2);
-            quad[3].position = sf::Vector2f(i * t_map.x, ((j + 1) * t_map.y)/2);
+            quad[0].position = sf::Vector2f((i * t_map.x), (j * t_map.y)/2);
+            quad[1].position = sf::Vector2f(((i + 1) * t_map.x), (j * t_map.y)/2);
+            quad[2].position = sf::Vector2f(((i + 1) * t_map.x), ((j + 1) * t_map.y)/2);
+            quad[3].position = sf::Vector2f((i * t_map.x), ((j + 1) * t_map.y)/2);
 
             // define its 4 texture coordinates
-            quad[0].texCoords = sf::Vector2f(tu * t_map.x, (tv * t_map.y)/2);
-            quad[1].texCoords = sf::Vector2f((tu + 1) * t_map.x, (tv * t_map.y)/2);
-            quad[2].texCoords = sf::Vector2f((tu + 1) * t_map.x, ((tv + 1) * t_map.y)/2);
-            quad[3].texCoords = sf::Vector2f(tu * t_map.x, ((tv + 1) * t_map.y)/2);
+            quad[0].texCoords = sf::Vector2f((tu * t_map.x), (tv * t_map.y)/2);
+            quad[1].texCoords = sf::Vector2f(((tu + 1) * t_map.x), (tv * t_map.y)/2);
+            quad[2].texCoords = sf::Vector2f(((tu + 1) * t_map.x), ((tv + 1) * t_map.y)/2);
+            quad[3].texCoords = sf::Vector2f((tu * t_map.x), ((tv + 1) * t_map.y)/2);
         }
-        //t_map.rotate(45);
 
 
     sf::RenderStates r_states;
     sf::Transformable my_transformation;
 
 
+    //rotates the map 45°
+    my_transformation.rotate(45);
+    //set the origin of the map to the top center of the window
+    my_transformation.move(x_window/2,y_window/16);
+    //scales the map to resize it
+    my_transformation.scale(1,2);
     // apply the transform
-    //my_transformation.rotate(45);
     r_states.transform *= my_transformation.getTransform();
 
 
@@ -199,5 +216,5 @@ bool test_render(){
         // end the current frame
         window.display();
     }
-
+    return true;
 }
