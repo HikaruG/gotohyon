@@ -9,29 +9,24 @@ using namespace render;
 DrawManager::DrawManager (state::State& current_state)
 {
     this->current_state = &current_state;
+    drawer = MapSurface();
+    //beaucoup trop de hardcodage mais bon, a modifié plus tard !
     
 }
 
-bool DrawManager::getSurface (Surface * surface)
-{
 
-    return true;
-}
-bool DrawManager::getTerrains ()
-{
-
-    return true;
-}
 bool DrawManager::setTerrain ()
 {
 
     return true;
 }
+
 bool DrawManager::setUnit ()
 {
 
     return true;
 }
+
 bool DrawManager::setBuilding ()
 {
 

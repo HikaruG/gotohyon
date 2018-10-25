@@ -100,7 +100,7 @@ bool test_state()
 
 bool test_render1(){
     //size of the level
-    size_t width = 16;
+    size_t width = 16;//Map.size x
     size_t height = 16;
 
 
