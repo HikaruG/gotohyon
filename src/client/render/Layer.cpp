@@ -5,4 +5,11 @@
 #include "Layer.h"
 
 using namespace render;
-Layer::Layer() {}
+Layer::Layer() {
+    this->surface = nullptr;
+    this->tileset = nullptr;
+}
+
+const Surface* const Layer::getSurface() {
+
+}
