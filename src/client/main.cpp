@@ -35,9 +35,9 @@ int main(int argc,char* argv[])
         }
 
         if( !strcmp(argv[1],"render") ) {
-            cout << "launching render sequence" << endl;
+            cout << "launching prototype function of the rendering" << endl;
             if (test_render1()) {
-                cout << "tests successful" << endl;
+                cout << "test du rendering a l'aide d'une seule fonction reussie" << endl;
             }
         }
     }
@@ -104,6 +104,10 @@ bool test_state()
     return true;
 }
 
+bool test_render(){
+
+}
+//le test ci-dessous permet de visualiser la map isométrique avec la texture du terrain.
 bool test_render1(){
     //size of the level
     size_t width = 16;//Map.size x
@@ -166,26 +170,20 @@ bool test_render1(){
         {
             // get the current tile number
             int tileNumber = tiles[i + j * width];
-            cout <<"new tile : "<<tileNumber<<endl;
 
             // find its position in the tileset texture
             int tu = tileNumber % (m_tileset.getSize().x / t_map.x);
             int tv = tileNumber / (m_tileset.getSize().x / t_map.x);
 
-            cout << "tu: "<<tu<<" tv: "<<tv<<endl;
 
             // get a pointer to the current tile's quad
             sf::Vertex* quad = &m_vertices[(i + j * width) * 4];
 
-            cout << "i: "<<i<<" j: "<<j<<endl;
-
             // define its 4 corners
             int cc = -(j * t_map.x);
-            cout << "cc : "<<cc<<endl;
             int k = (i * t_map.x)/2 + cc/2 + t_map.x/2 + offset;
             int l = ((i + j) * t_map.y) / 2;
 
-            cout << "k: "<<k<<" l: "<<l<<endl;
 
             quad[0].position = sf::Vector2f(k, l);
             quad[1].position = sf::Vector2f(k + t_map.x/2, l + t_map.y/2);
@@ -196,13 +194,10 @@ bool test_render1(){
 
             int ku = tu*t_map.x + t_map.x/2;
 
-            cout << "ku: "<<ku << endl;
-
             quad[0].texCoords = sf::Vector2f(ku, 0);
             quad[1].texCoords = sf::Vector2f(ku + t_map.x/2, t_map.y/2);
             quad[3].texCoords = sf::Vector2f(ku - t_map.x/2, t_map.y/2);
             quad[2].texCoords = sf::Vector2f(ku , t_map.y);
-            cout << endl;
         }
 
 
