@@ -12,6 +12,7 @@ void testSFML() {
 // Fin test SFML
 
 #include "state.h"
+#include "render.h"
 
 using namespace std;
 using namespace state;
@@ -46,7 +47,9 @@ int main(int argc,char* argv[])
 
 bool test_state()
 {
+    State testState = State(1);
     Map test_map = Map(2,3,{0,0,0,0,0,0});
+    testState.initializeMap(test_map);
     cout << "map sucessfully instanciated" << endl;
     Position default_pos = Position(0,0);
     cout << "trying to put a mine and an infantry in 0,0" << endl;
@@ -93,6 +96,9 @@ bool test_state()
             cout << "it's a "<<prop->getStringType()<<" that i can't move !"<<endl;
         }
     }
+
+    render::DrawManager testdraw = render::DrawManager
+            (testState);
 
     cout << "dope" << endl;
     return true;

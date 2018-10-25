@@ -89,6 +89,16 @@ bool Map::moveGameObject (unsigned int game_object_id, Position new_position)
     return false;
 }
 
+bool Map::getSize(int *size_x, int *size_y) {
+    size_x = (int*) this->map_size_x;
+    size_y = (int*) this->map_size_Y;
+    return true;
+}
+
+int Map::getObjectCount() {
+    return (int) map_size_x * map_size_Y + this->list_game_object.size();
+}
+
 Map::~Map() {
     for (int i = 0; i >list_game_object.size();i++)
     {

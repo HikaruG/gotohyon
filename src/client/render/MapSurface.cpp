@@ -14,13 +14,18 @@ void MapSurface::draw(sf::RenderTarget &target, sf::RenderStates states) const{
 //    target.draw(quads,textures);
 }
 
-bool MapSurface::loadTextures(const std::string &image_file) {
+bool MapSurface::loadTextures(const std::string& terrain_file, const std::string& unit_file, const std::string& building_file) {
     // load the tileset texture
-    for(unsigned int i = 0; i<textures.size();i++) {
-        if (!textures[i].loadFromFile(image_file)) {
-            return false;
-        }
+    if (!texture_terrain.loadFromFile(terrain_file)) {
+        return false;
     }
+    if (!texture_building.loadFromFile(building_file)) {
+        return false;
+    }
+    if (!texture_unit.loadFromFile(unit_file)) {
+        return false;
+    }
+
     return true;
 }
 
@@ -33,15 +38,21 @@ bool MapSurface::initQuads(int count) {
     return true;
 }
 
-bool MapSurface::setSpriteLocation(int x, int y) {
+bool MapSurface::setSpriteLocation(int count, int x, int y) {
     //i represente le niveau/level
     //x represente l'emplacement en x
     //y represente l'emplacement en y
+    int offset = 128; // taille map * taille texture longueur, pour eviter d'arriver dans les negatifs
+    int t_map_x = 64;
+    int t_map_y = 32;
+    int cc = -(x * t_map_x);
+    int k = (x * t_map_x)/2 + cc/2 + t_map_x/2 + offset;
+    int l = ((x + y) * t_map_y) / 2;
 
-//    quads[0].position = sf::Vector2f(k, l);
-//    quads[1].position = sf::Vector2f(k + t_map.x/2, l + t_map.y/2);
-//    quads[3].position = sf::Vector2f(k - t_map.x/2, l + t_map.y /2);
-//    quads[2].position = sf::Vector2f(k , l + t_map.y);
+    quads[0].position = sf::Vector2f(k, l);
+    quads[1].position = sf::Vector2f(k + t_map_x/2, l + t_map_y/2);
+    quads[3].position = sf::Vector2f(k - t_map_x/2, l + t_map_y /2);
+    quads[2].position = sf::Vector2f(k , l + t_map_y);
 
 }
 
