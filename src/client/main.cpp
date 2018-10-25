@@ -159,25 +159,43 @@ bool test_render1(){
         {
             // get the current tile number
             int tileNumber = tiles[i + j * width];
+            cout <<"new tile : "<<tileNumber<<endl;
 
             // find its position in the tileset texture
             int tu = tileNumber % (m_tileset.getSize().x / t_map.x);
             int tv = tileNumber / (m_tileset.getSize().x / t_map.x);
 
+            cout << "tu: "<<tu<<" tv: "<<tv<<endl;
+
             // get a pointer to the current tile's quad
             sf::Vertex* quad = &m_vertices[(i + j * width) * 4];
 
-            // define its 4 corners
-            quad[0].position = sf::Vector2f(((i * t_map.x) + (j * (-1) * t_map.x)) / 2, ((i + j) * t_map.y) / 2);
-            quad[1].position = sf::Vector2f(((i * t_map.x) + (j * (-1) * t_map.x)) / 2 + t_map.x, ((i + j) * t_map.y)/2);
-            quad[2].position = sf::Vector2f(((i * t_map.x) + (j * (-1) * t_map.x)) / 2, ((i + j) * t_map.y) / 2 + t_map.y);
-            quad[3].position = sf::Vector2f(((i * t_map.x) + (j * (-1) * t_map.x)) / 2 + t_map.x, ((i + j) * t_map.y) / 2 + t_map.y);
+            cout << "i: "<<i<<" j: "<<j<<endl;
 
-            // define its 4 texture coordinates
-            quad[0].texCoords = sf::Vector2f(((tu * t_map.x) + (tv * (-1) * t_map.x)) / 2, ((tv + tu) * t_map.y) / 2);
-            quad[1].texCoords = sf::Vector2f(((tu * t_map.x) + (tv * (-1) * t_map.x)) / 2 + t_map.x, ((tv + tu) * t_map.y) / 2);
-            quad[2].texCoords = sf::Vector2f(((tu * t_map.x) + (tv * (-1) * t_map.x)) / 2, ((tv + tu) * t_map.y) / 2 + t_map.y);
-            quad[3].texCoords = sf::Vector2f(((tu * t_map.x) + (tv * (-1) * t_map.x)) / 2 + t_map.x, ((tv + tu) * t_map.y) / 2 + t_map.y);
+            // define its 4 corners
+            int cc = -(j * t_map.x);
+            cout << "cc : "<<cc<<endl;
+            int k = (i * t_map.x)/2 + cc/2;
+            int l = ((i + j) * t_map.y) / 2;
+
+            cout << "k: "<<k<<" l: "<<l<<endl;
+
+            quad[0].position = sf::Vector2f(k, l);
+            quad[1].position = sf::Vector2f(k + t_map.x, l);
+            quad[2].position = sf::Vector2f(k, l + t_map.y);
+            quad[3].position = sf::Vector2f(k + t_map.x, l + t_map.y);
+
+            // define its 4 texture coordinates1
+
+            int ku = ((tu * t_map.x) - (tv * t_map.x));
+            int kv = ((tv + tu) * t_map.y) / 2;
+
+            cout << "ku: "<<ku<<" kv: "<<kv<<endl;
+
+            quad[0].texCoords = sf::Vector2f(ku , 0);
+            quad[1].texCoords = sf::Vector2f(ku + t_map.x, 0);
+            quad[2].texCoords = sf::Vector2f(ku , t_map.y);
+            quad[3].texCoords = sf::Vector2f(ku + t_map.x, t_map.y);
         }
 
 
@@ -213,7 +231,7 @@ bool test_render1(){
         }
 
         // clear the window with black color
-        window.clear(sf::Color::Black);
+        window.clear(sf::Color::Magenta);
 
         // draw everything here...
         window.draw(m_vertices,r_states);
