@@ -96,9 +96,8 @@ bool test_state()
             cout << "it's a "<<prop->getStringType()<<" that i can't move !"<<endl;
         }
     }
-
-    render::DrawManager testdraw = render::DrawManager
-            (testState);
+    cout << "wtf" << endl;
+    render::DrawManager testdraw = render::DrawManager(testState);
 
     cout << "dope" << endl;
     return true;
