@@ -37,10 +37,10 @@ bool Surface::setSpriteLocation(int i, int x, int y) {
     //x represente l'emplacement en x
     //y represente l'emplacement en y
 
-    //quad[0].position = sf::Vector2f((x*getSize()), (j * t_map.y));
-    //quad[1].position = sf::Vector2f((i + 1) * t_map.x,  j * t_map.y);
-    //quad[2].position = sf::Vector2f(i * t_map.x, (j + 1) * t_map.y);
-    //quad[3].position = sf::Vector2f((i + 1) *  t_map.x, (j + 1) * t_map.y);
+    quad[0].position = sf::Vector2f(k, l);
+    quad[1].position = sf::Vector2f(k + t_map.x/2, l + t_map.y/2);
+    quad[3].position = sf::Vector2f(k - t_map.x/2, l + t_map.y /2);
+    quad[2].position = sf::Vector2f(k , l + t_map.y);
 
 }
 
