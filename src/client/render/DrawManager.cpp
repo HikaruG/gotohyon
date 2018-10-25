@@ -6,10 +6,10 @@
 
 using namespace render;
 
-DrawManager::DrawManager (state::State& current_state):
-current_state(current_state)
+DrawManager::DrawManager (state::State& current_state)
 {
-
+    this->current_state = &current_state;
+    
 }
 
 bool DrawManager::getSurface (Surface * surface)
