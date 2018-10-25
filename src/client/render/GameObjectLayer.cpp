@@ -6,3 +6,5 @@
 using namespace render;
 
 //GameObjectLayer::GameObjectLayer(const state::GameObject &game_object) {}
+
+//GameObjectLayer::GameObjectLayer(const state::GameObject &game_object) {}
