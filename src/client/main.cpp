@@ -100,8 +100,8 @@ bool test_state()
 
 bool test_render1(){
     //size of the level
-    size_t width = 2;
-    size_t height = 2;
+    size_t width = 16;
+    size_t height = 16;
 
 
     //size of the window
@@ -119,32 +119,32 @@ bool test_render1(){
 
 
     // define the level with an array of tile indices
-    /*const int level[] =
-            {
-                    0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                    0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0,
-                    1, 1, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3,
-                    0, 1, 0, 0, 2, 0, 3, 3, 3, 0, 1, 1, 1, 0, 0, 0,
-                    0, 1, 1, 0, 3, 3, 3, 0, 0, 0, 1, 1, 1, 2, 0, 0,
-                    0, 0, 1, 0, 3, 0, 2, 2, 0, 0, 1, 1, 1, 1, 2, 0,
-                    2, 0, 1, 0, 3, 0, 2, 2, 2, 0, 1, 1, 1, 1, 1, 1,
-                    0, 0, 1, 0, 3, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1,
-                    0, 0, 1, 0, 3, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1,
-                    2, 0, 1, 0, 3, 0, 2, 2, 2, 0, 1, 1, 1, 1, 1, 1,
-                    0, 0, 1, 0, 3, 0, 2, 2, 0, 0, 1, 1, 1, 1, 2, 0,
-                    0, 1, 1, 0, 3, 3, 3, 0, 0, 0, 1, 1, 1, 2, 0, 0,
-                    0, 1, 0, 0, 2, 0, 3, 3, 3, 0, 1, 1, 1, 0, 0, 0,
-                    1, 1, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3,
-                    0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-            };
-*/
     const int level[] =
             {
-                0,1,
-                2,3
+                    0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                    0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0,
+                    1, 1, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3,
+                    0, 1, 0, 0, 2, 0, 3, 3, 3, 0, 1, 1, 1, 0, 0, 0,
+                    0, 1, 1, 0, 3, 3, 3, 0, 0, 0, 1, 1, 1, 2, 0, 0,
+                    0, 0, 1, 0, 3, 0, 2, 2, 0, 0, 1, 1, 1, 1, 2, 0,
+                    2, 0, 1, 0, 3, 0, 2, 2, 2, 0, 1, 1, 1, 1, 1, 1,
+                    0, 0, 1, 0, 3, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1,
+                    0, 0, 1, 0, 3, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1,
+                    2, 0, 1, 0, 3, 0, 2, 2, 2, 0, 1, 1, 1, 1, 1, 1,
+                    0, 0, 1, 0, 3, 0, 2, 2, 0, 0, 1, 1, 1, 1, 2, 0,
+                    0, 1, 1, 0, 3, 3, 3, 0, 0, 0, 1, 1, 1, 2, 0, 0,
+                    0, 1, 0, 0, 2, 0, 3, 3, 3, 0, 1, 1, 1, 0, 0, 0,
+                    1, 1, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3,
+                    0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
             };
-
+/*
+    const int level[] =
+            {
+                2,2,
+                2,2
+            };
+*/
     const int* tiles = level;
     // create the tilemap from the level definition
 
@@ -153,6 +153,7 @@ bool test_render1(){
 
     sf::Transform transform;
 
+    int offset = width*32;
 
     for (unsigned int i = 0; i < width; ++i)
         for (unsigned int j = 0; j < height; ++j)
@@ -175,27 +176,27 @@ bool test_render1(){
             // define its 4 corners
             int cc = -(j * t_map.x);
             cout << "cc : "<<cc<<endl;
-            int k = (i * t_map.x)/2 + cc/2;
+            int k = (i * t_map.x)/2 + cc/2 + t_map.x/2 + offset;
             int l = ((i + j) * t_map.y) / 2;
 
             cout << "k: "<<k<<" l: "<<l<<endl;
 
             quad[0].position = sf::Vector2f(k, l);
-            quad[1].position = sf::Vector2f(k + t_map.x, l);
-            quad[2].position = sf::Vector2f(k, l + t_map.y);
-            quad[3].position = sf::Vector2f(k + t_map.x, l + t_map.y);
+            quad[1].position = sf::Vector2f(k + t_map.x/2, l + t_map.y/2);
+            quad[3].position = sf::Vector2f(k - t_map.x/2, l + t_map.y /2);
+            quad[2].position = sf::Vector2f(k , l + t_map.y);
 
             // define its 4 texture coordinates1
 
-            int ku = ((tu * t_map.x) - (tv * t_map.x));
-            int kv = ((tv + tu) * t_map.y) / 2;
+            int ku = tu*t_map.x + t_map.x/2;
 
-            cout << "ku: "<<ku<<" kv: "<<kv<<endl;
+            cout << "ku: "<<ku << endl;
 
-            quad[0].texCoords = sf::Vector2f(ku , 0);
-            quad[1].texCoords = sf::Vector2f(ku + t_map.x, 0);
+            quad[0].texCoords = sf::Vector2f(ku, 0);
+            quad[1].texCoords = sf::Vector2f(ku + t_map.x/2, t_map.y/2);
+            quad[3].texCoords = sf::Vector2f(ku - t_map.x/2, t_map.y/2);
             quad[2].texCoords = sf::Vector2f(ku , t_map.y);
-            quad[3].texCoords = sf::Vector2f(ku + t_map.x, t_map.y);
+            cout << endl;
         }
 
 
@@ -206,11 +207,11 @@ bool test_render1(){
     //rotates the map 45°
     //my_transformation.rotate(45);
     //set the origin of the map to the top center of the window
-    my_transformation.move(x_window/2,y_window/2);
+    //my_transformation.move(x_window/2,y_window/2);
     //scales the map to resize it
     //my_transformation.scale(1,2);
     // apply the transform
-    r_states.transform *= my_transformation.getTransform();
+    //r_states.transform *= my_transformation.getTransform();
 
 
     // apply the tileset texture
@@ -231,7 +232,7 @@ bool test_render1(){
         }
 
         // clear the window with black color
-        window.clear(sf::Color::Magenta);
+        window.clear(sf::Color::Black);
 
         // draw everything here...
         window.draw(m_vertices,r_states);
