@@ -5,7 +5,7 @@
 #include "Map.h"
 #include "Building.h"
 #include "Unit.h"
-
+#include <iostream>
 using namespace state;
 
 Map::Map (unsigned int X, unsigned int Y, std::vector<int> terrain_int)
@@ -90,8 +90,9 @@ bool Map::moveGameObject (unsigned int game_object_id, Position new_position)
 }
 
 bool Map::getSize(int *size_x, int *size_y) {
-    size_x = (int*) this->map_size_x;
-    size_y = (int*) this->map_size_Y;
+    std::cout << map_size_x << map_size_Y<<std::endl;
+    *size_x = (int) map_size_x;
+    *size_y = (int) map_size_Y;
     return true;
 }
 
