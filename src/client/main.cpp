@@ -123,7 +123,7 @@ bool test_render1(){
     sf::VertexArray m_vertices;
     sf::Texture m_tileset;
 
-    if (!m_tileset.loadFromFile("../src/tileset.png")) {
+    if (!m_tileset.loadFromFile("res/tileset.png")) {
         return false;
     }
 
