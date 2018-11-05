@@ -3,6 +3,7 @@ build
 bin
 nbproject
 src/shared/state/*.h
+src/shared/engine/*.h
 src/client/render/*.h
 src/shared/*.h
 src/client/*.h
