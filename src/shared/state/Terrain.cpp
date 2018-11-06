@@ -16,7 +16,7 @@ Terrain::Terrain() {
     Position default_pos = Position(0,0);
     this->terrain_position = default_pos;
     this->movement_cost =1;
-    this->terrain_id = 0;
+    this->terrain_id = state::desert;
 }
 
 TerrainType const Terrain::getTerrainType(){
