@@ -41,7 +41,7 @@ file(GLOB_RECURSE shared_sources src/shared/*.cpp)
 
 
 # Executables
-add_executable(client ${client_sources} ${shared_sources})
+add_executable(client ${client_sources} ${shared_sources} src/shared/engine/Command.cpp src/shared/engine/HandleAttack.cpp)
 #add_executable(server ${server_sources} ${shared_sources} ${jsoncpp_sources})
 
 # SFML
