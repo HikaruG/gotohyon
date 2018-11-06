@@ -26,7 +26,7 @@ Map::Map (unsigned int X, unsigned int Y, std::vector<int> terrain_int)
 
 bool Map::addGameObject (unsigned int player_id, Position pos, bool is_static, int type)
 {
-    Property farmer = Property("unit_farmer",10,10,100);
+    Property farmer = Property("unit_farmer",10,10,100,3);
     Property infantry = Property("unit_infantry",10,10,100);
     Property archer = Property("unit_archer",10,10,100);
 

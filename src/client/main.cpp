@@ -93,13 +93,9 @@ bool test_state()
             cout<<"actually i can't move "<<(*lgo)[i]->getGame_object_id()<<endl;
             Property *prop = new Property();
             (*lgo)[i]->getProperty(prop);
-            cout << "it's a "<<prop->getStringType()<<" that i can't move !"<<endl;
         }
     }
-    cout << "wtf" << endl;
     render::DrawManager testdraw = render::DrawManager(testState);
-
-    cout << "dope" << endl;
     return true;
 }
 

@@ -5,7 +5,8 @@
 
 using namespace state;
 
-Property::Property(std::string type_name, unsigned int defense, unsigned int attack, unsigned int health_max) {
+Property::Property(std::string type_name, unsigned int defense, unsigned int attack, unsigned int health_max, unsigned int attack_range) {
+    this->attack_range = attack_range;
     this->type_game_object = type_name;
     this->attack = attack;
     this->defense = defense;
