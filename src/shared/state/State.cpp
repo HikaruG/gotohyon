@@ -1,6 +1,7 @@
 //
 // Created by ben on 23/10/18.
 //
+#include <iostream>
 #include "State.h"
 
 
@@ -17,17 +18,39 @@ bool State::getMap (Map * currentMap){
 }
 
 State::State(unsigned int player_number)
-        :game_map(1,1,{0})
+      :game_map(1,1,{0}) ,game_player(0,0,0,{0})
+
 {
     this->player_nbr = player_number;
     day_count = 0;
-    current_player = 0;
+
 }
 
-bool State::getCurrentPlayer (unsigned int* current_player)
-{
-    *current_player = this->current_player;
+bool State::initializePlayer(state::Player new_player) {
+    this->list_player.push_back(&new_player);
+    this->game_player = new_player;
+}
+
+
+bool State::setCurrentPlayerId(unsigned int player_id) {
+    if(player_nbr < player_id) {
+        return false;
+    }
+    else {
+        current_player_id = player_id;
+    }
     return true;
+}
+
+
+bool State::getCurrentPlayerId (unsigned int current_player_id)
+{
+    current_player_id = this->current_player_id;
+    return true;
+}
+
+bool State::setDay(unsigned int day) {
+    this->day_count = day;
 }
 
 bool State::getDayCount (unsigned int* day_count)
@@ -36,13 +59,11 @@ bool State::getDayCount (unsigned int* day_count)
     return true;
 }
 
-bool State::getMyList(unsigned int player_id, std::vector<state::GameObject *> my_list) {
-    std::vector<GameObject *> new_list;
-    game_map.getListGameObject(new_list);
-    for( state::GameObject * s: new_list){
-        if (s->getPlayer_id() == player_id){
-            my_list.push_back(s);
-        }
-    }
+
+bool State::addGameObject(unsigned int player_id, state::Position position, bool is_static, int type) {
+    GameObject * ptr_new_game_object;
+    ptr_new_game_object = game_map.addGameObject(player_id, position, is_static, type);
+    game_player.addPlayerGameObject(ptr_new_game_object);
     return true;
 }
+

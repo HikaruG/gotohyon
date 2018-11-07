@@ -24,7 +24,7 @@ ENDIF(CMAKE_COMPILER_IS_GNUCC)
 # Generate headers
 set(DIA2CODE "${PROJECT_SOURCE_DIR}/bin/dia2code")
 exec_program(${DIA2CODE} ARGS -ns state  -d ../src/shared -t cpp ../src/state.dia)
-exec_program(${DIA2CODE} ARGS -ns render -d ../src/client -t cpp ../src/render.dia)
+#exec_program(${DIA2CODE} ARGS -ns render -d ../src/client -t cpp ../src/render.dia)
 exec_program(${DIA2CODE} ARGS -ns engine -d ../src/shared -t cpp ../src/engine.dia)
 #exec_program(${DIA2CODE} ARGS -ns ai     -d ../src/shared -t cpp ../src/ai.dia)
 #exec_program(${DIA2CODE} ARGS -ns client -d ../src/client -t cpp ../src/module.dia)
@@ -41,7 +41,7 @@ file(GLOB_RECURSE shared_sources src/shared/*.cpp)
 
 
 # Executables
-add_executable(client ${client_sources} ${shared_sources} src/shared/engine/Command.cpp src/shared/engine/HandleAttack.cpp src/shared/engine/HandleMovement.cpp src/shared/engine/engine.cpp)
+add_executable(client ${client_sources} ${shared_sources} src/shared/engine/Command.cpp src/shared/engine/HandleAttack.cpp src/shared/engine/HandleMovement.cpp src/shared/engine/engine.cpp src/shared/engine/HandleCreation.cpp src/shared/engine/HandleGrowth.cpp src/shared/engine/LoadCommand.cpp src/shared/state/Player.cpp)
 #add_executable(server ${server_sources} ${shared_sources} ${jsoncpp_sources})
 
 # SFML

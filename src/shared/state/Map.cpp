@@ -24,7 +24,7 @@ Map::Map (unsigned int X, unsigned int Y, std::vector<int> terrain_int)
 
 }
 
-bool Map::addGameObject (unsigned int player_id, Position pos, bool is_static, int type)
+GameObject * Map::addGameObject (unsigned int player_id, Position pos, bool is_static, int type)
 {
     Property farmer = Property("unit_farmer",10,10,100,3);
     Property infantry = Property("unit_infantry",10,10,100);
@@ -45,15 +45,15 @@ bool Map::addGameObject (unsigned int player_id, Position pos, bool is_static, i
                                   static_cast<BuildingType>(type));
 
         list_game_object.push_back(new_b);
+        return new_b;
     }
     else {
         Unit * new_u = new Unit(10, static_cast<unsigned int>(list_game_object.size()), player_id, pos, units[type],
                           static_cast<UnitType>(type));
 
         list_game_object.push_back(new_u);
+        return new_u;
     }
-
-    return true;
 }
 
 bool Map::getTerrain (unsigned int X, unsigned int Y, Terrain * terrain)
