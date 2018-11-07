@@ -77,6 +77,11 @@ bool Map::getGameObject (unsigned int X, unsigned int Y, std::vector<GameObject*
     return true;
 }
 
+bool Map::getListGameObject(std::vector<state::GameObject *> &list_objects) {
+    list_objects = this->list_game_object;
+    return true;
+}
+
 bool Map::moveGameObject (unsigned int game_object_id, Position new_position)
 {
     for(int GOind = 0; GOind < list_game_object.size(); GOind ++)
