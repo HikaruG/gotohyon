@@ -3,15 +3,16 @@
 //
 
 #include "MapSurface.h"
+#include <iostream>
 
 using namespace render;
 
 void MapSurface::draw(sf::RenderTarget &target, sf::RenderStates states) const{
     //states.transform *= getTransform();
     //aplly the texture
-//    states.texture = &textures;
-//    //draw the vertex arrow
-//    target.draw(quads,textures);
+    states.texture = &texture_to_apply;
+    //draw the vertex arrow
+    target.draw(quads,states.texture);
 }
 
 bool MapSurface::loadTextures(const std::string& terrain_file, const std::string& unit_file, const std::string& building_file) {
@@ -39,9 +40,7 @@ bool MapSurface::initQuads(int count) {
 }
 
 bool MapSurface::setSpriteLocation(int count, int x, int y) {
-    //i represente le niveau/level
-    //x represente l'emplacement en x
-    //y represente l'emplacement en y
+    sf::Vertex* quad = &quads[count*4];
     int offset = 128; // taille map * taille texture longueur, pour eviter d'arriver dans les negatifs
     int t_map_x = 64;
     int t_map_y = 32;
@@ -56,7 +55,19 @@ bool MapSurface::setSpriteLocation(int count, int x, int y) {
 
 }
 
-bool const MapSurface::setSpriteTexture(const Tile &text) {
+bool const MapSurface::setSpriteTexture(unsigned int tileset_layer, unsigned int tileset_position_x) {
 
+    int t_map_x = 64;
+    int t_map_y = 32;
+    std::vector<sf::Texture> texture_level = {texture_terrain,texture_building,texture_unit};
+    texture_to_apply = texture_level[tileset_layer];
+    int tu = tileset_position_x % (texture_to_apply.getSize().x / t_map_x);
+
+    int ku = tu*t_map_x + t_map_x/2;
+
+    quads[0].texCoords = sf::Vector2f(ku, 0);
+    quads[1].texCoords = sf::Vector2f(ku + t_map_x/2, t_map_y/2);
+    quads[3].texCoords = sf::Vector2f(ku - t_map_x/2, t_map_y/2);
+    quads[2].texCoords = sf::Vector2f(ku , t_map_y);
     return true;
 }

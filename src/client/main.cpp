@@ -95,7 +95,29 @@ bool test_state()
             (*lgo)[i]->getProperty(prop);
         }
     }
-    render::DrawManager testdraw = render::DrawManager(testState);
+
+    //init windows
+    size_t x_window = 1024;
+    size_t y_window = 1024;
+    // create the window
+    sf::RenderWindow window(sf::VideoMode(x_window, y_window), "Tilemap");
+    
+    render::DrawManager testdraw = render::DrawManager(testState,window);
+
+    while (window.isOpen())
+    {
+        // check all the window's events that were triggered since the last iteration of the loop
+        sf::Event event;
+        while (window.pollEvent(event))
+        {
+            // "close requested" event: we close the window
+            if (event.type == sf::Event::Closed)
+                window.close();
+        }
+
+        // end the current frame
+        window.display();
+    }
     return true;
 }
 
