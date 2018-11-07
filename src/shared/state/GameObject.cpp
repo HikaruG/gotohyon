@@ -53,3 +53,8 @@ bool GameObject::getProperty(state::Property *prop) {
     *prop = this->game_object_property;
     return true;
 }
+
+bool GameObject::isStatic()
+{
+    return this->is_static;
+}
