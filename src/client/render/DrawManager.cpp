@@ -12,7 +12,7 @@ DrawManager::DrawManager (state::State& current_state, sf::RenderWindow& window)
     this->window = &window;
     //counting nbr of objects:
     state::Map * current_map = new state::Map();
-    this->current_state->getMap(current_map);
+    current_map = this->current_state->getMap();
 
     current_map->getObjectCount();
     int tmp_x;
@@ -25,7 +25,7 @@ DrawManager::DrawManager (state::State& current_state, sf::RenderWindow& window)
     this->map_size_y = (unsigned int&) tmp_y;
     std::cout << "debug size : "<<map_size_x<<" "<<map_size_y<<std::endl;
     drawer = MapSurface();
-    if(!drawer.loadTextures("res/tileset_terrain.png","res/tileset_building.png","res/tileset_unit.png"))
+    if(!drawer.loadTextures("res/tileset_terrain.png","res/tileset_unit.png","res/tileset_building.png"))
         std::cout<<"Error: Textures failed to load, launch like this: bin/client whatever" << std::endl;
     updateState(current_state);
 
@@ -37,7 +37,7 @@ DrawManager::DrawManager (state::State& current_state, sf::RenderWindow& window)
 
 bool DrawManager::updateState(state::State &new_state) {
     this->current_state = &new_state;
-    window->clear(sf::Color::Green);
+    window->clear(sf::Color::Black);
 
 
     setTerrain();
@@ -52,8 +52,7 @@ bool DrawManager::updateState(state::State &new_state) {
 
 bool DrawManager::setTerrain ()
 {
-    state::Map * current_map = new state::Map();
-    this->current_state->getMap(current_map);
+    state::Map * current_map = this->current_state->getMap();
     state::Terrain * local_terrain = new state::Terrain();
     drawer.initQuads(this->map_size_x+this->map_size_x*this->map_size_y);
     for(unsigned int x = 0; x < this->map_size_x;x ++)
@@ -73,7 +72,7 @@ bool DrawManager::setTerrain ()
 bool DrawManager::setUnit ()
 {
     state::Map * current_map = new state::Map();
-    this->current_state->getMap(current_map);
+    current_map = this->current_state->getMap();
     current_map->getListGameObject(game_object_list);
     std::vector<state::Unit *> units_go;
     state::Position pos;
@@ -101,13 +100,13 @@ bool DrawManager::setBuilding ()
 {
 
     state::Map * current_map = new state::Map();
-    this->current_state->getMap(current_map);
+    current_map=this->current_state->getMap();
     current_map->getListGameObject(game_object_list);
     std::vector<state::Building *> build_go;
     state::Position pos;
     for (int i = 0; i< game_object_list.size();i++)
     {
-        if(!game_object_list[i]->isStatic())
+        if(game_object_list[i]->isStatic())
         {
             build_go.push_back((state::Building*)game_object_list[i]);
         }
@@ -116,7 +115,7 @@ bool DrawManager::setBuilding ()
     drawer.initQuads(build_go.size());
     for(int i = 0; i<build_go.size(); i++)
     {
-        drawer.setSpriteTexture(2,build_go[i]->getBuildingType(), i);
+        drawer.setSpriteTexture(1,build_go[i]->getBuildingType(), i);
         pos = build_go[i]->getPosition();
         drawer.setSpriteLocation(i,pos.getX(), pos.getY());
     }

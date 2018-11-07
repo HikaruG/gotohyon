@@ -12,9 +12,9 @@ bool State::initializeMap (Map new_map){
     return true;
 }
 
-bool State::getMap (Map * currentMap){
-    *currentMap = this->game_map;
-    return true;
+Map* State::getMap (){
+    std::cout<<&game_map<<std::endl;
+    return &game_map;
 }
 
 State::State(unsigned int player_number)
