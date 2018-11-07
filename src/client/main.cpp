@@ -48,7 +48,14 @@ int main(int argc,char* argv[])
 bool test_state()
 {
     State testState = State(1);
-    Map test_map = Map(2,3,{0,0,0,0,0,0});
+    static int const terrain_int [] = {1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 3, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 4, 4, 4, 1, 2, 1, 1, 3, 1, 4, 4, 4, 1, 2, 2, 2, 1, 1, 1, 1, 2, 2, 1, 4, 4, 4, 1, 1, 1, 2, 2, 2, 3, 1, 1, 1, 1, 2, 1, 4, 1, 3, 3, 1, 1, 2, 2, 2, 2, 3, 1, 3, 1, 2, 1, 4, 1, 3, 3, 3, 1, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1, 4, 3, 3, 3, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 2, 1, 4, 3, 3, 3, 1, 1, 1, 1, 2, 2, 2, 2, 3, 1, 2, 1, 4, 1, 3, 3, 3, 1, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1, 4, 1, 3, 3, 1, 1, 2, 2, 2, 2, 3, 1, 1, 2, 2, 1, 4, 4, 4, 1, 1, 1, 2, 2, 2, 3, 1, 1, 1, 2, 1, 1, 3, 1, 4, 4, 4, 1, 2, 2, 2, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 4, 4, 4, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2};
+
+    vector<int> test_terrain;
+    for (int i = 0; i < 256;i++)
+    {
+        test_terrain.push_back(terrain_int[i]);
+    }
+    Map test_map = Map(16,16,test_terrain);
     testState.initializeMap(test_map);
     cout << "map sucessfully instanciated" << endl;
     Position default_pos = Position(0,0);
@@ -101,7 +108,7 @@ bool test_state()
     size_t y_window = 1024;
     // create the window
     sf::RenderWindow window(sf::VideoMode(x_window, y_window), "Tilemap");
-    
+
     render::DrawManager testdraw = render::DrawManager(testState,window);
 
     while (window.isOpen())
@@ -115,8 +122,6 @@ bool test_state()
                 window.close();
         }
 
-        // end the current frame
-        window.display();
     }
     return true;
 }

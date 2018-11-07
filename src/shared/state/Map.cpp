@@ -8,7 +8,7 @@
 #include <iostream>
 using namespace state;
 
-Map::Map (unsigned int X, unsigned int Y, std::vector<int> terrain_int)
+Map::Map (unsigned int X, unsigned int Y, std::vector<int>& terrain_int)
 {
     this->map_size_x = X;
     this->map_size_Y = Y;
@@ -18,7 +18,7 @@ Map::Map (unsigned int X, unsigned int Y, std::vector<int> terrain_int)
     }
     for (int i = 0; i < terrain_int.size(); i++)
     {
-        Position newPos = Position(i%X,(i*X)%Y);
+        Position newPos = Position(i%Y,i/Y);
         list_map.push_back(Terrain(newPos, 1, static_cast<TerrainType >(terrain_int[i])));
     }
 
@@ -56,11 +56,11 @@ GameObject * Map::addGameObject (unsigned int player_id, Position pos, bool is_s
     }
 }
 
-bool Map::getTerrain (unsigned int X, unsigned int Y, Terrain * terrain)
+bool Map::getTerrain (unsigned int X, unsigned int Y, Terrain * terrain_bob)
 {
     if (X > map_size_x || Y > map_size_Y)
         return false;
-    terrain = &this->list_map[X + Y * map_size_x];
+    *terrain_bob = this->list_map[X + Y * map_size_x];
     return true;
 }
 
@@ -110,4 +110,9 @@ Map::~Map() {
     {
         delete list_game_object[i];
     }
+}
+
+Map::Map() {
+    this->map_size_x = 0;
+    this->map_size_Y = 0;
 }
