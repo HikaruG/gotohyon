@@ -9,13 +9,11 @@ using namespace engine;
 //HandleMovement::~HandleMovement() {}
 
 CommandTypeId HandleMovement::getTypeId() const {
-
     return CommandTypeId::HANDLE_MOVEMENT;
 }
 
-bool HandleMovement::execute(state::Terrain &terrain, state::Unit &unit, std::vector<state::Terrain *>& terrain_list) {
+bool HandleMovement::execute(state::Terrain &terrain, state::Unit &unit, std::vector<state::Terrain *> &list_terrain, state::State& state) {
     unsigned int unit_x, unit_y;
     unit.getPosition().getPosition(&unit_x, &unit_y);
-
-
+    return true;
 }

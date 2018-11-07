@@ -11,8 +11,8 @@ CommandTypeId HandleAttack::getTypeId() const{
     return CommandTypeId::HANDLE_ATTACK;
 }
 
-bool HandleAttack::execute(std::vector<state::GameObject *> &ennemy_list, state::Unit &current_unit,
-                           state::Terrain &terrain) {
+bool HandleAttack::execute(state::Unit &current_unit,
+                           state::Terrain &terrain, state::State& state) {
     unsigned int current_x, current_y;
     current_unit.getPosition().getPosition(&current_x,
                                            &current_y); //cuurent_x et current_y sont les coordonnées de l'unité considéré
@@ -21,6 +21,7 @@ bool HandleAttack::execute(std::vector<state::GameObject *> &ennemy_list, state:
     unsigned int others_y;
     int distance = 0;
     bool canattack = false;
+    std::vector<state::GameObject *> ennemy_list;
 
     if (current_unit.getUnitType() == state::archer) {
         switch (terrain.getTerrainType()) {
@@ -54,6 +55,4 @@ bool HandleAttack::execute(std::vector<state::GameObject *> &ennemy_list, state:
     }
 
 }
-
-
 
