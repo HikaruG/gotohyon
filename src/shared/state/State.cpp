@@ -35,3 +35,14 @@ bool State::getDayCount (unsigned int* day_count)
     *day_count = this->day_count;
     return true;
 }
+
+bool State::getMyList(unsigned int player_id, std::vector<state::GameObject *> my_list) {
+    std::vector<GameObject *> new_list;
+    game_map.getListGameObject(new_list);
+    for( state::GameObject * s: new_list){
+        if (s->getPlayer_id() == player_id){
+            my_list.push_back(s);
+        }
+    }
+    return true;
+}
