@@ -44,7 +44,14 @@ bool HandleCreation::execute(state::State &state, unsigned int pos_x, unsigned i
     return true;
 }
 
+HandleCreation::HandleCreation()
+{
 
+}
+
+CommandTypeId Command::getTypeId() const {
+    return ;
+}
 
 
 

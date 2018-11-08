@@ -13,9 +13,11 @@ void testSFML() {
 
 #include "state.h"
 #include "render.h"
+#include "engine.h"
 
 using namespace std;
 using namespace state;
+using namespace engine;
 
 bool test_state();
 bool test_render1();
@@ -70,6 +72,8 @@ bool test_engine()
 
     Map * thisMap = testState.getMap();
 
+    Engine test_engine = Engine();
+    HandleCreation test_creation = HandleCreation();
     //starting test
 
 
