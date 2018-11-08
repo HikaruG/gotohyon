@@ -18,7 +18,7 @@ Map* State::getMap (){
 }
 
 State::State(unsigned int player_number)
-      :game_map() ,game_player(0,0,0,{0})
+      :game_map() ,game_player(0,0,0,{0},{0})
 
 {
     this->player_nbr = player_number;
@@ -32,21 +32,20 @@ bool State::initializePlayer(state::Player new_player) {
 }
 
 
-bool State::setCurrentPlayerId(unsigned int player_id) {
-    if(player_nbr < player_id) {
+bool State::setCurrentPlayer(Player &player) {
+    if(player_nbr < player.getPlayerId() ) {
         return false;
     }
     else {
-        current_player_id = player_id;
+        player = game_player;
     }
     return true;
 }
 
 
-bool State::getCurrentPlayerId (unsigned int current_player_id)
+Player * State::getCurrentPlayer ()
 {
-    current_player_id = this->current_player_id;
-    return true;
+    return &game_player;
 }
 
 bool State::setDay(unsigned int day) {
@@ -63,7 +62,12 @@ bool State::getDayCount (unsigned int* day_count)
 bool State::addGameObject(unsigned int player_id, state::Position position, bool is_static, int type) {
     GameObject * ptr_new_game_object;
     ptr_new_game_object = game_map.addGameObject(player_id, position, is_static, type);
-    game_player.addPlayerGameObject(ptr_new_game_object);
+    if(is_static) {
+        game_player.addPlayerBuilding((Building *)ptr_new_game_object);
+    }
+    else{
+        game_player.addPlayerUnit((Unit *)ptr_new_game_object);
+    }
     return true;
 }
 

@@ -10,8 +10,8 @@ CommandTypeId HandleCreation::getTypeId() const {
     return CommandTypeId::HANDLE_CREATION;
 }
 
-bool HandleCreation::execute(std::vector<state::GameObject *> &object_list, state::Map &map, state::State &state) {
-
+bool HandleCreation::execute(state::State &state, state::Unit &unit, state::Building &building, unsigned int pos_x, unsigned int pos_y) {
+    return true;
 }
 
 

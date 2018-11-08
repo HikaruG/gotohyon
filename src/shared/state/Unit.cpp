@@ -16,3 +16,7 @@ UnitType const Unit::getUnitType ()
 {
     return type;
 }
+
+int Unit::getMovementRange() {
+    return movement_range;
+}

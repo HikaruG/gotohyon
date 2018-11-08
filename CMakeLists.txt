@@ -41,7 +41,7 @@ file(GLOB_RECURSE shared_sources src/shared/*.cpp)
 
 
 # Executables
-add_executable(client ${client_sources} ${shared_sources} src/shared/engine/Command.cpp src/shared/engine/HandleAttack.cpp src/shared/engine/HandleMovement.cpp src/shared/engine/engine.cpp src/shared/engine/HandleCreation.cpp src/shared/engine/HandleGrowth.cpp src/shared/engine/LoadCommand.cpp src/shared/state/Player.cpp)
+add_executable(client ${client_sources} ${shared_sources} src/shared/engine/Command.cpp src/shared/engine/HandleAttack.cpp src/shared/engine/HandleMovement.cpp src/shared/engine/engine.cpp src/shared/engine/HandleCreation.cpp src/shared/engine/HandleGrowth.cpp src/shared/engine/LoadCommand.cpp src/shared/state/Player.cpp src/shared/engine/HandleDamage.cpp)
 #add_executable(server ${server_sources} ${shared_sources} ${jsoncpp_sources})
 
 # SFML
