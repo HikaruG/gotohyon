@@ -44,16 +44,9 @@ bool HandleCreation::execute(state::State &state, unsigned int pos_x, unsigned i
     return true;
 }
 
-HandleCreation::HandleCreation()
-{
+HandleCreation::HandleCreation() = default;
 
-}
-
-CommandTypeId Command::getTypeId() const {
-    CommandTypeId creation = 
-    return creation;
-}
-
+HandleCreation::~HandleCreation () = default;
 
 
 
