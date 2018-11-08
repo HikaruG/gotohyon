@@ -19,6 +19,7 @@ using namespace state;
 
 bool test_state();
 bool test_render1();
+bool test_render();
 
 int main(int argc,char* argv[])
 {
@@ -36,8 +37,8 @@ int main(int argc,char* argv[])
 
         if( !strcmp(argv[1],"render") ) {
             cout << "launching prototype function of the rendering" << endl;
-            if (test_render1()) {
-                cout << "test du rendering a l'aide d'une seule fonction reussie" << endl;
+            if (test_render()) {
+                cout << "render testing" << endl;
             }
         }
     }
@@ -112,6 +113,42 @@ bool test_state()
         }
     }
 
+
+    return true;
+}
+
+bool test_render(){
+
+    State testState = State(1);
+    static int const terrain_int [] = {1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 3, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 4, 4, 4, 1, 2, 1, 1, 3, 1, 4, 4, 4, 1, 2, 2, 2, 1, 1, 1, 1, 2, 2, 1, 4, 4, 4, 1, 1, 1, 2, 2, 2, 3, 1, 1, 1, 1, 2, 1, 4, 1, 3, 3, 1, 1, 2, 2, 2, 2, 3, 1, 3, 1, 2, 1, 4, 1, 3, 3, 3, 1, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1, 4, 3, 3, 3, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 2, 1, 4, 3, 3, 3, 1, 1, 1, 1, 2, 2, 2, 2, 3, 1, 2, 1, 4, 1, 3, 3, 3, 1, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1, 4, 1, 3, 3, 1, 1, 2, 2, 2, 2, 3, 1, 1, 2, 2, 1, 4, 4, 4, 1, 1, 1, 2, 2, 2, 3, 1, 1, 1, 2, 1, 1, 3, 1, 4, 4, 4, 1, 2, 2, 2, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 4, 4, 4, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2};
+
+    vector<int> test_terrain;
+    for (int i = 0; i < 256;i++)
+    {
+        test_terrain.push_back(terrain_int[i]);
+    }
+    Map test_map = Map(16,16,test_terrain);
+
+    testState.initializeMap(test_map);
+
+    Map * thisMap = testState.getMap();
+
+
+    //adding some stuff to the map
+    Position default_pos = Position(8,8);
+    thisMap->addGameObject(1,default_pos,true,5);
+    default_pos.setPosition(1,2);
+    thisMap->addGameObject(1,default_pos,true, 2);
+    default_pos.setPosition(1,5);
+    thisMap->addGameObject(1,default_pos,true, 2);
+    default_pos.setPosition(6,2);
+    thisMap->addGameObject(1,default_pos,false, 3);
+    default_pos.setPosition(14,7);
+    thisMap->addGameObject(1,default_pos,false, 4);
+
+    cout << "what"<<endl;
+
+
     //init windows
     size_t x_window = 1024;
     size_t y_window = 1024;
@@ -119,7 +156,7 @@ bool test_state()
     sf::RenderWindow window(sf::VideoMode(x_window, y_window), "Tilemap");
 
     render::DrawManager testdraw = render::DrawManager(testState,window);
-
+/*
     while (window.isOpen())
     {
         // check all the window's events that were triggered since the last iteration of the loop
@@ -132,11 +169,7 @@ bool test_state()
         }
 
     }
-    return true;
-}
-
-bool test_render(){
-
+*/
 }
 //le test ci-dessous permet de visualiser la map isométrique avec la texture du terrain.
 bool test_render1(){
@@ -179,13 +212,7 @@ bool test_render1(){
                     0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0,
                     0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
             };
-/*
-    const int level[] =
-            {
-                2,2,
-                2,2
-            };
-*/
+
     const int* tiles = level;
     // create the tilemap from the level definition
 

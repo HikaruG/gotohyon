@@ -13,7 +13,6 @@ bool State::initializeMap (Map new_map){
 }
 
 Map* State::getMap (){
-    std::cout<<&game_map<<std::endl;
     return &game_map;
 }
 

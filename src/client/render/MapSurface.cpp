@@ -8,10 +8,7 @@
 using namespace render;
 
 void MapSurface::draw(sf::RenderTarget &target, sf::RenderStates states) const{
-    //states.transform *= getTransform();
-    //aplly the texture
     states.texture = &texture_to_apply;
-    //draw the vertex arrow
     target.draw(quads,states.texture);
 }
 
