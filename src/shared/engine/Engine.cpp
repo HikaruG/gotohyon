@@ -12,6 +12,10 @@ Engine::Engine()
 
 }
 
+Engine::~Engine() {
+
+}
+
 const state::State& Engine::getState() const
 {
     return current_state;
