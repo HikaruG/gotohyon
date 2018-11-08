@@ -11,6 +11,9 @@ CommandTypeId HandleCreation::getTypeId() const {
 }
 
 bool HandleCreation::execute(state::State &state, state::Unit &unit, state::Building &building, unsigned int pos_x, unsigned int pos_y) {
+    if(&unit==nullptr){
+        
+    }
     return true;
 }
 
