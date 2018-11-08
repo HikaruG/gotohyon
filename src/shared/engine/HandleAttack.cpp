@@ -12,7 +12,7 @@ CommandTypeId HandleAttack::getTypeId() const{
 }
 
 bool HandleAttack::execute(state::Unit &current_unit,
-                           state::Terrain &terrain, state::State& state) {
+                           state::Terrain &terrain, state::State& state, bool canattack, std::vector<state::GameObject *> * in_range_list) {
     unsigned int current_x, current_y;
     current_unit.getPosition().getPosition(&current_x,
                                            &current_y); //cuurent_x et current_y sont les coordonnées de l'unité considéré
@@ -20,7 +20,8 @@ bool HandleAttack::execute(state::Unit &current_unit,
     unsigned int others_x; //others_x et others_y sont les coordonnées des autres unités présentent sur la carte
     unsigned int others_y;
     int distance = 0;
-    bool canattack = false;
+    canattack = false;
+    in_range_list = nullptr;
     std::vector<state::GameObject *> ennemy_list;
 
     if (current_unit.getUnitType() == state::archer) {
@@ -35,7 +36,7 @@ bool HandleAttack::execute(state::Unit &current_unit,
             s->getPosition().getPosition(&others_x, &others_y);
             if (abs(current_x + current_y - (others_x + others_y)) < distance) {
                 canattack = true; //si une cible ennemie se trouve dans un rayon de "distance" ou moins, l'archer peut attaquer
-                break;
+                in_range_list->push_back(s);
             }
         }
 
@@ -45,14 +46,17 @@ bool HandleAttack::execute(state::Unit &current_unit,
             if (others_y == current_y - 1 || others_y == current_y + 1) {//cible ennemie en haut ou en bas de l'unité considéré
                 if (others_x == current_x) {
                     canattack = true;
+                    in_range_list->push_back(s);
                 }
             } else if (others_x == current_x - 1 || others_x == current_x + 1) {//cible ennemie à gauche u à droite de l'unité considéré
                 if (others_y == current_y) {
                     canattack = true;
+                    in_range_list->push_back(s);
                 }
             }
         }
     }
+
 
 }
 
