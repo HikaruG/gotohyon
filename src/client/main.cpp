@@ -20,6 +20,7 @@ using namespace state;
 bool test_state();
 bool test_render1();
 bool test_render();
+bool test_engine();
 
 int main(int argc,char* argv[])
 {
@@ -36,14 +37,44 @@ int main(int argc,char* argv[])
         }
 
         if( !strcmp(argv[1],"render") ) {
-            cout << "launching prototype function of the rendering" << endl;
+            cout << "render test sequence  activated . . ." << endl;
             if (test_render()) {
+                cout << "render testing" << endl;
+            }
+        }
+        if( !strcmp(argv[1],"engine") ) {
+            cout << "engine test sequence activated . . ." << endl;
+            if (test_engine()) {
                 cout << "render testing" << endl;
             }
         }
     }
 
     return 0;
+}
+
+bool test_engine()
+{
+    // state to test
+    State testState = State(1);
+    static int const terrain_int [] = {1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 3, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 4, 4, 4, 1, 2, 1, 1, 3, 1, 4, 4, 4, 1, 2, 2, 2, 1, 1, 1, 1, 2, 2, 1, 4, 4, 4, 1, 1, 1, 2, 2, 2, 3, 1, 1, 1, 1, 2, 1, 4, 1, 3, 3, 1, 1, 2, 2, 2, 2, 3, 1, 3, 1, 2, 1, 4, 1, 3, 3, 3, 1, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1, 4, 3, 3, 3, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 2, 1, 4, 3, 3, 3, 1, 1, 1, 1, 2, 2, 2, 2, 3, 1, 2, 1, 4, 1, 3, 3, 3, 1, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1, 4, 1, 3, 3, 1, 1, 2, 2, 2, 2, 3, 1, 1, 2, 2, 1, 4, 4, 4, 1, 1, 1, 2, 2, 2, 3, 1, 1, 1, 2, 1, 1, 3, 1, 4, 4, 4, 1, 2, 2, 2, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 4, 4, 4, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2};
+
+    vector<int> test_terrain;//to do mettre la taille
+    for (int i = 0; i < 256;i++)
+    {
+        test_terrain.push_back(terrain_int[i]);
+    }
+    Map test_map = Map(16,16,test_terrain);
+
+    testState.initializeMap(test_map);
+
+    Map * thisMap = testState.getMap();
+
+    //starting test
+
+
+
+    return true;
 }
 
 bool test_state()

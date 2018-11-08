@@ -38,7 +38,7 @@ GameObject * Map::addGameObject (unsigned int player_id, Position pos, bool is_s
 
     std::vector<Property> statics = {mine,farm,turret,town, barrack};
     std::vector<Property> units = {farmer,infantry, archer};
-    
+
     if(is_static)
     {
         Building * new_b = new Building(static_cast<unsigned int>(list_game_object.size()),player_id, pos, statics[type],
