@@ -15,6 +15,12 @@ Player::Player(unsigned int player_id, unsigned int in_gold, unsigned int in_foo
     this->player_unit_list = unit_list;
 }
 
+Player::Player() {
+    this->player_id = 0;
+    this->in_food = 600;
+    this->in_gold = 600;
+}
+
 bool Player::getPlayerUnitList(std::vector<state::Unit *> &unit_list) {
     unit_list = this->player_unit_list;
     return true;

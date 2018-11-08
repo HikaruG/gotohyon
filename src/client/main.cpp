@@ -122,7 +122,7 @@ bool test_render(){
     State testState = State(1);
     static int const terrain_int [] = {1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 3, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 4, 4, 4, 1, 2, 1, 1, 3, 1, 4, 4, 4, 1, 2, 2, 2, 1, 1, 1, 1, 2, 2, 1, 4, 4, 4, 1, 1, 1, 2, 2, 2, 3, 1, 1, 1, 1, 2, 1, 4, 1, 3, 3, 1, 1, 2, 2, 2, 2, 3, 1, 3, 1, 2, 1, 4, 1, 3, 3, 3, 1, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1, 4, 3, 3, 3, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 2, 1, 4, 3, 3, 3, 1, 1, 1, 1, 2, 2, 2, 2, 3, 1, 2, 1, 4, 1, 3, 3, 3, 1, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1, 4, 1, 3, 3, 1, 1, 2, 2, 2, 2, 3, 1, 1, 2, 2, 1, 4, 4, 4, 1, 1, 1, 2, 2, 2, 3, 1, 1, 1, 2, 1, 1, 3, 1, 4, 4, 4, 1, 2, 2, 2, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 4, 4, 4, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2};
 
-    vector<int> test_terrain;
+    vector<int> test_terrain;//to do mettre la taille
     for (int i = 0; i < 256;i++)
     {
         test_terrain.push_back(terrain_int[i]);
@@ -133,20 +133,18 @@ bool test_render(){
 
     Map * thisMap = testState.getMap();
 
-
     //adding some stuff to the map
-    Position default_pos = Position(8,8);
-    thisMap->addGameObject(1,default_pos,true,5);
+    Position default_pos = Position(0,0);
+
+    thisMap->addGameObject(1,default_pos,true,2);
     default_pos.setPosition(1,2);
     thisMap->addGameObject(1,default_pos,true, 2);
     default_pos.setPosition(1,5);
     thisMap->addGameObject(1,default_pos,true, 2);
     default_pos.setPosition(6,2);
-    thisMap->addGameObject(1,default_pos,false, 3);
+    thisMap->addGameObject(1,default_pos,false, 2);
     default_pos.setPosition(14,7);
-    thisMap->addGameObject(1,default_pos,false, 4);
-
-    cout << "what"<<endl;
+    thisMap->addGameObject(1,default_pos,false, 2);
 
 
     //init windows
@@ -156,7 +154,7 @@ bool test_render(){
     sf::RenderWindow window(sf::VideoMode(x_window, y_window), "Tilemap");
 
     render::DrawManager testdraw = render::DrawManager(testState,window);
-/*
+
     while (window.isOpen())
     {
         // check all the window's events that were triggered since the last iteration of the loop
@@ -169,7 +167,7 @@ bool test_render(){
         }
 
     }
-*/
+
 }
 //le test ci-dessous permet de visualiser la map isométrique avec la texture du terrain.
 bool test_render1(){

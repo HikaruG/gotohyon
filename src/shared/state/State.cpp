@@ -17,7 +17,7 @@ Map* State::getMap (){
 }
 
 State::State(unsigned int player_number)
-      :game_map() ,game_player(0,0,0,{0},{0})
+      :game_map() ,game_player()
 
 {
     this->player_nbr = player_number;

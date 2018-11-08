@@ -2,6 +2,7 @@
 // Created by ben on 15/10/18.
 //
 #include "Building.h"
+#include <iostream>
 
 using namespace state;
 
