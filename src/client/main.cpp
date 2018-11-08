@@ -77,6 +77,8 @@ bool test_engine()
     //init windows
     size_t x_window = 1024;
     size_t y_window = 1024;
+
+    sf::Time delayTime = sf::milliseconds(1000);
     // create the window
     sf::RenderWindow window(sf::VideoMode(x_window, y_window), "test engine");
 
@@ -87,17 +89,22 @@ bool test_engine()
     test_creation.execute(testState,0,0,1,true);//should instanciate a building in 0,0
 
     render::DrawManager testdraw = render::DrawManager(testState,window);
-
+    sf::sleep(delayTime);
     test_creation.execute(testState,0,1,1,false);//should instanciate a unit in 1,1
 
     testdraw.updateState(testState);
+    sf::sleep(delayTime);
 
     //cheating a bit to recover a unit pointer:
     vector<GameObject *> onTheTile;
     thisMap->getGameObject(0,1,&onTheTile);
     Unit * theUnit = (Unit*)onTheTile[0];
+    //end of cheating part
 
     test_movement.execute(*theUnit,testState,0,0);
+
+    testdraw.updateState(testState);
+
 
 
     // end window
