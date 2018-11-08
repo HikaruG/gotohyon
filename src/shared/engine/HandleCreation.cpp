@@ -50,7 +50,8 @@ HandleCreation::HandleCreation()
 }
 
 CommandTypeId Command::getTypeId() const {
-    return ;
+    CommandTypeId creation = 
+    return creation;
 }
 
 
