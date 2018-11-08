@@ -20,3 +20,16 @@ bool HandleMovement::execute(state::Unit &unit, state::State& state, unsigned in
 
     return true;
 }
+
+bool HandleMovement::execute (state::State& state)
+{
+    return false;
+}
+
+HandleMovement::~HandleMovement() {
+
+}
+
+HandleMovement::HandleMovement() {
+
+}

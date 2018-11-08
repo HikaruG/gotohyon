@@ -14,7 +14,7 @@ CommandTypeId HandleCreation::getTypeId() const {
 bool HandleCreation::execute(state::State &state, unsigned int pos_x, unsigned int pos_y, int type, bool is_static) {
 
     state::Map * map;
-    state::Terrain * terrain = nullptr;
+    state::Terrain * terrain = new state::Terrain();
     state::Position position(pos_x, pos_y);
 
     map = state.getMap();
@@ -44,6 +44,10 @@ bool HandleCreation::execute(state::State &state, unsigned int pos_x, unsigned i
     return true;
 }
 
+
+bool HandleCreation::execute (state::State& state){
+    return true;
+}
 HandleCreation::HandleCreation() = default;
 
 HandleCreation::~HandleCreation () = default;

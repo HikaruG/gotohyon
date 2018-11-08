@@ -31,3 +31,7 @@ bool Engine::setState(state::State& new_state) {
     current_state = new_state;
     return true;
 }
+
+bool Engine::update() {
+    return true;
+}

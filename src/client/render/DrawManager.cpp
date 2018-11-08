@@ -61,7 +61,7 @@ bool DrawManager::setTerrain ()
         {
             current_map->getTerrain(x,y,local_terrain);
             drawer.setSpriteLocation(x+y*map_size_x,x,y);
-            std::cout<<"adding "<<local_terrain->getTerrainType()<<" as "<<local_terrain->getTerrainType()<<std::endl;
+            //std::cout<<"adding "<<local_terrain->getTerrainType()<<" as "<<local_terrain->getTerrainType()<<std::endl;
             drawer.setSpriteTexture(0,local_terrain->getTerrainType(),x+y*map_size_x);
         }
     }

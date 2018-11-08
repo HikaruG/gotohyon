@@ -72,11 +72,48 @@ bool test_engine()
 
     Map * thisMap = testState.getMap();
 
+    //init window
+
+    //init windows
+    size_t x_window = 1024;
+    size_t y_window = 1024;
+    // create the window
+    sf::RenderWindow window(sf::VideoMode(x_window, y_window), "test engine");
+
+    // tests starts here
     Engine test_engine = Engine();
     HandleCreation test_creation = HandleCreation();
-    //starting test
+    HandleMovement test_movement = HandleMovement();
+    test_creation.execute(testState,0,0,1,true);//should instanciate a building in 0,0
+
+    render::DrawManager testdraw = render::DrawManager(testState,window);
+
+    test_creation.execute(testState,0,1,1,false);//should instanciate a unit in 1,1
+
+    testdraw.updateState(testState);
+
+    //cheating a bit to recover a unit pointer:
+    vector<GameObject *> onTheTile;
+    thisMap->getGameObject(0,1,&onTheTile);
+    Unit * theUnit = (Unit*)onTheTile[0];
+
+    test_movement.execute(*theUnit,testState,0,0);
 
 
+    // end window
+
+    while (window.isOpen())
+    {
+        // check all the window's events that were triggered since the last iteration of the loop
+        sf::Event event;
+        while (window.pollEvent(event))
+        {
+            // "close requested" event: we close the window
+            if (event.type == sf::Event::Closed)
+                window.close();
+        }
+
+    }
 
     return true;
 }
