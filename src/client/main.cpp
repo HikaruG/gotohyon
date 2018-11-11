@@ -20,7 +20,6 @@ using namespace state;
 using namespace engine;
 
 bool test_state();
-bool test_render1();
 bool test_render();
 bool test_engine();
 
@@ -80,7 +79,7 @@ bool test_engine()
 
     sf::Time delayTime = sf::milliseconds(1000);
     // create the window
-    sf::RenderWindow window(sf::VideoMode(x_window, y_window), "test engine");
+    sf::RenderWindow window(sf::VideoMode(static_cast<unsigned int>(x_window), static_cast<unsigned int>(y_window)), "test engine");
 
     // tests starts here
     Engine test_engine = Engine();
@@ -172,7 +171,7 @@ bool test_state()
     thisMap->getGameObject(0,0,lgo);
     cout<<"number of item in 0,0:"<<lgo->size()<<endl;
     cout<<"damaging everyone ! "<<endl;
-    for(int i =0; i< lgo->size();i++) {
+    for(unsigned int i =0; i< lgo->size();i++) {
         (*lgo)[i]->takeDamage(12);
         int health;
         (*lgo)[i]->getHealth(&health);
@@ -180,7 +179,7 @@ bool test_state()
     }
     cout<<"moving everyone !? "<<endl;
     Position new_position = Position(1,0);
-    for(int i =0; i< lgo->size();i++) {
+    for(unsigned int i =0; i< lgo->size();i++) {
         if(thisMap->moveGameObject((*lgo)[i]->getGame_object_id(),new_position))
         {
             cout<<"successfully moved "<<(*lgo)[i]->getGame_object_id()<<endl;
@@ -202,7 +201,7 @@ bool test_render(){
     static int const terrain_int [] = {1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 3, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 4, 4, 4, 1, 2, 1, 1, 3, 1, 4, 4, 4, 1, 2, 2, 2, 1, 1, 1, 1, 2, 2, 1, 4, 4, 4, 1, 1, 1, 2, 2, 2, 3, 1, 1, 1, 1, 2, 1, 4, 1, 3, 3, 1, 1, 2, 2, 2, 2, 3, 1, 3, 1, 2, 1, 4, 1, 3, 3, 3, 1, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1, 4, 3, 3, 3, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 2, 1, 4, 3, 3, 3, 1, 1, 1, 1, 2, 2, 2, 2, 3, 1, 2, 1, 4, 1, 3, 3, 3, 1, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1, 4, 1, 3, 3, 1, 1, 2, 2, 2, 2, 3, 1, 1, 2, 2, 1, 4, 4, 4, 1, 1, 1, 2, 2, 2, 3, 1, 1, 1, 2, 1, 1, 3, 1, 4, 4, 4, 1, 2, 2, 2, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 4, 4, 4, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2};
 
     vector<int> test_terrain;//to do mettre la taille
-    for (int i = 0; i < 256;i++)
+    for (unsigned int i = 0; i < 256;i++)
     {
         test_terrain.push_back(terrain_int[i]);
     }
@@ -230,7 +229,7 @@ bool test_render(){
     size_t x_window = 1024;
     size_t y_window = 1024;
     // create the window
-    sf::RenderWindow window(sf::VideoMode(x_window, y_window), "Tilemap");
+    sf::RenderWindow window(sf::VideoMode(static_cast<unsigned int>(x_window), static_cast<unsigned int>(y_window)), "Tilemap");
 
     render::DrawManager testdraw = render::DrawManager(testState,window);
 
@@ -246,9 +245,11 @@ bool test_render(){
         }
 
     }
+    return true;
 
 }
 //le test ci-dessous permet de visualiser la map isométrique avec la texture du terrain.
+/*
 bool test_render1(){
     //size of the level
     size_t width = 16;//Map.size x
@@ -377,4 +378,4 @@ bool test_render1(){
         window.display();
     }
     return true;
-}
+}*/

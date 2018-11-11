@@ -28,6 +28,7 @@ bool Player::getPlayerUnitList(std::vector<state::Unit *> &unit_list) {
 
 bool Player::getPlayerBuildingList(std::vector<state::Building *> &building_list) {
     building_list = this->player_building_list;
+    return true;
 }
 
 unsigned int Player::getPlayerId() {
@@ -43,6 +44,7 @@ bool Player::getRessource(unsigned int &in_food, unsigned int &in_gold) {
 bool Player::setRessource(unsigned int add_gold, unsigned int add_food) {
     in_gold += add_gold;
     in_food += add_food;
+    return true;
 }
 
 bool Player::addPlayerUnit(state::Unit * unit) {

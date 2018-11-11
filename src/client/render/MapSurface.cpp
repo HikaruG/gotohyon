@@ -32,7 +32,7 @@ bool MapSurface::initQuads(int count) {
     //definit le type de vertex: quads
     quads.setPrimitiveType(sf::Quads);
     //count represente le nombre de la tuile
-    quads.resize(4*count);
+    quads.resize(4*(size_t) count);
     return true;
 }
 
