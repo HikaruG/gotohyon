@@ -28,6 +28,7 @@ State::State(unsigned int player_number)
 bool State::initializePlayer(state::Player new_player) {
     this->list_player.push_back(&new_player);
     this->game_player = new_player;
+    return true;
 }
 
 
@@ -49,6 +50,7 @@ Player * State::getCurrentPlayer ()
 
 bool State::setDay(unsigned int day) {
     this->day_count = day;
+    return true;
 }
 
 bool State::getDayCount (unsigned int* day_count)

@@ -11,19 +11,15 @@ DrawManager::DrawManager (state::State& current_state, sf::RenderWindow& window)
     this->current_state = &current_state;
     this->window = &window;
     //counting nbr of objects:
-    state::Map * current_map = new state::Map();
-    current_map = this->current_state->getMap();
+    state::Map * current_map = this->current_state->getMap();
 
     current_map->getObjectCount();
     int tmp_x;
     int tmp_y;
-    std::cout <<"?"<<std::endl;
     current_map->getSize(&tmp_x,&tmp_y);
-    std::cout <<"?"<<std::endl;
 
     this->map_size_x = (unsigned int&) tmp_x;
     this->map_size_y = (unsigned int&) tmp_y;
-    std::cout << "debug size : "<<map_size_x<<" "<<map_size_y<<std::endl;
     drawer = MapSurface();
     if(!drawer.loadTextures("res/tileset_terrain.png","res/tileset_unit.png","res/tileset_building.png"))
         std::cout<<"Error: Textures failed to load, launch like this: bin/client whatever" << std::endl;
@@ -76,7 +72,7 @@ bool DrawManager::setUnit ()
     current_map->getListGameObject(game_object_list);
     std::vector<state::Unit *> units_go;
     state::Position pos;
-    for (int i = 0; i< game_object_list.size();i++)
+    for (unsigned int i = 0; i< game_object_list.size();i++)
     {
         if(!game_object_list[i]->isStatic())
         {
@@ -84,8 +80,8 @@ bool DrawManager::setUnit ()
         }
 
     }
-    drawer.initQuads(units_go.size());
-    for(int i = 0; i<units_go.size(); i++)
+    drawer.initQuads(static_cast<int>(units_go.size()));
+    for(unsigned int i = 0; i<units_go.size(); i++)
     {
         drawer.setSpriteTexture(2,units_go[i]->getUnitType(), i);
         pos = units_go[i]->getPosition();
@@ -99,12 +95,11 @@ bool DrawManager::setUnit ()
 bool DrawManager::setBuilding ()
 {
 
-    state::Map * current_map = new state::Map();
-    current_map=this->current_state->getMap();
+    state::Map * current_map = this->current_state->getMap();
     current_map->getListGameObject(game_object_list);
     std::vector<state::Building *> build_go;
     state::Position pos;
-    for (int i = 0; i< game_object_list.size();i++)
+    for (unsigned int i = 0; i< game_object_list.size();i++)
     {
         if(game_object_list[i]->isStatic())
         {
@@ -113,7 +108,7 @@ bool DrawManager::setBuilding ()
 
     }
     drawer.initQuads(build_go.size());
-    for(int i = 0; i<build_go.size(); i++)
+    for(unsigned int i = 0; i<build_go.size(); i++)
     {
         drawer.setSpriteTexture(1,build_go[i]->getBuildingType(), i);
         pos = build_go[i]->getPosition();

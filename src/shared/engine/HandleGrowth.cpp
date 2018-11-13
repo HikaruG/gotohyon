@@ -26,4 +26,5 @@ bool HandleGrowth::execute(state::State &state) {
     }
 
     state.getCurrentPlayer()->setRessource(count_farm * 100, count_mine * 100);
+    return true;
 }

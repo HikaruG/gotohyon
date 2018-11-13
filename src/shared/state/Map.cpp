@@ -16,7 +16,7 @@ Map::Map (unsigned int X, unsigned int Y, std::vector<int>& terrain_int)
     {
         throw std::invalid_argument("terrain size does not match x and y");
     }
-    for (int i = 0; i < terrain_int.size(); i++)
+    for (unsigned int i = 0; i < terrain_int.size(); i++)
     {
         Position newPos = Position(i%Y,i/Y);
         list_map.push_back(Terrain(newPos, 1, static_cast<TerrainType >(terrain_int[i])));
@@ -84,7 +84,7 @@ bool Map::getListGameObject(std::vector<state::GameObject *> &list_objects) {
 
 bool Map::moveGameObject (unsigned int game_object_id, Position new_position)
 {
-    for(int GOind = 0; GOind < list_game_object.size(); GOind ++)
+    for(unsigned int GOind = 0; GOind < list_game_object.size(); GOind ++)
     {
         if(list_game_object[GOind]->getGame_object_id() == game_object_id)
         {
@@ -102,11 +102,11 @@ bool Map::getSize(int *size_x, int *size_y) {
 }
 
 int Map::getObjectCount() {
-    return (int) map_size_x * map_size_Y + this->list_game_object.size();
+    return static_cast<int>(map_size_x * map_size_Y + this->list_game_object.size());
 }
 
 Map::~Map() {
-    for (int i = 0; i >list_game_object.size();i++)
+    for (unsigned int i = 0; i >list_game_object.size();i++)
     {
         delete list_game_object[i];
     }

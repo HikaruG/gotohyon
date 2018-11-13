@@ -56,7 +56,7 @@ bool HandleAttack::execute(state::Unit &current_unit,
             }
         }
     }
-
+    return true;
 
 }
 

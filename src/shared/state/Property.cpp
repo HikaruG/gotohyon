@@ -38,7 +38,7 @@ unsigned int Property::getDefense() {
 }
 
 unsigned int Property::getHealthMax() {
-    return this->health_max;
+    return (unsigned int)this->health_max;
 }
 
 std::string Property::getStringType() {
