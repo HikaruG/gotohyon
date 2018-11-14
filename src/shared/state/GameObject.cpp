@@ -31,6 +31,9 @@ unsigned int GameObject::getGame_object_id() const {
     return this->game_object_id;
 }
 
+unsigned int GameObject::getPlayerId() {
+    return this->player_id;
+}
 
  Property * GameObject::getProperty() {
     return &this->game_object_property;

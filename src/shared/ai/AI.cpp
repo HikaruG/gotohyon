@@ -16,9 +16,10 @@ AI::AI() {
     //par défaut, le joueur IA est le player avec le player_id = 0;
 }
 
-bool AI::listCommandType(std::vector<int> list, state::State &state,
+bool AI::listCommandType(std::vector<engine::Command *>&  list, state::State &state,
                       state::Player &player) {
 
+/*  Doit-on vraiment créer une liste ....
 
     //récupération du terrain
     state::Terrain * terrain;
@@ -44,9 +45,6 @@ bool AI::listCommandType(std::vector<int> list, state::State &state,
     std::vector<state::Unit *> * ptr_ennemy_unit_list;
     std::vector<state::Building *> * ptr_ennemy_building_list;
 
-    std::vector<state::GameObject *> * ennemy_unit_list;
-    std::vector<state::Building *> * ennemy_building_list;
-
     for(state::Player *s : list_player){
         if(s->getPlayerId() != player.getPlayerId()){//fonctionne seulement pour 1 seul joueur contre 1 PC
             s->getPlayerUnitList(* ptr_ennemy_unit_list);
@@ -56,46 +54,28 @@ bool AI::listCommandType(std::vector<int> list, state::State &state,
 
 
 
-    //les commandes pour les déplacements des unités
-    engine::HandleAttack commande_attack = engine::HandleAttack();
+    //les différentes commandes pour l'IA
+    engine::HandleDamage commande_damage = engine::HandleDamage();
     engine::HandleCreation commande_creation = engine::HandleCreation();
-    int type=0;
-    for(state::Unit * s : * list_unit ){
-        type = s->getGame_object_id();
-        switch(type){
-            case state::infantry:
-                s->getMovementRange();
-                //commande_attack().execute()
-        }
+    engine::HandleMovement commande_movement = engine::HandleMovement();
 
-
-        list.push_back(engine::HANDLE_MOVEMENT);
-        list.push_back(engine::HANDLE_DAMAGE);
+    //commandes pour les déplacements pour toutes les unités
+    for(int i = 0; i < (int)unit_count; i++ ){
+        list.push_back( &commande_movement);
     }
-    //les commandes pour les créations d'unités: en fonction du nombre de casernes + villes
-    for (state::Building * s : list_building){
-       // if( s->getBuildingType() == state::BuildingType::barrack || s->getBuildingType() == state::BuildingType::town){
-            list.push_back(engine::HANDLE_CREATION);
-        //}
-    }
-
 
     //les commandes pour les attaques des unités:
+    for(int i = 0; i <(int)unit_count; i++){
+        list.push_back(& commande_damage);
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    //commandes pour les créations d'objets
+    //les commandes pour les créations d'unités: en fonction du nombre de casernes + villes
+    for (state::Building * s : list_building){
+       if( s->getBuildingType() == state::BuildingType::barrack || s->getBuildingType() == state::BuildingType::town) {
+           list.push_back(& commande_creation);
+       }
+    }
+*/
     return true;
 }

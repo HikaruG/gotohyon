@@ -10,8 +10,8 @@ CommandTypeId HandleDamage::getTypeId() const {
     return CommandTypeId::HANDLE_DAMAGE;
 }
 
-bool HandleDamage::execute(state::Unit & unit, state::Unit & ennemy_unit, state::Terrain &terrain) {
-    ennemy_unit.getProperty()->takeDamage(unit.getProperty()->getAttack());
+bool HandleDamage::execute(state::GameObject & object, state::GameObject & ennemy_object, state::Terrain &terrain) {
+    ennemy_object.getProperty()->takeDamage(object.getProperty()->getAttack());
     return true;
 }
 
