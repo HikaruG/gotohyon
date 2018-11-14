@@ -51,6 +51,12 @@ int main(int argc,char* argv[])
                 cout << "render testing" << endl;
             }
         }
+        if( !strcmp(argv[1],"random_ai") ) {
+            cout << "test random ai sequence activated . . ." << endl;
+            if (test_randomAI()) {
+                cout << "test random_ai successful" << endl;
+            }
+        }
     }
 
     return 0;
@@ -125,7 +131,7 @@ bool test_randomAI() {
     //create the first units
     cout << "test : create unit in 6,6" << endl;
     HandleCreation test_creation = HandleCreation();
-    test_creation.execute(test_state, 6, 6, 1, false);//should instanciate an unit in 10,10
+    test_creation.execute(test_state, 6, 6, 1, false);//should instanciate an unit in 6,6
     //testdraw.updateState(test_state);
 
     cout << "test : create unit in 0,0" << endl;
