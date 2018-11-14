@@ -16,6 +16,10 @@ AI::AI() {
     //par défaut, le joueur IA est le player avec le player_id = 0;
 }
 
+AI::~AI(){
+}
+
+
 bool AI::listCommandType(std::vector<engine::Command *>&  list, state::State &state,
                       state::Player &player) {
 
@@ -79,3 +83,4 @@ bool AI::listCommandType(std::vector<engine::Command *>&  list, state::State &st
 */
     return true;
 }
+

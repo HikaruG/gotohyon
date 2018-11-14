@@ -6,14 +6,16 @@
 #include <engine/Command.h>
 #include "RandomAI.h"
 #include "engine.h"
+
 using namespace ai;
 
 RandomAI::RandomAI(int random_seed) {
     std::mt19937 randgen(random_seed);
 }
 
-bool RandomAI::run(engine::Engine &engine, state::Player& player, state::State& state) {
+RandomAI::~RandomAI() = default;
 
+bool RandomAI::run(engine::Engine &engine, state::Player& player, state::State& state) {
     //récupération de la map
     state::Map * map;
 
@@ -49,8 +51,11 @@ bool RandomAI::run(engine::Engine &engine, state::Player& player, state::State& 
         old_y = position_unit.getY();
         old_x = position_unit.getX();
         distance = s->getMovementRange();
-        //new_x = old_x rand() % distance;
-        new_y = distance;
+        std::uniform_int_distribution<int> dis_x(-distance,distance);
+        new_x = old_x + dis_x(randgen);
+
+        std::uniform_int_distribution<int> dis_y(-abs(distance - new_x),abs(distance - new_x));
+        new_y = old_y + dis_y(randgen);
         commande_movement.execute(*s, state, new_x, new_y);
 
         //si l'unité peut attaquer, il attaque
@@ -58,7 +63,8 @@ bool RandomAI::run(engine::Engine &engine, state::Player& player, state::State& 
             size_ennemy_list = ennemy_object_list->size();
 
             //rajouter la valeur aléatoire
-
+            std::uniform_int_distribution<int> dis_i(0,size_ennemy_list - 1);
+            i_object = dis_i(randgen);
             //fin du rajout à faire
 
             //identification de l'objet choisi aléatoirement
@@ -77,3 +83,6 @@ bool RandomAI::run(engine::Engine &engine, state::Player& player, state::State& 
 
     return true;
 }
+
+
+

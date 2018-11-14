@@ -9,8 +9,8 @@ using namespace state;
 Player::Player(unsigned int player_id, unsigned int in_gold, unsigned int in_food,
                std::vector<Building *>  building_list, std::vector<Unit *> unit_list) {
     this->player_id = player_id;
-    this->in_food = 600;
-    this->in_gold = 600;
+    this->in_food = in_food;
+    this->in_gold = in_gold;
     this->player_building_list = building_list;
     this->player_unit_list = unit_list;
 }
@@ -21,6 +21,8 @@ Player::Player() {
     this->in_food = 600;
     this->in_gold = 600;
 }
+
+
 
 bool Player::getPlayerUnitList(std::vector<state::Unit *> &unit_list) {
     unit_list = this->player_unit_list;

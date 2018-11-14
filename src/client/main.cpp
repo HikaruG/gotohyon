@@ -14,6 +14,7 @@ void testSFML() {
 #include "state.h"
 #include "render.h"
 #include "engine.h"
+#include "ai.h"
 
 using namespace std;
 using namespace state;
@@ -22,6 +23,7 @@ using namespace engine;
 bool test_state();
 bool test_render();
 bool test_engine();
+bool test_randomAI();
 
 int main(int argc,char* argv[])
 {
@@ -53,6 +55,91 @@ int main(int argc,char* argv[])
 
     return 0;
 }
+
+bool test_randomAI() {
+    // state to test
+
+    State test_state = State(1);
+
+    static int const terrain_int[] = {
+            0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0,
+            1, 1, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3,
+            0, 1, 0, 0, 2, 0, 3, 3, 3, 0, 1, 1, 1, 0, 0, 0,
+            0, 1, 1, 0, 3, 3, 3, 0, 0, 0, 1, 1, 1, 2, 0, 0,
+            0, 0, 1, 0, 3, 0, 2, 2, 0, 0, 1, 1, 1, 1, 2, 0,
+            2, 0, 1, 0, 3, 0, 2, 2, 2, 0, 1, 1, 1, 1, 1, 1,
+            0, 0, 1, 0, 3, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1,
+            0, 0, 1, 0, 3, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1,
+            2, 0, 1, 0, 3, 0, 2, 2, 2, 0, 1, 1, 1, 1, 1, 1,
+            0, 0, 1, 0, 3, 0, 2, 2, 0, 0, 1, 1, 1, 1, 2, 0,
+            0, 1, 1, 0, 3, 3, 3, 0, 0, 0, 1, 1, 1, 2, 0, 0,
+            0, 1, 0, 0, 2, 0, 3, 3, 3, 0, 1, 1, 1, 0, 0, 0,
+            1, 1, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3,
+            0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    };
+    vector<int> test_terrain;//to do mettre la taille
+    for (int i = 0; i < 256; i++) {
+        test_terrain.push_back(terrain_int[i]);
+    }
+    Map test_map = Map(16, 16, test_terrain);
+
+    //init map terrain
+    test_state.initializeMap(test_map);
+
+    Map *thisMap = test_state.getMap();
+
+
+    //init windows
+    size_t x_window = 1024;
+    size_t y_window = 1024;
+
+    sf::Time delayTime = sf::milliseconds(1000);
+    // create the window
+    sf::RenderWindow window(sf::VideoMode(static_cast<unsigned int>(x_window), static_cast<unsigned int>(y_window)),
+                            "test engine");
+
+
+    cout << "test : new engine instance" << endl;
+    Engine test_engine = Engine();
+
+    cout << "test : new drawmanager instance" << endl;
+    render::DrawManager testdraw = render::DrawManager(test_state, window);
+
+    cout << "test : new randomAI instance" << endl;
+    ai::RandomAI test_randomAI = ai::RandomAI(0);
+
+
+
+    cout << "test : updates... " << endl;
+    testdraw.updateState(test_state);
+    sf::sleep(delayTime);
+
+
+
+    //init player AI
+    Player test_player = Player();
+    test_state.initializePlayer(test_player);
+
+    //create the first units
+    cout << "test : create unit in 6,6" << endl;
+    HandleCreation test_creation = HandleCreation();
+    test_creation.execute(test_state, 6, 6, 1, false);//should instanciate an unit in 10,10
+    //testdraw.updateState(test_state);
+
+    cout << "test : create unit in 0,0" << endl;
+    test_creation.execute(test_state, 0, 0, 1, false);//should instanciate an unit in 0,0
+    //testdraw.updateState(test_state);
+
+
+    cout << "test : create unit in 3,1" << endl;
+    test_creation.execute(test_state, 1, 0, 1, false);//should instanciate an unit in 3,1
+    testdraw.updateState(test_state);
+
+    test_randomAI.run(test_engine, test_player, test_state);
+}
+
 
 bool test_engine()
 {
