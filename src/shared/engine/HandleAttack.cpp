@@ -59,4 +59,10 @@ bool HandleAttack::execute(state::Unit &current_unit,
     return true;
 
 }
+bool HandleAttack::execute (state::State &state) {
+    return true;
+}
+HandleAttack::HandleAttack() = default;
+
+HandleAttack::~HandleAttack() = default;
 

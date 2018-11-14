@@ -14,3 +14,11 @@ bool HandleDamage::execute(state::Unit & unit, state::Unit & ennemy_unit, state:
     ennemy_unit.getProperty()->takeDamage(unit.getProperty()->getAttack());
     return true;
 }
+
+bool HandleDamage::execute(state::State &state) {
+    return true;
+}
+
+HandleDamage::HandleDamage() = default;
+
+HandleDamage::~HandleDamage() = default;

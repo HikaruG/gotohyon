@@ -8,6 +8,7 @@
 #include <state/BuildingType.h>
 #include <state/GameObject.h>
 #include "AI.h"
+#include "engine.h"
 
 using namespace ai;
 
@@ -56,13 +57,15 @@ bool AI::listCommandType(std::vector<int> list, state::State &state,
 
 
     //les commandes pour les déplacements des unités
+    engine::HandleAttack commande_attack = engine::HandleAttack();
+    engine::HandleCreation commande_creation = engine::HandleCreation();
     int type=0;
     for(state::Unit * s : * list_unit ){
         type = s->getGame_object_id();
         switch(type){
-            //case state::infantry:
-                //engine::
-
+            case state::infantry:
+                s->getMovementRange();
+                //commande_attack().execute()
         }
 
 

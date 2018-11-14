@@ -12,3 +12,7 @@ CommandTypeId LoadCommand::getTypeId() const {
 bool LoadCommand::execute(state::State &state) {
     return true;
 }
+
+LoadCommand::LoadCommand() = default;
+
+LoadCommand::~LoadCommand() = default;
