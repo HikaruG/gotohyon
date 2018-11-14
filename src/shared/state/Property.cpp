@@ -24,6 +24,8 @@ Property::Property() {
 }
 
 Property& Property::operator=(const state::Property& orig) {
+    this->is_static = orig.is_static;
+    this->healthBar = orig.healthBar;
     this->type_game_object = orig.type_game_object;
     this->attack = orig.attack;
     this->defense = orig.defense;
