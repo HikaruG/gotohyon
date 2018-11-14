@@ -21,7 +21,7 @@ bool HandleAttack::execute(state::Unit &current_unit,
     unsigned int others_y;
     int distance = 0;
     canattack = false;
-    in_range_list = nullptr;
+    //in_range_list = nullptr;
     std::vector<state::GameObject *> ennemy_list;
 
     if (current_unit.getUnitType() == state::archer) {

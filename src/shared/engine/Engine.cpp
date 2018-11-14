@@ -3,7 +3,7 @@
 //
 
 #include "Engine.h"
-
+#include <SFML/Graphics.hpp>
 using namespace engine;
 
 Engine::Engine()
@@ -30,6 +30,10 @@ bool Engine::addCommands(Command* command)
 bool Engine::setState(state::State& new_state) {
     current_state = new_state;
     return true;
+}
+
+std::vector<int> getMouseClick() {
+
 }
 
 bool Engine::update() {

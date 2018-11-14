@@ -10,7 +10,6 @@ Unit::Unit (unsigned int movement_range, unsigned int gameobject_id, unsigned in
 {
     this->movement_range = movement_range;
     this->type = unit_type;
-    this->is_static = false;
 }
 UnitType const Unit::getUnitType ()
 {

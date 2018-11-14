@@ -11,9 +11,6 @@ CommandTypeId HandleDamage::getTypeId() const {
 }
 
 bool HandleDamage::execute(state::Unit & unit, state::Unit & ennemy_unit, state::Terrain &terrain) {
-    state::Property * prop_unit = new state::Property;
-    // erreur : invalid use of icomplete type // j'ai pas cherché, trop fatigué et en colère pour ça, perso je l'avais pas à mon premier codage <3
-    unit.getProperty(prop_unit);
-    ennemy_unit.takeDamage(prop_unit->getAttack());
-     return true;
+    ennemy_unit.getProperty()->takeDamage(unit.getProperty()->getAttack());
+    return true;
 }

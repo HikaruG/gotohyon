@@ -58,8 +58,24 @@ bool test_engine()
 {
     // state to test
     State testState = State(1);
-    static int const terrain_int [] = {1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 3, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 4, 4, 4, 1, 2, 1, 1, 3, 1, 4, 4, 4, 1, 2, 2, 2, 1, 1, 1, 1, 2, 2, 1, 4, 4, 4, 1, 1, 1, 2, 2, 2, 3, 1, 1, 1, 1, 2, 1, 4, 1, 3, 3, 1, 1, 2, 2, 2, 2, 3, 1, 3, 1, 2, 1, 4, 1, 3, 3, 3, 1, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1, 4, 3, 3, 3, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 2, 1, 4, 3, 3, 3, 1, 1, 1, 1, 2, 2, 2, 2, 3, 1, 2, 1, 4, 1, 3, 3, 3, 1, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1, 4, 1, 3, 3, 1, 1, 2, 2, 2, 2, 3, 1, 1, 2, 2, 1, 4, 4, 4, 1, 1, 1, 2, 2, 2, 3, 1, 1, 1, 2, 1, 1, 3, 1, 4, 4, 4, 1, 2, 2, 2, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 4, 4, 4, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2};
-
+    static int const terrain_int [] = {
+            0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0,
+            1, 1, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3,
+            0, 1, 0, 0, 2, 0, 3, 3, 3, 0, 1, 1, 1, 0, 0, 0,
+            0, 1, 1, 0, 3, 3, 3, 0, 0, 0, 1, 1, 1, 2, 0, 0,
+            0, 0, 1, 0, 3, 0, 2, 2, 0, 0, 1, 1, 1, 1, 2, 0,
+            2, 0, 1, 0, 3, 0, 2, 2, 2, 0, 1, 1, 1, 1, 1, 1,
+            0, 0, 1, 0, 3, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1,
+            0, 0, 1, 0, 3, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1,
+            2, 0, 1, 0, 3, 0, 2, 2, 2, 0, 1, 1, 1, 1, 1, 1,
+            0, 0, 1, 0, 3, 0, 2, 2, 0, 0, 1, 1, 1, 1, 2, 0,
+            0, 1, 1, 0, 3, 3, 3, 0, 0, 0, 1, 1, 1, 2, 0, 0,
+            0, 1, 0, 0, 2, 0, 3, 3, 3, 0, 1, 1, 1, 0, 0, 0,
+            1, 1, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3,
+            0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    };
     vector<int> test_terrain;//to do mettre la taille
     for (int i = 0; i < 256;i++)
     {
@@ -82,23 +98,41 @@ bool test_engine()
     sf::RenderWindow window(sf::VideoMode(static_cast<unsigned int>(x_window), static_cast<unsigned int>(y_window)), "test engine");
 
     // tests starts here
+    cout << "test : new engine instance"<<endl;
     Engine test_engine = Engine();
+
+    cout << "test : new handlers instance"<<endl;
     HandleCreation test_creation = HandleCreation();
     HandleMovement test_movement = HandleMovement();
+
+    cout << "test : create building in 0,0"<<endl;
     test_creation.execute(testState,0,0,1,true);//should instanciate a building in 0,0
 
+    cout << "test : new drawmanager instance"<<endl;
     render::DrawManager testdraw = render::DrawManager(testState,window);
     sf::sleep(delayTime);
+
+    cout << "test : new unit in 0,1"<<endl;
     test_creation.execute(testState,0,1,1,false);//should instanciate a unit in 1,1
 
+    cout << "test : updates... "<<endl;
     testdraw.updateState(testState);
     sf::sleep(delayTime);
 
+
+    cout << "test : cheating sequence -- start"<<endl;
+
     //cheating a bit to recover a unit pointer:
     vector<GameObject *> onTheTile;
+    cout << "debug : a"<<endl;
+
     thisMap->getGameObject(0,1,&onTheTile);
+    cout << "debug : b"<<endl;
     Unit * theUnit = (Unit*)onTheTile[0];
     //end of cheating part
+
+    cout << "test : cheating sequence -- end"<<endl;
+
 
     test_movement.execute(*theUnit,testState,0,0);
 
@@ -112,8 +146,35 @@ bool test_engine()
     {
         // check all the window's events that were triggered since the last iteration of the loop
         sf::Event event;
+        int x_cart = 0, y_cart = 0;
+        int x_iso = 0, y_iso = 0;
+        int offset = 8;
+        //int cc = -(y * t_map_x);
+        int t_map_x = 64;
+        int t_map_y = 32;
+        int cc;
+        //int k = (x * t_map_x)/2 + cc/2 + t_map_x/2 + offset;
+        //int l = ((x + y) * t_map_y) / 2;
         while (window.pollEvent(event))
         {
+            if (event.type == sf::Event::MouseButtonPressed)
+            {
+                if (event.mouseButton.button == sf::Mouse::Left)
+                {
+                    std::cout << "the right button was pressed" << std::endl;
+                    x_cart = (event.mouseButton.x)/t_map_x;
+                    y_cart = (event.mouseButton.y)/t_map_y;
+
+                    x_iso = 0.5*x_cart - 0.5*y_cart;
+                    //y_iso =
+                    std::cout << "mouse x carte: " << x_cart<< std::endl; // valeur de x en cartésien
+                    std::cout << "mouse x iso: " << x_iso << std::endl; // valeur de x en cartésien
+                    std::cout << "mouse y carte: " << y_cart << std::endl; // valeur de y en cartésien
+                    std::cout << "mouse y iso: " << y_iso << std::endl; // valeur de y en cartésien
+                    test_movement.execute(*theUnit, testState,(event.mouseButton.x)/64,(event.mouseButton.y)/32 );
+
+                }
+            }
             // "close requested" event: we close the window
             if (event.type == sf::Event::Closed)
                 window.close();
@@ -127,8 +188,24 @@ bool test_engine()
 bool test_state()
 {
     State testState = State(1);
-    static int const terrain_int [] = {1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 3, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 4, 4, 4, 1, 2, 1, 1, 3, 1, 4, 4, 4, 1, 2, 2, 2, 1, 1, 1, 1, 2, 2, 1, 4, 4, 4, 1, 1, 1, 2, 2, 2, 3, 1, 1, 1, 1, 2, 1, 4, 1, 3, 3, 1, 1, 2, 2, 2, 2, 3, 1, 3, 1, 2, 1, 4, 1, 3, 3, 3, 1, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1, 4, 3, 3, 3, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 2, 1, 4, 3, 3, 3, 1, 1, 1, 1, 2, 2, 2, 2, 3, 1, 2, 1, 4, 1, 3, 3, 3, 1, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1, 4, 1, 3, 3, 1, 1, 2, 2, 2, 2, 3, 1, 1, 2, 2, 1, 4, 4, 4, 1, 1, 1, 2, 2, 2, 3, 1, 1, 1, 2, 1, 1, 3, 1, 4, 4, 4, 1, 2, 2, 2, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 4, 4, 4, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2};
-
+    static int const terrain_int [] = {
+            0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0,
+            1, 1, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3,
+            0, 1, 0, 0, 2, 0, 3, 3, 3, 0, 1, 1, 1, 0, 0, 0,
+            0, 1, 1, 0, 3, 3, 3, 0, 0, 0, 1, 1, 1, 2, 0, 0,
+            0, 0, 1, 0, 3, 0, 2, 2, 0, 0, 1, 1, 1, 1, 2, 0,
+            2, 0, 1, 0, 3, 0, 2, 2, 2, 0, 1, 1, 1, 1, 1, 1,
+            0, 0, 1, 0, 3, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1,
+            0, 0, 1, 0, 3, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1,
+            2, 0, 1, 0, 3, 0, 2, 2, 2, 0, 1, 1, 1, 1, 1, 1,
+            0, 0, 1, 0, 3, 0, 2, 2, 0, 0, 1, 1, 1, 1, 2, 0,
+            0, 1, 1, 0, 3, 3, 3, 0, 0, 0, 1, 1, 1, 2, 0, 0,
+            0, 1, 0, 0, 2, 0, 3, 3, 3, 0, 1, 1, 1, 0, 0, 0,
+            1, 1, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3,
+            0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    };
     vector<int> test_terrain;
     for (int i = 0; i < 256;i++)
     {
@@ -172,9 +249,8 @@ bool test_state()
     cout<<"number of item in 0,0:"<<lgo->size()<<endl;
     cout<<"damaging everyone ! "<<endl;
     for(unsigned int i =0; i< lgo->size();i++) {
-        (*lgo)[i]->takeDamage(12);
-        int health;
-        (*lgo)[i]->getHealth(&health);
+        (*lgo)[i]->getProperty()->takeDamage(12);
+        int health = (*lgo)[i]->getProperty()->getHealth();
         cout << "lgo health:" << health << endl;
     }
     cout<<"moving everyone !? "<<endl;
@@ -186,8 +262,6 @@ bool test_state()
         }
         else{
             cout<<"actually i can't move "<<(*lgo)[i]->getGame_object_id()<<endl;
-            Property *prop = new Property();
-            (*lgo)[i]->getProperty(prop);
         }
     }
 
@@ -198,8 +272,24 @@ bool test_state()
 bool test_render(){
 
     State testState = State(1);
-    static int const terrain_int [] = {1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 3, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 4, 4, 4, 1, 2, 1, 1, 3, 1, 4, 4, 4, 1, 2, 2, 2, 1, 1, 1, 1, 2, 2, 1, 4, 4, 4, 1, 1, 1, 2, 2, 2, 3, 1, 1, 1, 1, 2, 1, 4, 1, 3, 3, 1, 1, 2, 2, 2, 2, 3, 1, 3, 1, 2, 1, 4, 1, 3, 3, 3, 1, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1, 4, 3, 3, 3, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 2, 1, 4, 3, 3, 3, 1, 1, 1, 1, 2, 2, 2, 2, 3, 1, 2, 1, 4, 1, 3, 3, 3, 1, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1, 4, 1, 3, 3, 1, 1, 2, 2, 2, 2, 3, 1, 1, 2, 2, 1, 4, 4, 4, 1, 1, 1, 2, 2, 2, 3, 1, 1, 1, 2, 1, 1, 3, 1, 4, 4, 4, 1, 2, 2, 2, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 4, 4, 4, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2};
-
+    static int const terrain_int [] = {
+            0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0,
+            1, 1, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3,
+            0, 1, 0, 0, 2, 0, 3, 3, 3, 0, 1, 1, 1, 0, 0, 0,
+            0, 1, 1, 0, 3, 3, 3, 0, 0, 0, 1, 1, 1, 2, 0, 0,
+            0, 0, 1, 0, 3, 0, 2, 2, 0, 0, 1, 1, 1, 1, 2, 0,
+            2, 0, 1, 0, 3, 0, 2, 2, 2, 0, 1, 1, 1, 1, 1, 1,
+            0, 0, 1, 0, 3, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1,
+            0, 0, 1, 0, 3, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1,
+            2, 0, 1, 0, 3, 0, 2, 2, 2, 0, 1, 1, 1, 1, 1, 1,
+            0, 0, 1, 0, 3, 0, 2, 2, 0, 0, 1, 1, 1, 1, 2, 0,
+            0, 1, 1, 0, 3, 3, 3, 0, 0, 0, 1, 1, 1, 2, 0, 0,
+            0, 1, 0, 0, 2, 0, 3, 3, 3, 0, 1, 1, 1, 0, 0, 0,
+            1, 1, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3,
+            0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    };
     vector<int> test_terrain;//to do mettre la taille
     for (unsigned int i = 0; i < 256;i++)
     {

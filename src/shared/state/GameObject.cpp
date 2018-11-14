@@ -12,27 +12,14 @@ GameObject::GameObject(unsigned int gameobject_id, unsigned int player_ids, stat
     this->game_object_property = property;
     this->player_id = player_ids;
     this->object_position = pos;
-
-    this->health_bar = this->game_object_property.getHealthMax();
-    this->is_destroyed = false;
 }
 
-
-bool GameObject::takeDamage (int damage)
-{
-    this->health_bar -= damage;
-    if (this->health_bar <= 0)
-    {
-        this->is_destroyed = true;
-    }
-    return true;
-}
 
 Position GameObject::getPosition () {
     return this->object_position;
 }
 bool GameObject::setPosition (Position new_position) {
-    if(this->is_static)
+    if(this->getProperty()->isStatic())
     {
         return false;
     }
@@ -44,17 +31,15 @@ unsigned int GameObject::getGame_object_id() const {
     return this->game_object_id;
 }
 
-bool GameObject::getHealth(int *health) {
-    *health = health_bar;
-    return true;
+
+ Property * GameObject::getProperty() {
+    return &this->game_object_property;
 }
 
-bool GameObject::getProperty(state::Property *prop) {
-    *prop = this->game_object_property;
-    return true;
+GameObject::GameObject(){
+
 }
 
-bool GameObject::isStatic()
-{
-    return this->is_static;
+GameObject::~GameObject(){
+
 }

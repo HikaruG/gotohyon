@@ -41,7 +41,7 @@ file(GLOB_RECURSE shared_sources src/shared/*.cpp)
 
 
 # Executables
-add_executable(client ${client_sources} ${shared_sources} src/shared/ai/AI.cpp src/shared/ai/RandomAI.cpp)
+add_executable(client ${client_sources} ${shared_sources})
 #add_executable(server ${server_sources} ${shared_sources} ${jsoncpp_sources})
 
 # SFML

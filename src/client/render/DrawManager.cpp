@@ -67,14 +67,13 @@ bool DrawManager::setTerrain ()
 
 bool DrawManager::setUnit ()
 {
-    state::Map * current_map = new state::Map();
-    current_map = this->current_state->getMap();
+    state::Map * current_map = this->current_state->getMap();
     current_map->getListGameObject(game_object_list);
     std::vector<state::Unit *> units_go;
     state::Position pos;
     for (unsigned int i = 0; i< game_object_list.size();i++)
     {
-        if(!game_object_list[i]->isStatic())
+        if(!game_object_list[i]->getProperty()->isStatic())
         {
             units_go.push_back((state::Unit*)game_object_list[i]);
         }
@@ -101,7 +100,7 @@ bool DrawManager::setBuilding ()
     state::Position pos;
     for (unsigned int i = 0; i< game_object_list.size();i++)
     {
-        if(game_object_list[i]->isStatic())
+        if(game_object_list[i]->getProperty()->isStatic())
         {
             build_go.push_back((state::Building*)game_object_list[i]);
         }

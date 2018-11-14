@@ -58,7 +58,7 @@ bool const MapSurface::setSpriteTexture(unsigned int tileset_layer, unsigned int
     int t_map_y = 32;
     std::vector<sf::Texture> texture_level = {texture_terrain,texture_building,texture_unit};
     texture_to_apply = texture_level[tileset_layer];
-    int tu = (tileset_position_x-1) % (texture_to_apply.getSize().x / t_map_x);
+    int tu = (tileset_position_x) % (texture_to_apply.getSize().x / t_map_x);
 
     int ku = tu*t_map_x + t_map_x/2;
     //std::cout<<"Debug : adding sprite on layer "<<tileset_layer<<" tile id "<<tileset_position_x<<" count "<<count<<std::endl;

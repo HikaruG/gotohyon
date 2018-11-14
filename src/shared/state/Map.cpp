@@ -26,15 +26,15 @@ Map::Map (unsigned int X, unsigned int Y, std::vector<int>& terrain_int)
 
 GameObject * Map::addGameObject (unsigned int player_id, Position pos, bool is_static, int type)
 {
-    Property farmer = Property("unit_farmer",10,10,100,3);
-    Property infantry = Property("unit_infantry",10,10,100);
-    Property archer = Property("unit_archer",10,10,100);
+    Property farmer = Property("unit_farmer",10,10,100,false,3);
+    Property infantry = Property("unit_infantry",10,10,100,false);
+    Property archer = Property("unit_archer",10,10,100,false);
 
-    Property mine = Property("building_mine",10,10,100);
-    Property farm = Property("building_farm",10,10,100);
-    Property turret = Property("building_turret",10,10,100);
-    Property town = Property("building_town",10,10,100);
-    Property barrack = Property("building_barrack",10,10,100);
+    Property mine = Property("building_mine",10,10,100,true);
+    Property farm = Property("building_farm",10,10,100,true);
+    Property turret = Property("building_turret",10,10,100,true);
+    Property town = Property("building_town",10,10,100,true);
+    Property barrack = Property("building_barrack",10,10,100,true);
 
     std::vector<Property> statics = {mine,farm,turret,town, barrack};
     std::vector<Property> units = {farmer,infantry, archer};
@@ -95,7 +95,6 @@ bool Map::moveGameObject (unsigned int game_object_id, Position new_position)
 }
 
 bool Map::getSize(int *size_x, int *size_y) {
-    std::cout << map_size_x << map_size_Y<<std::endl;
     *size_x = (int) map_size_x;
     *size_y = (int) map_size_Y;
     return true;

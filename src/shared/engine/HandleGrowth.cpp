@@ -15,7 +15,6 @@ bool HandleGrowth::execute(state::State &state) {
     std::vector<state::Building *> building_list;
     state.getCurrentPlayer()->getPlayerBuildingList(building_list);
 
-// erreur : invalid use of incomplete type // j'ai pas cherché, trop fatigué et en colère pour ça, perso je l'avais pas à mon premier codage <3
     for(state::Building * s : building_list){
         if(s->getBuildingType() == state::farm){
             count_farm ++;
