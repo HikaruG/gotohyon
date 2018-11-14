@@ -197,17 +197,15 @@ bool test_engine()
 
     cout << "test : new drawmanager instance"<<endl;
     render::DrawManager testdraw = render::DrawManager(testState,window);
-    if(testState.addObserver(&testdraw))
-    {
-        cout<<"adding new oservers"<<endl;
-    };
+    testState.addObserver(&testdraw);
+    thisMap->addObserver(&testdraw);
     sf::sleep(delayTime);
 
     cout << "test : new unit in 0,1"<<endl;
     test_creation.execute(testState,0,1,1,false);//should instanciate a unit in 1,1
 
     cout << "test : updates... "<<endl;
-    testdraw.updateState(testState);
+    //testdraw.updateState(testState);
     sf::sleep(delayTime);
 
 
@@ -227,7 +225,7 @@ bool test_engine()
 
     test_movement.execute(*theUnit,testState,0,0);
 
-    testdraw.updateState(testState);
+    //testdraw.updateState(testState);
 
 
 

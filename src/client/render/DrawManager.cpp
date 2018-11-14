@@ -119,6 +119,7 @@ bool DrawManager::setBuilding ()
 }
 
 bool DrawManager::stateChanged(const state::Event &event) {
-    std::cout<<"mkay i should redraw right ?"<<std::endl;
+    std::cout<<"mkay i should redraw right ? "<<std::endl;
+    updateState(*current_state);
 
 }

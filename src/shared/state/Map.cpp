@@ -19,6 +19,8 @@ Map::Map (unsigned int X, unsigned int Y, std::vector<int>& terrain_int)
         Position newPos = Position(i%Y,i/Y);
         list_map.push_back(Terrain(newPos, 1, static_cast<TerrainType >(terrain_int[i])));
     }
+    MapEvent event = MapEvent(MapEventId::TERRAIN_CHANGED);
+    notifyObservers(event);
 
 }
 
@@ -89,6 +91,8 @@ bool Map::moveGameObject (unsigned int game_object_id, Position new_position)
     {
         if(list_game_object[GOind]->getGame_object_id() == game_object_id)
         {
+            MapEvent event = MapEvent(MapEventId::UNIT_CHANGED);
+            notifyObservers(event);
             return list_game_object[GOind]->setPosition(new_position);
         }
     }
