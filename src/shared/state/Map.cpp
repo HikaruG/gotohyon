@@ -1,11 +1,9 @@
 //
 // Created by ben on 15/10/18.
 //
+#include "state.h"
 #include <iostream>
-#include "Map.h"
-#include "Building.h"
-#include "Unit.h"
-#include <iostream>
+
 using namespace state;
 
 Map::Map (unsigned int X, unsigned int Y, std::vector<int>& terrain_int)
@@ -45,6 +43,8 @@ GameObject * Map::addGameObject (unsigned int player_id, Position pos, bool is_s
                                   static_cast<BuildingType>(type));
 
         list_game_object.push_back(new_b);
+        MapEvent event = MapEvent(MapEventId::BUILDING_CHANGED);
+        notifyObservers(event);
         return new_b;
     }
     else {
@@ -52,6 +52,7 @@ GameObject * Map::addGameObject (unsigned int player_id, Position pos, bool is_s
                           static_cast<UnitType>(type));
 
         list_game_object.push_back(new_u);
+        notifyObservers(MapEvent(MapEventId::UNIT_CHANGED));
         return new_u;
     }
 }

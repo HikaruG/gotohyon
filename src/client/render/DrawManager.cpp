@@ -117,3 +117,8 @@ bool DrawManager::setBuilding ()
     drawer.draw(*window,state_sfml);
     return true;
 }
+
+bool DrawManager::stateChanged(const state::Event &event) {
+    std::cout<<"mkay i should redraw right ?"<<std::endl;
+
+}

@@ -110,6 +110,10 @@ bool test_engine()
 
     cout << "test : new drawmanager instance"<<endl;
     render::DrawManager testdraw = render::DrawManager(testState,window);
+    if(testState.addObserver(&testdraw))
+    {
+        cout<<"adding new oservers"<<endl;
+    };
     sf::sleep(delayTime);
 
     cout << "test : new unit in 0,1"<<endl;
