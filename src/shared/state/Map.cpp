@@ -50,7 +50,7 @@ GameObject * Map::addGameObject (unsigned int player_id, Position pos, bool is_s
         return new_b;
     }
     else {
-        Unit * new_u = new Unit(10, static_cast<unsigned int>(list_game_object.size()), player_id, pos, units[type],
+        Unit * new_u = new Unit(1, static_cast<unsigned int>(list_game_object.size()), player_id, pos, units[type],
                           static_cast<UnitType>(type));
 
         list_game_object.push_back(new_u);

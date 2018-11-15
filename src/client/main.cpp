@@ -125,8 +125,8 @@ bool test_randomAI() {
 
 
     //init player AI
-    Player test_player = Player();
-    test_state.initializePlayer(test_player);
+    Player test_player1 = Player();
+    test_state.initializePlayer(test_player1);
 
 
     //create the first units
@@ -148,10 +148,11 @@ bool test_randomAI() {
     test_creation.execute(test_state,0,0,1,true);//should instanciate a building in 0,0
     testdraw.updateState(test_state);
 
-
-    test_randomAI.run(test_engine, test_player, test_state);
-    testdraw.updateState(test_state);
-    sf::sleep(delayTime);
+    for(int i =0; i<100;i++) {
+        test_randomAI.run(test_engine, test_player1, test_state);
+        testdraw.updateState(test_state);
+        sf::sleep(delayTime);
+    }
 }
 
 
@@ -269,7 +270,7 @@ bool test_engine()
                     y_cart = (event.mouseButton.y)/t_map_y;
 
                     x_iso = 0.5*x_cart - 0.5*y_cart;
-                    //y_iso =
+                    y_iso = 0.5*x_cart + 0.5*y_cart;
                     std::cout << "mouse x carte: " << x_cart<< std::endl; // valeur de x en cartésien
                     std::cout << "mouse x iso: " << x_iso << std::endl; // valeur de x en cartésien
                     std::cout << "mouse y carte: " << y_cart << std::endl; // valeur de y en cartésien

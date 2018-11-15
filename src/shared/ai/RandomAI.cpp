@@ -79,6 +79,9 @@ bool RandomAI::run(engine::Engine &engine, state::Player& player, state::State& 
         }
     }
 
+    for(state::Building *s : * list_building){
+
+    }
 
     /***  implémentation des créations d'unités   ***/
 
