@@ -22,11 +22,11 @@ bool RandomAI::run(engine::Engine &engine, state::Player& player, state::State& 
 
     //récupération de la liste des bâtiments du pc
     std::vector<state::Building *> * list_building = new std::vector<state::Building *>;
-    player.getPlayerBuildingList(* list_building);
+    state.getCurrentPlayer()->getPlayerBuildingList(* list_building);
     //std::cout<<"size for player "<<player.getPlayerId()<<" "<<list_building->size()<<std::endl;
     //récupération de la liste des unités du pc
     std::vector<state::Unit *> * list_unit = new std::vector<state::Unit *>;
-    player.getPlayerUnitList(* list_unit);
+    state.getCurrentPlayer()->getPlayerUnitList(* list_unit);
     //std::cout<<"size for player "<<player.getPlayerId()<<" "<<list_unit->size()<<std::endl;
 
 
@@ -38,7 +38,7 @@ bool RandomAI::run(engine::Engine &engine, state::Player& player, state::State& 
 
 
     //création d'une liste de GameObject attaquable
-    std::vector<state::GameObject *> * ennemy_object_list;
+    std::vector<state::GameObject *> * ennemy_object_list = new std::vector<state::GameObject *>;
     //taille de liste des objets attaquables
     int size_ennemy_list = 0;
     //position dans la liste du gameobject choisi aléatoirement
