@@ -79,11 +79,15 @@ bool RandomAI::run(engine::Engine &engine, state::Player& player, state::State& 
         }
     }
 
+    /***  implémentation des créations d'unités   ***/
     for(state::Building *s : * list_building){
+        if(s->getBuildingType()==state::BuildingType::town){
+            
+        }
 
     }
 
-    /***  implémentation des créations d'unités   ***/
+
 
 
     return true;
