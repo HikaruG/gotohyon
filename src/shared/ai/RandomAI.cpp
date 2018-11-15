@@ -6,6 +6,7 @@
 #include <engine/Command.h>
 #include "RandomAI.h"
 #include "engine.h"
+#include <iostream>
 
 using namespace ai;
 
@@ -20,12 +21,13 @@ bool RandomAI::run(engine::Engine &engine, state::Player& player, state::State& 
     state::Map * map;
 
     //récupération de la liste des bâtiments du pc
-    std::vector<state::Building *> * list_building;
+    std::vector<state::Building *> * list_building = new std::vector<state::Building *>;
     player.getPlayerBuildingList(* list_building);
-
+    //std::cout<<"size for player "<<player.getPlayerId()<<" "<<list_building->size()<<std::endl;
     //récupération de la liste des unités du pc
-    std::vector<state::Unit *> * list_unit;
+    std::vector<state::Unit *> * list_unit = new std::vector<state::Unit *>;
     player.getPlayerUnitList(* list_unit);
+    //std::cout<<"size for player "<<player.getPlayerId()<<" "<<list_unit->size()<<std::endl;
 
 
     unsigned int old_x, old_y, new_x = 0, new_y = 0, distance;
