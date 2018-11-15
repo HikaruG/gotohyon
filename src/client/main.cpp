@@ -250,12 +250,12 @@ bool test_engine()
     {
         // check all the window's events that were triggered since the last iteration of the loop
         sf::Event event;
-        int x_cart = 0, y_cart = 0;
-        int x_iso = 0, y_iso = 0;
+        float x_cart = 0, y_cart = 0;
+        float x_iso = 0, y_iso = 0;
         int offset = 8;
         //int cc = -(y * t_map_x);
-        int t_map_x = 64;
-        int t_map_y = 32;
+        float t_map_x = 64;
+        float t_map_y = 32;
         int cc;
         //int k = (x * t_map_x)/2 + cc/2 + t_map_x/2 + offset;
         //int l = ((x + y) * t_map_y) / 2;
@@ -269,13 +269,13 @@ bool test_engine()
                     x_cart = (event.mouseButton.x)/t_map_x;
                     y_cart = (event.mouseButton.y)/t_map_y;
 
-                    x_iso = 0.5*x_cart - 0.5*y_cart;
-                    y_iso = 0.5*x_cart + 0.5*y_cart;
+                    x_iso = x_cart - 8 + y_cart;
+                    y_iso = y_cart - x_cart + 8;
                     std::cout << "mouse x carte: " << x_cart<< std::endl; // valeur de x en cartésien
                     std::cout << "mouse x iso: " << x_iso << std::endl; // valeur de x en cartésien
                     std::cout << "mouse y carte: " << y_cart << std::endl; // valeur de y en cartésien
                     std::cout << "mouse y iso: " << y_iso << std::endl; // valeur de y en cartésien
-                    test_movement.execute(*theUnit, testState,(event.mouseButton.x)/64,(event.mouseButton.y)/32 );
+                    test_movement.execute(*theUnit, testState,(int)x_iso,(int)y_iso );
 
                 }
             }
