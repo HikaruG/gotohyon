@@ -65,7 +65,7 @@ int main(int argc,char* argv[])
 bool test_randomAI() {
     // state to test
 
-    State test_state = State(1);
+    unique_ptr<State> test_state (new State(1));
 
     static int const terrain_int[] = {
             4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
@@ -89,13 +89,10 @@ bool test_randomAI() {
     for (int i = 0; i < 256; i++) {
         test_terrain.push_back(terrain_int[i]);
     }
-    Map test_map = Map(16, 16, test_terrain);
-
     //init map terrain
-    test_state.initializeMap(test_map);
+    test_state->initializeMap(16, 16, test_terrain);
 
-    Map *thisMap = test_state.getMap();
-
+    //Map * thisMap = test_state.getMap().get();
 
     //init windows
     size_t x_window = 1024;
@@ -110,8 +107,9 @@ bool test_randomAI() {
     cout << "test : new engine instance" << endl;
     Engine test_engine = Engine();
 
+    State * state_for_render = test_state.get();
     cout << "test : new drawmanager instance" << endl;
-    render::DrawManager testdraw = render::DrawManager(test_state, window);
+    render::DrawManager testdraw = render::DrawManager(* state_for_render, window);
 
     cout << "test : new randomAI instance" << endl;
     ai::RandomAI test_randomAI = ai::RandomAI(0);
@@ -119,43 +117,46 @@ bool test_randomAI() {
 
 
     cout << "test : updates... " << endl;
-    testdraw.updateState(test_state);
+    testdraw.updateState(*state_for_render);
     sf::sleep(delayTime);
 
 
 
     //init player AI
-    Player test_player1 = Player();
-    test_state.initializePlayer(test_player1);
+    test_state->initializePlayer();
 
 
     //create the first units
     cout << "test : create unit in 6,6" << endl;
     HandleCreation test_creation = HandleCreation();
-    test_creation.execute(test_state, 6, 6, 1, false);//should instanciate an unit in 6,6
+    test_creation.execute(* state_for_render, 6, 6, 1, false);//should instanciate an unit in 6,6
     //testdraw.updateState(test_state);
 
     cout << "test : create unit in 0,0" << endl;
-    test_creation.execute(test_state, 0, 0, 1, false);//should instanciate an unit in 0,0
+    test_creation.execute(* state_for_render, 0, 0, 1, false);//should instanciate an unit in 0,0
     //testdraw.updateState(test_state);
 
 
     cout << "test : create unit in 3,1" << endl;
-    test_creation.execute(test_state, 1, 0, 1, false);//should instanciate an unit in 3,1
-    testdraw.updateState(test_state);
+    test_creation.execute(* state_for_render, 1, 0, 1, false);//should instanciate an unit in 3,1
+    testdraw.updateState(*state_for_render);
 
     cout << "test : create building in 0,0"<<endl;
-    test_creation.execute(test_state,0,0,1,true);//should instanciate a building in 0,0
-    testdraw.updateState(test_state);
+    test_creation.execute(*state_for_render,0,0,1,true);//should instanciate a building in 0,0
+    testdraw.updateState(*state_for_render);
+
+    Player * current_player = state_for_render->getCurrentPlayer(0).get();
 
     for(int i =0; i<100;i++) {
-        test_randomAI.run(test_engine, test_player1, test_state);
-        testdraw.updateState(test_state);
+        test_randomAI.run(test_engine, * current_player, * state_for_render);
+        testdraw.updateState(* state_for_render);
         sf::sleep(delayTime);
     }
+
+    return true;
 }
 
-
+/*
 bool test_engine()
 {
     // state to test
@@ -187,7 +188,7 @@ bool test_engine()
 
     testState.initializeMap(test_map);
 
-    Map * thisMap = testState.getMap();
+    Map thisMap = testState.getMap();
 
     //init window
 
@@ -213,7 +214,7 @@ bool test_engine()
     cout << "test : new drawmanager instance"<<endl;
     render::DrawManager testdraw = render::DrawManager(testState,window);
     testState.addObserver(&testdraw);
-    thisMap->addObserver(&testdraw);
+    thisMap.addObserver(&testdraw);
     sf::sleep(delayTime);
 
     cout << "test : new unit in 0,1"<<endl;
@@ -227,18 +228,21 @@ bool test_engine()
     cout << "test : cheating sequence -- start"<<endl;
 
     //cheating a bit to recover a unit pointer:
+    ///*
     vector<GameObject *> onTheTile;
     cout << "debug : a"<<endl;
 
     thisMap->getGameObject(0,1,&onTheTile);
     cout << "debug : b"<<endl;
     Unit * theUnit = (Unit*)onTheTile[0];
-    //end of cheating part
+    //*/
+     //end of cheating part
+/*
 
     cout << "test : cheating sequence -- end"<<endl;
 
 
-    test_movement.execute(*theUnit,testState,0,0);
+    //test_movement.execute(*theUnit,testState,0,0);
 
     //testdraw.updateState(testState);
 
@@ -252,11 +256,9 @@ bool test_engine()
         sf::Event event;
         float x_cart = 0, y_cart = 0;
         float x_iso = 0, y_iso = 0;
-        int offset = 8;
         //int cc = -(y * t_map_x);
         float t_map_x = 64;
         float t_map_y = 32;
-        int cc;
         //int k = (x * t_map_x)/2 + cc/2 + t_map_x/2 + offset;
         //int l = ((x + y) * t_map_y) / 2;
         while (window.pollEvent(event))
@@ -275,7 +277,6 @@ bool test_engine()
                     std::cout << "mouse x iso: " << x_iso << std::endl; // valeur de x en cartésien
                     std::cout << "mouse y carte: " << y_cart << std::endl; // valeur de y en cartésien
                     std::cout << "mouse y iso: " << y_iso << std::endl; // valeur de y en cartésien
-                    test_movement.execute(*theUnit, testState,(int)x_iso,(int)y_iso );
 
                 }
             }
@@ -288,7 +289,8 @@ bool test_engine()
 
     return true;
 }
-
+ */
+/*
 bool test_state()
 {
     State testState = State(1);
@@ -373,6 +375,9 @@ bool test_state()
     return true;
 }
 
+ */
+
+/*
 bool test_render(){
 
     State testState = State(1);
@@ -442,134 +447,5 @@ bool test_render(){
     return true;
 
 }
-//le test ci-dessous permet de visualiser la map isométrique avec la texture du terrain.
-/*
-bool test_render1(){
-    //size of the level
-    size_t width = 16;//Map.size x
-    size_t height = 16;
 
-
-    //size of the window
-    size_t x_window = 1024;
-    size_t y_window = 1024;
-    // create the window
-    sf::RenderWindow window(sf::VideoMode(x_window, y_window), "Tilemap");
-    sf::Vector2u t_map = sf::Vector2u(64,32);
-    sf::VertexArray m_vertices;
-    sf::Texture m_tileset;
-
-    if (!m_tileset.loadFromFile("res/tileset.png")) {
-        return false;
-    }
-
-
-    // define the level with an array of tile indices
-    const int level[] =
-            {
-                    0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                    0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0,
-                    1, 1, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3,
-                    0, 1, 0, 0, 2, 0, 3, 3, 3, 0, 1, 1, 1, 0, 0, 0,
-                    0, 1, 1, 0, 3, 3, 3, 0, 0, 0, 1, 1, 1, 2, 0, 0,
-                    0, 0, 1, 0, 3, 0, 2, 2, 0, 0, 1, 1, 1, 1, 2, 0,
-                    2, 0, 1, 0, 3, 0, 2, 2, 2, 0, 1, 1, 1, 1, 1, 1,
-                    0, 0, 1, 0, 3, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1,
-                    0, 0, 1, 0, 3, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1,
-                    2, 0, 1, 0, 3, 0, 2, 2, 2, 0, 1, 1, 1, 1, 1, 1,
-                    0, 0, 1, 0, 3, 0, 2, 2, 0, 0, 1, 1, 1, 1, 2, 0,
-                    0, 1, 1, 0, 3, 3, 3, 0, 0, 0, 1, 1, 1, 2, 0, 0,
-                    0, 1, 0, 0, 2, 0, 3, 3, 3, 0, 1, 1, 1, 0, 0, 0,
-                    1, 1, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3,
-                    0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-            };
-
-    const int* tiles = level;
-    // create the tilemap from the level definition
-
-    m_vertices.setPrimitiveType(sf::Quads);
-    m_vertices.resize(width * height * 4);
-
-    sf::Transform transform;
-
-    int offset = width*32;
-
-    for (unsigned int i = 0; i < width; ++i)
-        for (unsigned int j = 0; j < height; ++j)
-        {
-            // get the current tile number
-            int tileNumber = tiles[i + j * width];
-
-            // find its position in the tileset texture
-            int tu = tileNumber % (m_tileset.getSize().x / t_map.x);
-            int tv = tileNumber / (m_tileset.getSize().x / t_map.x);
-
-
-            // get a pointer to the current tile's quad
-            sf::Vertex* quad = &m_vertices[(i + j * width) * 4];
-
-            // define its 4 corners
-            int cc = -(j * t_map.x);
-            int k = (i * t_map.x)/2 + cc/2 + t_map.x/2 + offset;
-            int l = ((i + j) * t_map.y) / 2;
-
-
-            quad[0].position = sf::Vector2f(k, l);
-            quad[1].position = sf::Vector2f(k + t_map.x/2, l + t_map.y/2);
-            quad[3].position = sf::Vector2f(k - t_map.x/2, l + t_map.y /2);
-            quad[2].position = sf::Vector2f(k , l + t_map.y);
-
-            // define its 4 texture coordinates1
-
-            int ku = tu*t_map.x + t_map.x/2;
-
-            quad[0].texCoords = sf::Vector2f(ku, 0);
-            quad[1].texCoords = sf::Vector2f(ku + t_map.x/2, t_map.y/2);
-            quad[3].texCoords = sf::Vector2f(ku - t_map.x/2, t_map.y/2);
-            quad[2].texCoords = sf::Vector2f(ku , t_map.y);
-        }
-
-
-    sf::RenderStates r_states;
-    sf::Transformable my_transformation;
-
-
-    //rotates the map 45°
-    //my_transformation.rotate(45);
-    //set the origin of the map to the top center of the window
-    //my_transformation.move(x_window/2,y_window/2);
-    //scales the map to resize it
-    //my_transformation.scale(1,2);
-    // apply the transform
-    //r_states.transform *= my_transformation.getTransform();
-
-
-    // apply the tileset texture
-    r_states.texture = &m_tileset;
-
-
-
-    // run the program as long as the window is open
-    while (window.isOpen())
-    {
-        // check all the window's events that were triggered since the last iteration of the loop
-        sf::Event event;
-        while (window.pollEvent(event))
-        {
-            // "close requested" event: we close the window
-            if (event.type == sf::Event::Closed)
-                window.close();
-        }
-
-        // clear the window with black color
-        window.clear(sf::Color::Black);
-
-        // draw everything here...
-        window.draw(m_vertices,r_states);
-
-        // end the current frame
-        window.display();
-    }
-    return true;
-}*/
+ */

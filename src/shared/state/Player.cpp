@@ -5,14 +5,13 @@
 #include "Player.h"
 
 using namespace state;
+using namespace std;
 
-Player::Player(unsigned int player_id, unsigned int in_gold, unsigned int in_food,
-               std::vector<Building *>  building_list, std::vector<Unit *> unit_list) {
+Player::Player(size_t player_id, size_t starting_gold, size_t starting_food){
     this->player_id = player_id;
-    this->in_food = in_food;
-    this->in_gold = in_gold;
-    this->player_building_list = building_list;
-    this->player_unit_list = unit_list;
+    this->in_food = starting_food;
+    this->in_gold = starting_gold;
+
 }
 
 
@@ -22,16 +21,14 @@ Player::Player() {
     this->in_gold = 600;
 }
 
-
-
-bool Player::getPlayerUnitList(std::vector<state::Unit *> &unit_list) {
-    unit_list = this->player_unit_list;
-    return true;
+vector<shared_ptr<Building>>& Player::getPlayerBuildingList(){
+    return player_building_list;
 }
 
-bool Player::getPlayerBuildingList(std::vector<state::Building *> &building_list) {
-    building_list = this->player_building_list;
-    return true;
+
+
+std::vector<std::shared_ptr<Unit>>& Player::getPlayerUnitList (){
+    return player_unit_list;
 }
 
 unsigned int Player::getPlayerId() {
@@ -50,12 +47,12 @@ bool Player::setRessource(unsigned int add_gold, unsigned int add_food) {
     return true;
 }
 
-bool Player::addPlayerUnit(state::Unit * unit) {
+bool Player::addPlayerUnit(shared_ptr<Unit> unit) {
     this->player_unit_list.push_back(unit);
     return true;
 }
 
-bool Player::addPlayerBuilding(Building * building) {
+bool Player::addPlayerBuilding(shared_ptr<Building> building) {
     this->player_building_list.push_back(building);
     return true;
 }

@@ -16,11 +16,6 @@ Position::Position(unsigned int X, unsigned int Y) {
     this->positionY = Y;
 }
 
-bool Position::getPosition(unsigned int  * ptr_X, unsigned int * ptr_Y) {
-    * ptr_X = positionX;
-    * ptr_Y = positionY;
-    return true;
-}
 
 bool Position::setPosition(unsigned int newX, unsigned int newY) {
     positionX = newX;

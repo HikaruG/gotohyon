@@ -6,21 +6,12 @@
 #include <SFML/Graphics.hpp>
 using namespace engine;
 
-Engine::Engine()
-:current_state(state::State(1))
-{
-
-
-}
+Engine::Engine() {}
 
 Engine::~Engine() {
 
 }
 
-const state::State& Engine::getState() const
-{
-    return current_state;
-}
 
 bool Engine::addCommands(Command* command)
 {
@@ -28,14 +19,6 @@ bool Engine::addCommands(Command* command)
     return true;
 }
 
-bool Engine::setState(state::State& new_state) {
-    current_state = new_state;
-    return true;
-}
-
-std::vector<int> getMouseClick() {
-
-}
 
 bool Engine::update() {
     return true;

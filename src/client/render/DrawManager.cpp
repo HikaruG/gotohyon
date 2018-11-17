@@ -5,13 +5,16 @@
 #include "state.h"
 #include <iostream>
 using namespace render;
+using namespace std;
 
-DrawManager::DrawManager (state::State& current_state, sf::RenderWindow& window)
+DrawManager::DrawManager ( state::State& current_state, sf::RenderWindow& window)
 {
     this->current_state = &current_state;
     this->window = &window;
-    //counting nbr of objects:
-    state::Map * current_map = this->current_state->getMap();
+    //utilisation d'un unique ptr :
+    //étapes: instancier un pointeur, puis lui attribuer le "unique_ptr".get()
+    state::Map* current_map = this->current_state->getMap().get();
+    //this->game_object_list = move(current_state.getMap().get()->getListGameObject());
 
     current_map->getObjectCount();
     int tmp_x;
@@ -48,14 +51,14 @@ bool DrawManager::updateState(state::State &new_state) {
 
 bool DrawManager::setTerrain ()
 {
-    state::Map * current_map = this->current_state->getMap();
-    state::Terrain * local_terrain = new state::Terrain();
+    state::Map * current_map = this->current_state->getMap().get();
+    state::Terrain local_terrain;
     drawer.initQuads(this->map_size_x+this->map_size_x*this->map_size_y);
     for(unsigned int x = 0; x < this->map_size_x;x ++)
     {
         for(unsigned int y=0; y< this->map_size_y;y++)
         {
-            current_map->getTerrain(x,y,local_terrain);
+            state::Terrain * local_terrain = current_map->getTerrain(x,y).get();
             drawer.setSpriteLocation(x+y*map_size_x,x,y);
             //std::cout<<"adding "<<local_terrain->getTerrainType()<<" as "<<local_terrain->getTerrainType()<<std::endl;
             drawer.setSpriteTexture(0,local_terrain->getTerrainType(),x+y*map_size_x);
@@ -67,17 +70,18 @@ bool DrawManager::setTerrain ()
 
 bool DrawManager::setUnit ()
 {
-    state::Map * current_map = this->current_state->getMap();
-    current_map->getListGameObject(game_object_list);
+    state::Map * current_map = this->current_state->getMap().get();
+
     std::vector<state::Unit *> units_go;
     state::Position pos;
-    for (unsigned int i = 0; i< game_object_list.size();i++)
+    for (unsigned int i = 0; i< current_map->getListGameObject().size();i++)
     {
-        if(!game_object_list[i]->getProperty()->isStatic())
-        {
-            units_go.push_back((state::Unit*)game_object_list[i]);
-        }
 
+        if(!current_map->getListGameObject()[i].get()->getProperty()->isStatic())
+        {
+            //cast en pointeur le unique pointeur => on peut utiliser les méthodes de la classe
+            units_go.push_back((state::Unit*)current_map->getListGameObject()[i].get());
+        }
     }
     drawer.initQuads(static_cast<int>(units_go.size()));
     for(unsigned int i = 0; i<units_go.size(); i++)
@@ -94,15 +98,15 @@ bool DrawManager::setUnit ()
 bool DrawManager::setBuilding ()
 {
 
-    state::Map * current_map = this->current_state->getMap();
-    current_map->getListGameObject(game_object_list);
+    state::Map * current_map = this->current_state->getMap().get();
     std::vector<state::Building *> build_go;
     state::Position pos;
-    for (unsigned int i = 0; i< game_object_list.size();i++)
+    for (unsigned int i = 0; i< current_map->getListGameObject().size();i++)
     {
-        if(game_object_list[i]->getProperty()->isStatic())
+        if(current_map->getListGameObject()[i].get()->getProperty()->isStatic())
         {
-            build_go.push_back((state::Building*)game_object_list[i]);
+            //cast en pointeur de building l'unique pointeur pour pouvoir utiliser les méthodes de building
+            build_go.push_back((state::Building*)current_map->getListGameObject()[i].get());
         }
 
     }
@@ -120,6 +124,6 @@ bool DrawManager::setBuilding ()
 
 bool DrawManager::stateChanged(const state::Event &event) {
     std::cout<<"mkay i should redraw right ? "<<std::endl;
-    updateState(*current_state);
-
+    updateState(* current_state);
+    return true;
 }

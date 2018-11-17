@@ -9,6 +9,8 @@
 #include <iostream>
 
 using namespace ai;
+using namespace state;
+using namespace std;
 
 RandomAI::RandomAI(int random_seed) {
     std::mt19937 randgen(random_seed);
@@ -19,14 +21,16 @@ RandomAI::~RandomAI() = default;
 bool RandomAI::run(engine::Engine &engine, state::Player& player, state::State& state) {
     //récupération de la map
     state::Map * map;
+    unsigned int current_player = state.getCurrentPlayerId();
 
     //récupération de la liste des bâtiments du pc
-    std::vector<state::Building *> * list_building = new std::vector<state::Building *>;
-    state.getCurrentPlayer()->getPlayerBuildingList(* list_building);
+    vector<shared_ptr<Building>> list_building = state.getCurrentPlayer(current_player)->getPlayerBuildingList();
     //std::cout<<"size for player "<<player.getPlayerId()<<" "<<list_building->size()<<std::endl;
+
     //récupération de la liste des unités du pc
-    std::vector<state::Unit *> * list_unit = new std::vector<state::Unit *>;
-    state.getCurrentPlayer()->getPlayerUnitList(* list_unit);
+    vector<shared_ptr<Unit>> list_unit = state.getCurrentPlayer(current_player)->getPlayerUnitList();
+
+
     //std::cout<<"size for player "<<player.getPlayerId()<<" "<<list_unit->size()<<std::endl;
 
 
@@ -36,57 +40,47 @@ bool RandomAI::run(engine::Engine &engine, state::Player& player, state::State& 
     engine::HandleCanAttack commande_canattack = engine::HandleCanAttack();
     engine::HandleDamage commande_damage = engine::HandleDamage();
 
+    vector<shared_ptr<GameObject>> ennemy_objects;
 
-    //création d'une liste de GameObject attaquable
-    std::vector<state::GameObject *> * ennemy_object_list = new std::vector<state::GameObject *>;
-    //taille de liste des objets attaquables
-    int size_ennemy_list = 0;
-    //position dans la liste du gameobject choisi aléatoirement
-    int i_object = 0;
 
 
     /***  implémentation des déplacements et des attaques aléatoires  ***/
 
-    for(state::Unit * s : * list_unit)
+    for(int i= 0; i < list_unit.size(); i++)
     {
-        state::Position position_unit = s->getPosition();
+        Unit * unit_i = list_unit[i].get();
+        state::Position position_unit = unit_i->getPosition();
         old_y = position_unit.getY();
         old_x = position_unit.getX();
-        distance = s->getMovementRange();
+        distance = unit_i->getMovementRange();
         std::uniform_int_distribution<int> dis_x(-distance,distance);
         new_x = old_x + dis_x(randgen);
 
         std::uniform_int_distribution<int> dis_y(-abs(distance - new_x),abs(distance - new_x));
         new_y = old_y + dis_y(randgen);
-        commande_movement.execute(*s, state, new_x, new_y);
+        commande_movement.execute(*unit_i, state, new_x, new_y);
 
         //si l'unité peut attaquer, il attaque
-        if(commande_canattack.execute(* s, state, ennemy_object_list)){
-            size_ennemy_list = ennemy_object_list->size();
 
-            //rajouter la valeur aléatoire
+        if(commande_canattack.execute(* unit_i, state, ennemy_objects)){
+
+            int size_ennemy_list = ennemy_objects.size();
             std::uniform_int_distribution<int> dis_i(0,size_ennemy_list - 1);
-            i_object = dis_i(randgen);
-            //fin du rajout à faire
+            int i_object = dis_i(randgen);
 
-            //identification de l'objet choisi aléatoirement
-            state::GameObject * ennemy_object = ennemy_object_list->at(i_object);
-            state::Position position_ennemy = ennemy_object->getPosition();
+            //identification de la position de l'objet choisi aléatoirement
+            state::Position position_ennemy = ennemy_objects[i_object]->getPosition();
             //terrain sur lequel l'object est situé
-            state::Terrain object_terrain;
-            map->getTerrain(position_ennemy.getX(),position_ennemy.getY(),&object_terrain);
-            commande_damage.execute(* s, * ennemy_object, object_terrain);
+
+            state::Terrain * object_terrain = map->getTerrain(position_ennemy.getX(),position_ennemy.getY()).get();
+            commande_damage.execute(* unit_i, * ennemy_objects[i_object].get(),* object_terrain);
         }
     }
 
     /***  implémentation des créations d'unités   ***/
-    for(state::Building *s : * list_building){
-        if(s->getBuildingType()==state::BuildingType::town){
-
-        }
 
 
-    }
+
 
 
 
