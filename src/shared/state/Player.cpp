@@ -21,6 +21,10 @@ Player::Player() {
     this->in_gold = 600;
 }
 
+Player::~Player() {
+
+}
+
 vector<shared_ptr<Building>>& Player::getPlayerBuildingList(){
     return player_building_list;
 }

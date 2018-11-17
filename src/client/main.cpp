@@ -25,6 +25,7 @@ bool test_render();
 bool test_engine();
 bool test_randomAI();
 
+/*
 int main(int argc,char* argv[])
 {
     if ( argc > 1 ){
@@ -60,6 +61,18 @@ int main(int argc,char* argv[])
     }
 
     return 0;
+}
+*/
+
+int main(int argc,char* argv[]) {
+    if (argc > 1) {
+        if( !strcmp(argv[1],"random_ai") ) {
+            cout << "test random ai sequence activated . . ." << endl;
+            if (test_randomAI()) {
+                cout << "test random_ai successful" << endl;
+            }
+        }
+    }
 }
 
 bool test_randomAI() {

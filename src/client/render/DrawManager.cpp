@@ -52,7 +52,6 @@ bool DrawManager::updateState(state::State &new_state) {
 bool DrawManager::setTerrain ()
 {
     state::Map * current_map = this->current_state->getMap().get();
-    state::Terrain local_terrain;
     drawer.initQuads(this->map_size_x+this->map_size_x*this->map_size_y);
     for(unsigned int x = 0; x < this->map_size_x;x ++)
     {

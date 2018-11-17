@@ -73,7 +73,6 @@ GameObject * Map::addGameObject (unsigned int player_id, Position pos, bool is_s
 
 unique_ptr<Terrain>& Map::getTerrain (unsigned int X, unsigned int Y)
 {
-    list_map[X];
     if (X > map_size_x || Y > map_size_Y)
     {
         throw std::invalid_argument("terrain size does not match x and y");

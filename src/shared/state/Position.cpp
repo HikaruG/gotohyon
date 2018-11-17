@@ -16,6 +16,8 @@ Position::Position(unsigned int X, unsigned int Y) {
     this->positionY = Y;
 }
 
+Position::~Position() {}
+
 
 bool Position::setPosition(unsigned int newX, unsigned int newY) {
     positionX = newX;
