@@ -9,14 +9,14 @@ using namespace std;
 
 DrawManager::DrawManager ( shared_ptr<state::State> current_state, sf::RenderWindow& window)
 {
-    this->current_state = move(current_state);
+    this->current_state = current_state;
     this->window = &window;
     //utilisation d'un unique ptr :
     //étapes: instancier un pointeur, puis lui attribuer le "unique_ptr".get()
-    shared_ptr<state::Map> current_map = move(this->current_state->getMap());
+    shared_ptr<state::Map> current_map = (this->current_state->getMap());
 
     //this->game_object_list = move(current_state.getMap().get()->getListGameObject());
-    current_map.get()->getObjectCount();
+    cout << "object count :" << current_map.get()->getObjectCount() << endl;
     int tmp_x = 0;
     int tmp_y = 0;
     current_map.get()->getSize(tmp_x,tmp_y);
@@ -31,10 +31,9 @@ DrawManager::DrawManager ( shared_ptr<state::State> current_state, sf::RenderWin
 
 
 bool DrawManager::updateState(shared_ptr<state::State> new_state) {
-    this->current_state = move(new_state);
+    this->current_state = new_state;
     window->clear(sf::Color::Black);
-
-    cout << "object count :" << this->current_state.get()->getMap().get()->getObjectCount() << endl;
+    cout << "object count :" << new_state.get()->getMap().get()->getObjectCount() << endl;
 
     setTerrain();
     setBuilding();
@@ -48,7 +47,7 @@ bool DrawManager::updateState(shared_ptr<state::State> new_state) {
 
 bool DrawManager::setTerrain ()
 {
-    shared_ptr<state::Map> current_map = move(this->current_state->getMap());
+    shared_ptr<state::Map> current_map = this->current_state->getMap();
     cout << "object count :" << current_map.get()->getObjectCount() << endl;
     drawer.initQuads(this->map_size_x+this->map_size_x*this->map_size_y);
     for(unsigned int x = 0; x < this->map_size_x;x ++)

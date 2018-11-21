@@ -10,15 +10,14 @@ using namespace std;
 
 //initialise la carte avec sa taille et sa carte de terrain en argument; la carte sera stockée en tant qu'attribut de state, de type unique_ptr
 bool State::initializeMap (int size_x, int size_y, vector<int>& terrain){
-    unique_ptr<Map> new_map (new Map(size_x,size_y,terrain));
-    this->game_map = move(new_map);
+    shared_ptr<Map> new_map (new Map(size_x,size_y,terrain));
+    this->game_map = new_map;
     return true;
 }
 
 //obtient la référence de la carte initialisé au dessus
 shared_ptr<Map> State::getMap (){
-    shared_ptr<Map> ret_map = move(game_map);
-    return ret_map;
+    return game_map;
 }
 
 //constructeur de l'état qui prend en entrée le nombre de joueurs

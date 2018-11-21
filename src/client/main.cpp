@@ -122,7 +122,7 @@ bool test_randomAI() {
 
 
     cout << "test : new drawmanager instance" << endl;
-    render::DrawManager testdraw = render::DrawManager(move(test_state), window);
+    render::DrawManager testdraw = render::DrawManager(test_state, window);
 
     cout << "test : new randomAI instance" << endl;
     ai::RandomAI test_randomAI = ai::RandomAI(0);
@@ -130,7 +130,7 @@ bool test_randomAI() {
 
 
     cout << "test : updates... " << endl;
-    testdraw.updateState(move(test_state));
+    testdraw.updateState(test_state);
     sf::sleep(delayTime);
 
 
@@ -162,7 +162,7 @@ bool test_randomAI() {
 
     for(int i =0; i<100;i++) {
         test_randomAI.run(test_engine, * current_player, * test_state.get());
-        testdraw.updateState(move(test_state));
+        testdraw.updateState(test_state);
         sf::sleep(delayTime);
     }
 

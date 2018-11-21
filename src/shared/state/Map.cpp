@@ -79,7 +79,7 @@ shared_ptr<Terrain> Map::getTerrain (unsigned int X, unsigned int Y)
         throw std::invalid_argument("terrain size does not match x and y");
     }
     //instancie une nouvelle unique_ptr pour permettre un "unique_ptr rvalue"
-    shared_ptr<Terrain> terrain = move(list_map[X + Y * map_size_x]);
+    shared_ptr<Terrain> terrain = list_map[X + Y * map_size_x];
     return terrain;
 }
 
