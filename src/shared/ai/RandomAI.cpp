@@ -56,7 +56,7 @@ bool RandomAI::run(engine::Engine &engine, state::Player& player, state::State& 
         std::uniform_int_distribution<int> dis_x(-distance,distance);
         new_x = old_x + dis_x(randgen);
 
-        std::uniform_int_distribution<int> dis_y(-abs(distance - new_x),abs(distance - new_x));
+        std::uniform_int_distribution<int> dis_y(-abs((int)(distance - new_x)),abs((int)(distance - new_x)));
         new_y = old_y + dis_y(randgen);
         commande_movement.execute(*unit_i, state, new_x, new_y);
 
