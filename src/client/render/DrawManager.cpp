@@ -7,9 +7,9 @@
 using namespace render;
 using namespace std;
 
-DrawManager::DrawManager ( state::State& current_state, sf::RenderWindow& window)
+DrawManager::DrawManager ( shared_ptr<state::State> current_state, sf::RenderWindow& window)
 {
-    this->current_state = &current_state;
+    this->current_state = move(current_state);
     this->window = &window;
     //utilisation d'un unique ptr :
     //étapes: instancier un pointeur, puis lui attribuer le "unique_ptr".get()
@@ -34,8 +34,8 @@ DrawManager::DrawManager ( state::State& current_state, sf::RenderWindow& window
 }
 
 
-bool DrawManager::updateState(state::State &new_state) {
-    this->current_state = &new_state;
+bool DrawManager::updateState(shared_ptr<state::State> new_state) {
+    this->current_state = move(new_state);
     window->clear(sf::Color::Black);
 
 
@@ -59,7 +59,7 @@ bool DrawManager::setTerrain ()
         {
             state::Terrain * local_terrain = current_map->getTerrain(x,y).get();
             drawer.setSpriteLocation(x+y*map_size_x,x,y);
-            //std::cout<<"adding "<<local_terrain->getTerrainType()<<" as "<<local_terrain->getTerrainType()<<std::endl;
+            std::cout<<"adding "<<local_terrain->getTerrainType()<<" as "<<local_terrain->getTerrainType()<<std::endl;
             drawer.setSpriteTexture(0,local_terrain->getTerrainType(),x+y*map_size_x);
         }
     }
@@ -123,6 +123,6 @@ bool DrawManager::setBuilding ()
 
 bool DrawManager::stateChanged(const state::Event &event) {
     std::cout<<"mkay i should redraw right ? "<<std::endl;
-    updateState(* current_state);
+    updateState(current_state);
     return true;
 }

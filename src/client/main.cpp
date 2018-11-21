@@ -78,7 +78,7 @@ int main(int argc,char* argv[]) {
 bool test_randomAI() {
     // state to test
 
-    unique_ptr<State> test_state (new State(1));
+    shared_ptr<State> test_state (new State(1));
 
     static int const terrain_int[] = {
             4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
@@ -120,9 +120,9 @@ bool test_randomAI() {
     cout << "test : new engine instance" << endl;
     Engine test_engine = Engine();
 
-    State * state_for_render = test_state.get();
+
     cout << "test : new drawmanager instance" << endl;
-    render::DrawManager testdraw = render::DrawManager(* state_for_render, window);
+    render::DrawManager testdraw = render::DrawManager(move(test_state), window);
 
     cout << "test : new randomAI instance" << endl;
     ai::RandomAI test_randomAI = ai::RandomAI(0);
@@ -130,7 +130,7 @@ bool test_randomAI() {
 
 
     cout << "test : updates... " << endl;
-    testdraw.updateState(*state_for_render);
+    testdraw.updateState(move(test_state));
     sf::sleep(delayTime);
 
 
@@ -139,30 +139,31 @@ bool test_randomAI() {
     test_state->initializePlayer();
 
 
+    State * ptr_test_state = test_state.get();
     //create the first units
     cout << "test : create unit in 6,6" << endl;
     HandleCreation test_creation = HandleCreation();
-    test_creation.execute(* state_for_render, 6, 6, 1, false);//should instanciate an unit in 6,6
+    test_creation.execute(* test_state.get(), 6, 6, 1, false);//should instanciate an unit in 6,6
     //testdraw.updateState(test_state);
 
     cout << "test : create unit in 0,0" << endl;
-    test_creation.execute(* state_for_render, 0, 0, 1, false);//should instanciate an unit in 0,0
+    test_creation.execute(* test_state.get(), 0, 0, 1, false);//should instanciate an unit in 0,0
     //testdraw.updateState(test_state);
 
 
     cout << "test : create unit in 3,1" << endl;
-    test_creation.execute(* state_for_render, 1, 0, 1, false);//should instanciate an unit in 3,1
-    testdraw.updateState(*state_for_render);
+    test_creation.execute(* test_state.get(), 1, 0, 1, false);//should instanciate an unit in 3,1
+    testdraw.updateState(move(test_state));
 
     cout << "test : create building in 0,0"<<endl;
-    test_creation.execute(*state_for_render,0,0,1,true);//should instanciate a building in 0,0
-    testdraw.updateState(*state_for_render);
+    test_creation.execute(* test_state.get(),0,0,1,true);//should instanciate a building in 0,0
+    testdraw.updateState(move(test_state));
 
-    Player * current_player = state_for_render->getCurrentPlayer(0).get();
+    Player * current_player = test_state.get()->getCurrentPlayer(0).get();
 
     for(int i =0; i<100;i++) {
-        test_randomAI.run(test_engine, * current_player, * state_for_render);
-        testdraw.updateState(* state_for_render);
+        test_randomAI.run(test_engine, * current_player, * test_state.get());
+        testdraw.updateState(move(test_state));
         sf::sleep(delayTime);
     }
 
