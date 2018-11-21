@@ -16,9 +16,11 @@ bool State::initializeMap (int size_x, int size_y, vector<int>& terrain){
 }
 
 //obtient la référence de la carte initialisé au dessus
-unique_ptr<Map>& State::getMap (){
-    return this->game_map;
+shared_ptr<Map> State::getMap (){
+    shared_ptr<Map> ret_map = move(game_map);
+    return ret_map;
 }
+
 //constructeur de l'état qui prend en entrée le nombre de joueurs
 State::State(unsigned int player_number)
       :game_map()
@@ -26,6 +28,7 @@ State::State(unsigned int player_number)
 {
     this->player_nbr = player_number;
     day_count = 0;
+    cout << " construit " << this << endl;
 }
 
 //instancie un joueur, il faudra faire appel à cette méthode autant de fois que de joueurs
@@ -91,3 +94,6 @@ bool State::addBuilding(Position position, shared_ptr<Building> building) {
     return true;
 }
 
+State::~State(){
+    cout << " détruit " << this << endl;
+}

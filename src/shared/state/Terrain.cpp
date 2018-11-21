@@ -2,8 +2,10 @@
 // Created by ben on 15/10/18.
 //
 #include "Terrain.h"
+#include <iostream>
 
 using namespace state;
+using namespace std;
 
 Terrain::Terrain (Position pos, unsigned int mvt_cost, TerrainType terrain_id)
 {
@@ -23,3 +25,6 @@ TerrainType const Terrain::getTerrainType(){
     return terrain_id;
 }
 
+Terrain::~Terrain() {
+    cout << " terrain détruit " << this << endl;
+}

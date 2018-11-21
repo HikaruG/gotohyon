@@ -6,6 +6,7 @@
 
 using namespace state;
 
+
 GameObject::GameObject(unsigned int gameobject_id, unsigned int player_ids, state::Position pos, state::Property property)
 {
     this->game_object_id = gameobject_id;
@@ -44,5 +45,5 @@ GameObject::GameObject(){
 }
 
 GameObject::~GameObject(){
-
+    std::cout << " objet détruit " << this << std::endl;
 }

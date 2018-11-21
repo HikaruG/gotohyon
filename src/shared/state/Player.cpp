@@ -3,6 +3,7 @@
 //
 
 #include "Player.h"
+#include <iostream>
 
 using namespace state;
 using namespace std;
@@ -22,7 +23,7 @@ Player::Player() {
 }
 
 Player::~Player() {
-
+    cout << " player détruit " << this << endl;
 }
 
 vector<shared_ptr<Building>>& Player::getPlayerBuildingList(){

@@ -134,7 +134,6 @@ bool test_randomAI() {
     sf::sleep(delayTime);
 
 
-
     //init player AI
     test_state->initializePlayer();
 

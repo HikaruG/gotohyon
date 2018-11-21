@@ -13,24 +13,20 @@ DrawManager::DrawManager ( shared_ptr<state::State> current_state, sf::RenderWin
     this->window = &window;
     //utilisation d'un unique ptr :
     //étapes: instancier un pointeur, puis lui attribuer le "unique_ptr".get()
-    state::Map* current_map = this->current_state->getMap().get();
+    shared_ptr<state::Map> current_map = move(this->current_state->getMap());
+
     //this->game_object_list = move(current_state.getMap().get()->getListGameObject());
+    current_map.get()->getObjectCount();
+    int tmp_x = 0;
+    int tmp_y = 0;
+    current_map.get()->getSize(tmp_x,tmp_y);
 
-    current_map->getObjectCount();
-    int tmp_x;
-    int tmp_y;
-    current_map->getSize(&tmp_x,&tmp_y);
-
-    this->map_size_x = (unsigned int&) tmp_x;
-    this->map_size_y = (unsigned int&) tmp_y;
+    this->map_size_x = (unsigned int) tmp_x;
+    this->map_size_y = (unsigned int) tmp_y;
     drawer = MapSurface();
     if(!drawer.loadTextures("res/tileset_terrain.png","res/tileset_unit.png","res/tileset_building.png"))
         std::cout<<"Error: Textures failed to load, launch like this: bin/client whatever" << std::endl;
-    updateState(current_state);
-
-
-
-
+    updateState(this->current_state);
 }
 
 
@@ -38,6 +34,7 @@ bool DrawManager::updateState(shared_ptr<state::State> new_state) {
     this->current_state = move(new_state);
     window->clear(sf::Color::Black);
 
+    cout << "object count :" << this->current_state.get()->getMap().get()->getObjectCount() << endl;
 
     setTerrain();
     setBuilding();
@@ -51,13 +48,15 @@ bool DrawManager::updateState(shared_ptr<state::State> new_state) {
 
 bool DrawManager::setTerrain ()
 {
-    state::Map * current_map = this->current_state->getMap().get();
+    shared_ptr<state::Map> current_map = move(this->current_state->getMap());
+    cout << "object count :" << current_map.get()->getObjectCount() << endl;
     drawer.initQuads(this->map_size_x+this->map_size_x*this->map_size_y);
     for(unsigned int x = 0; x < this->map_size_x;x ++)
     {
         for(unsigned int y=0; y< this->map_size_y;y++)
         {
-            state::Terrain * local_terrain = current_map->getTerrain(x,y).get();
+            cout << current_map.get()->getObjectCount() << endl;
+            state::Terrain * local_terrain = current_map.get()->getTerrain(x,y).get();
             drawer.setSpriteLocation(x+y*map_size_x,x,y);
             std::cout<<"adding "<<local_terrain->getTerrainType()<<" as "<<local_terrain->getTerrainType()<<std::endl;
             drawer.setSpriteTexture(0,local_terrain->getTerrainType(),x+y*map_size_x);
