@@ -136,6 +136,7 @@ bool test_randomAI() {
 
     //init player AI
     test_state->initializePlayer();
+    
 
     //create the first units
     cout << "test : create unit in 6,6" << endl;
