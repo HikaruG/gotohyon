@@ -23,7 +23,7 @@ bool HandleMovement::execute(state::Unit &unit, state::State& state, unsigned in
     if( (int)(unit.getPosition().getX()  + unit.getPosition().getY() - abs(((int)new_x + (int)new_y)) ) <= unit.getMovementRange() ){
 
         //si l'objet ne sort pas de la carte
-        if((int) new_x > 0 && (int) new_x < max_x && (int)new_y > 0 && (int)new_y < max_y ) {
+        if((int) new_x >= 0 && (int) new_x < max_x && (int)new_y >= 0 && (int)new_y < max_y ) {
             //nouvelle position de l'objet
             state::Position position(new_x, new_y);
 
