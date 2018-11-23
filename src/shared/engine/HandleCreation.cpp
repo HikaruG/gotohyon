@@ -46,10 +46,12 @@ bool HandleCreation::execute(state::State &state, unsigned int pos_x, unsigned i
     if(is_static){
         if(type > 5) //il n' y a que 5 batiments
         {
-            throw invalid_argument(" can't find the building ! ");
+            cout<< " can't find the building ! " << endl;
+            return false;
         }
         if(state.getCurrentPlayer(current_player_id).get()->getPlayerBuildingList().size() > buildings_limit){
-            throw invalid_argument(" can't build anymore " );
+            cout << " can't build more buildings !" <<endl;
+            return false;
         }
         //Building::Building (unsigned int gameobject_id, unsigned int player_id, state::Position pos, state::Property prop, state::BuildingType build_type)
         shared_ptr<state::Building> new_building (new Building((unsigned int)state.getMap().get()->getListGameObject().size(),
@@ -57,17 +59,17 @@ bool HandleCreation::execute(state::State &state, unsigned int pos_x, unsigned i
                                                     position,
                                                     buildings[type],
                                                     (state::BuildingType)type));
-        state.addBuilding(position,new_building );
+        state.addBuilding(move(new_building));
 
     }
     else{
         if(type > 3)
         {
             cout << "can't find the unit !" << endl;
-            return true;
+            return false;
         }
         if(state.getCurrentPlayer(current_player_id).get()->getPlayerUnitList().size() > units_limit){
-            throw invalid_argument(" can't create units anymore " );
+            cout << "can't create more units; go fight someone already !" << endl;
         }
         //Unit::Unit (unsigned int movement_range, unsigned int gameobject_id, unsigned int player_id, state::Position pos, state::Property property, UnitType unit_type)
         shared_ptr<state::Unit> new_unit (new Unit(  1,
@@ -75,7 +77,7 @@ bool HandleCreation::execute(state::State &state, unsigned int pos_x, unsigned i
                                                      current_player_id,position,
                                                      units[type],
                                                      (state::UnitType)type));
-        state.addUnit(position,new_unit );
+        state.addUnit(move(new_unit));
     }
     return true;
 }

@@ -19,22 +19,22 @@ RandomAI::RandomAI(int random_seed) {
 RandomAI::~RandomAI() = default;
 
 bool RandomAI::run(engine::Engine &engine, state::Player& player, state::State& state) {
-    //récupération de la map
-    state::Map * map;
-    unsigned int current_player = state.getCurrentPlayerId();
+
+    unsigned int current_player_id = state.getCurrentPlayerId();
 
     //récupération de la liste des bâtiments du pc
-    vector<shared_ptr<Building>> list_building = state.getCurrentPlayer(current_player)->getPlayerBuildingList();
+    vector<shared_ptr<Building>> list_building = state.getCurrentPlayer(current_player_id)->getPlayerBuildingList();
     //std::cout<<"size for player "<<player.getPlayerId()<<" "<<list_building->size()<<std::endl;
 
     //récupération de la liste des unités du pc
-    vector<shared_ptr<Unit>> list_unit = state.getCurrentPlayer(current_player)->getPlayerUnitList();
+    vector<shared_ptr<Unit>> list_unit = state.getCurrentPlayer(current_player_id)->getPlayerUnitList();
 
 
     //std::cout<<"size for player "<<player.getPlayerId()<<" "<<list_unit->size()<<std::endl;
 
 
-    unsigned int old_x, old_y, new_x = 0, new_y = 0, distance;
+    //variables pour déterminer la nouvelle position de l'unité
+    int old_x, old_y, new_x = 0, new_y = 0, distance_x, distance_y;
 
     engine::HandleMovement commande_movement = engine::HandleMovement();
     engine::HandleCanAttack commande_canattack = engine::HandleCanAttack();
@@ -46,17 +46,20 @@ bool RandomAI::run(engine::Engine &engine, state::Player& player, state::State& 
 
     /***  implémentation des déplacements et des attaques aléatoires  ***/
 
-    for(int i= 0; i < list_unit.size(); i++)
+    for(int i= 0; i < (int)list_unit.size(); i++)
     {
         Unit * unit_i = list_unit[i].get();
         state::Position position_unit = unit_i->getPosition();
-        old_y = position_unit.getY();
-        old_x = position_unit.getX();
-        distance = unit_i->getMovementRange();
-        std::uniform_int_distribution<int> dis_x(-distance,distance);
+        old_y = (int)position_unit.getY();
+        old_x = (int)position_unit.getX();
+        distance_x = unit_i->getMovementRange();
+        std::uniform_int_distribution<int> dis_x(-distance_x,distance_x);
         new_x = old_x + dis_x(randgen);
 
-        std::uniform_int_distribution<int> dis_y(-abs((int)(distance - new_x)),abs((int)(distance - new_x)));
+        distance_y = distance_x - abs(old_x - new_x);
+
+
+        std::uniform_int_distribution<int> dis_y(-distance_y,distance_y);
         new_y = old_y + dis_y(randgen);
         commande_movement.execute(*unit_i, state, new_x, new_y);
 
@@ -70,9 +73,10 @@ bool RandomAI::run(engine::Engine &engine, state::Player& player, state::State& 
 
             //identification de la position de l'objet choisi aléatoirement
             state::Position position_ennemy = ennemy_objects[i_object]->getPosition();
+
             //terrain sur lequel l'object est situé
 
-            state::Terrain * object_terrain = map->getTerrain(position_ennemy.getX(),position_ennemy.getY()).get();
+            state::Terrain * object_terrain = state.getMap().get()->getTerrain(position_ennemy.getX(),position_ennemy.getY()).get();
             commande_damage.execute(* unit_i, * ennemy_objects[i_object].get(),* object_terrain);
         }
     }

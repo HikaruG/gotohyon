@@ -26,9 +26,10 @@ Map::Map (unsigned int X, unsigned int Y, std::vector<int>& terrain_int)
 }
 
 //
-bool Map::addGameObject(std::vector<std::shared_ptr<state::GameObject>> list_map_object,
-                        shared_ptr<GameObject> game_object) {
-    list_map_object.push_back(move(game_object));
+bool Map::addGameObject(shared_ptr<GameObject> game_object) {
+    shared_ptr<GameObject> new_object = game_object;
+    list_game_object.push_back(new_object);
+    return true;
 }
 
 
@@ -73,7 +74,6 @@ GameObject * Map::addGameObject (unsigned int player_id, Position pos, bool is_s
 
 shared_ptr<Terrain> Map::getTerrain (unsigned int X, unsigned int Y)
 {
-    cout << map_size_x << map_size_Y <<endl;
     if (X > map_size_x || Y > map_size_Y)
     {
         throw std::invalid_argument("terrain size does not match x and y");
@@ -84,7 +84,7 @@ shared_ptr<Terrain> Map::getTerrain (unsigned int X, unsigned int Y)
 }
 
 //renvoie la liste de shared_ptr des objets se trouvant sur la position (X,Y)
-vector<shared_ptr<GameObject>>& Map::getGameObject (unsigned int X, unsigned int Y)
+vector<shared_ptr<GameObject>> Map::getGameObject (unsigned int X, unsigned int Y)
 {
     vector<shared_ptr<GameObject>> sel_objects;
     Position looking_for = Position(X,Y);
@@ -95,7 +95,7 @@ vector<shared_ptr<GameObject>>& Map::getGameObject (unsigned int X, unsigned int
             sel_objects.push_back(list_game_object[indice_game_object]);
         }
     }
-    return sel_objects;
+    return  sel_objects;
 }
 
 //retourne une référence vers la liste des objets se trouvant sur la carte
@@ -108,11 +108,11 @@ bool Map::moveGameObject (unsigned int game_object_id, Position new_position)
 {
     for(unsigned int GOind = 0; GOind < list_game_object.size(); GOind ++)
     {
-        if(list_game_object[GOind]->getGame_object_id() == game_object_id)
+        if(list_game_object[GOind].get()->getGame_object_id() == game_object_id)
         {
             MapEvent event = MapEvent(MapEventId::UNIT_CHANGED);
             notifyObservers(event);
-            return list_game_object[GOind]->setPosition(new_position);
+            return list_game_object[GOind].get()->setPosition(new_position);
         }
     }
     return false;

@@ -18,7 +18,7 @@ bool HandleGrowth::execute(state::State &state) {
 
             ;
 
-    for(int i = 0; i < state.getCurrentPlayer(current_player)->getPlayerBuildingList().size(); i ++){
+    for(int i = 0; i < (int)state.getCurrentPlayer(current_player)->getPlayerBuildingList().size(); i ++){
         state::Building * building_i = state.getCurrentPlayer(current_player)->getPlayerBuildingList()[i].get();
         if(building_i->getBuildingType() == state::farm){
             count_farm ++;

@@ -137,8 +137,6 @@ bool test_randomAI() {
     //init player AI
     test_state->initializePlayer();
 
-
-    State * ptr_test_state = test_state.get();
     //create the first units
     cout << "test : create unit in 6,6" << endl;
     HandleCreation test_creation = HandleCreation();
@@ -152,11 +150,11 @@ bool test_randomAI() {
 
     cout << "test : create unit in 3,1" << endl;
     test_creation.execute(* test_state.get(), 1, 0, 1, false);//should instanciate an unit in 3,1
-    testdraw.updateState(move(test_state));
+    testdraw.updateState(test_state);
 
     cout << "test : create building in 0,0"<<endl;
     test_creation.execute(* test_state.get(),0,0,1,true);//should instanciate a building in 0,0
-    testdraw.updateState(move(test_state));
+    testdraw.updateState(test_state);
 
     Player * current_player = test_state.get()->getCurrentPlayer(0).get();
 
@@ -241,16 +239,15 @@ bool test_engine()
     cout << "test : cheating sequence -- start"<<endl;
 
     //cheating a bit to recover a unit pointer:
-    ///*
+    //
     vector<GameObject *> onTheTile;
     cout << "debug : a"<<endl;
 
     thisMap->getGameObject(0,1,&onTheTile);
     cout << "debug : b"<<endl;
     Unit * theUnit = (Unit*)onTheTile[0];
-    //*/
+    //
      //end of cheating part
-/*
 
     cout << "test : cheating sequence -- end"<<endl;
 
@@ -302,8 +299,8 @@ bool test_engine()
 
     return true;
 }
- */
-/*
+
+
 bool test_state()
 {
     State testState = State(1);
@@ -388,9 +385,9 @@ bool test_state()
     return true;
 }
 
- */
 
-/*
+
+
 bool test_render(){
 
     State testState = State(1);
@@ -460,5 +457,4 @@ bool test_render(){
     return true;
 
 }
-
- */
+*/

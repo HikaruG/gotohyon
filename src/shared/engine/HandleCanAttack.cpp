@@ -3,6 +3,7 @@
 //
 
 #include "HandleCanAttack.h"
+#include <iostream>
 
 using namespace engine;
 using namespace std;
@@ -27,7 +28,7 @@ bool HandleCanAttack::execute(state::Unit& current_unit, state::State& state, ve
 
     vector<shared_ptr<GameObject>> list_ennemies_object;
     // liste des unités/bâtiments des ennemis
-    for(int i =0;i < state.getMap().get()->getListGameObject().size(); i++){
+    for(int i =0;i < (int)state.getMap().get()->getListGameObject().size(); i++){
 
         //les objets avec un player_id différent de celui de l'unité "current_unit"
         if(state.getMap().get()->getListGameObject()[i].get()->getPlayerId() != current_unit.getPlayerId()){
@@ -36,7 +37,8 @@ bool HandleCanAttack::execute(state::Unit& current_unit, state::State& state, ve
     }
 
 
-    Terrain * terrain = state.getMap()->getTerrain(current_x,current_y).get();
+    cout << "current_x :" << current_x << "current_y"<< current_y <<endl;
+    Terrain * terrain = state.getMap().get()->getTerrain(current_x,current_y).get();
 
     //cas de l'archer
     if (current_unit.getUnitType() == state::archer) {

@@ -49,14 +49,19 @@ bool State::setCurrentPlayerId(unsigned int player_id) {
 
 //obtient le joueur actuel;
 /// A FAIRE: update du player_id : soit une commande "fin du jour", soit ...
-unique_ptr<Player>& State::getCurrentPlayer (unsigned int player_id)
+
+shared_ptr<Player>& State::getCurrentPlayer (unsigned int player_id)
 {
     for(int i = 0; i < (int) this->player_nbr; i++){
         if(list_player[i].get()->getPlayerId() == player_id){
             return list_player[i];
         }
     }
-    throw invalid_argument(" can't find the player ! Mayday");
+    throw invalid_argument(" can't find the player ! aborting");
+}
+
+vector<shared_ptr<Player> >& State::getListPlayer () {
+    return this->list_player;
 }
 
 //met à jour le nombre de "tour"
@@ -71,21 +76,23 @@ unsigned int State::getDayCount()
 }
 
 //instancie les shared pointers des unités sur la map: elle seront stockées dans 2 listes différentes
-bool State::addUnit(Position position, shared_ptr<Unit> unit) {
+
+bool State::addUnit(shared_ptr<Unit> unit) {
     //stock l'unité crée dans la liste list_game_object de Map
-    game_map.get()->addGameObject(game_map.get()->getListGameObject(),unit);
+    game_map.get()->addGameObject(unit);
 
     //instanciation d'un pointeur pour pouvoir cast en shared ptr de building ou de unit
     shared_ptr<Unit> ptr_player_unit (unit);
     getCurrentPlayer(unit.get()->getPlayerId()).get()->addPlayerUnit(ptr_player_unit);
-
+    return true;
 }
 
 //instancie les shared pointers des buildings sur la map: elle seront stockées dans 2 listes différentes
-bool State::addBuilding(Position position, shared_ptr<Building> building) {
+
+bool State::addBuilding(shared_ptr<Building> building) {
 
     //stock l'objet crée dans la liste list_game_object de Map
-    game_map.get()->addGameObject(game_map.get()->getListGameObject(),building);
+    game_map.get()->addGameObject(building);
 
     shared_ptr<Building> ptr_player_building = (building);
     //super long ... ça prend le joueur actuel et lui met le
