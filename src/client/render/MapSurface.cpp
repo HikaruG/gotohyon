@@ -12,19 +12,9 @@ void MapSurface::draw(sf::RenderTarget &target, sf::RenderStates states) const{
     target.draw(quads,states.texture);
 }
 
-bool MapSurface::loadTextures(const std::string& terrain_file, const std::string& unit_file, const std::string& building_file) {
+bool MapSurface::loadTextures(const std::string& terrain_file) {
     // load the tileset texture
-    if (!texture_terrain.loadFromFile(terrain_file)) {
-        return false;
-    }
-    if (!texture_building.loadFromFile(building_file)) {
-        return false;
-    }
-    if (!texture_unit.loadFromFile(unit_file)) {
-        return false;
-    }
-
-    return true;
+    return(texture_to_apply.loadFromFile(terrain_file));
 }
 
 
@@ -56,8 +46,6 @@ bool const MapSurface::setSpriteTexture(unsigned int tileset_layer, unsigned int
     sf::Vertex* quad = &quads[count*4];
     int t_map_x = 64;
     int t_map_y = 32;
-    std::vector<sf::Texture> texture_level = {texture_terrain,texture_building,texture_unit};
-    texture_to_apply = texture_level[tileset_layer];
     int tu = (tileset_position_x) % (texture_to_apply.getSize().x / t_map_x);
 
     int ku = tu*t_map_x + t_map_x/2;

@@ -23,9 +23,8 @@ DrawManager::DrawManager ( shared_ptr<state::State> current_state, sf::RenderWin
     this->map_size_x = (unsigned int) tmp_x;
     this->map_size_y = (unsigned int) tmp_y;
     drawer = MapSurface();
-    if(!drawer.loadTextures("res/tileset_terrain.png","res/tileset_unit.png","res/tileset_building.png"))
+    if(!drawer.loadTextures("res/tileset_terrain.png"))
         std::cout<<"Error: Textures failed to load, launch like this: bin/client whatever" << std::endl;
-    updateState(this->current_state);
 }
 
 
@@ -41,6 +40,10 @@ bool DrawManager::updateState(shared_ptr<state::State> new_state) {
 
     return true;
 }
+
+
+
+
 
 
 bool DrawManager::setTerrain ()
@@ -117,6 +120,7 @@ bool DrawManager::setBuilding ()
 
 bool DrawManager::stateChanged(const state::Event &event) {
     std::cout<<"mkay i should redraw right ? "<<std::endl;
+    event
     updateState(current_state);
     return true;
 }
