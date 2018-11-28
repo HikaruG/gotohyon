@@ -33,43 +33,14 @@ bool Map::addGameObject(shared_ptr<GameObject> game_object) {
 }
 
 
-//il faut changer cette classe addGameObject => au moins créer les 2 listes de propriétés dans Property
-/*
-GameObject * Map::addGameObject (unsigned int player_id, Position pos, bool is_static, int type)
-{
-    Property farmer = Property("unit_farmer",10,10,100,false,3);
-    Property infantry = Property("unit_infantry",10,10,100,false);
-    Property archer = Property("unit_archer",10,10,100,false);
-
-    Property mine = Property("building_mine",10,10,100,true);
-    Property farm = Property("building_farm",10,10,100,true);
-    Property turret = Property("building_turret",10,10,100,true);
-    Property town = Property("building_town",10,10,100,true);
-    Property barrack = Property("building_barrack",10,10,100,true);
-
-    std::vector<Property> statics = {mine,farm,turret,town, barrack};
-    std::vector<Property> units = {farmer,infantry, archer};
-
-    if(is_static)
-    {
-        std::unique_ptr<Building> new_b (new Building(static_cast<unsigned int>(list_game_object.size()),player_id, pos, statics[type],
-                                  static_cast<BuildingType>(type)));
-        list_game_object.push_back(std::move(new_b));
-
-        MapEvent event = MapEvent(MapEventId::BUILDING_CHANGED);
-        notifyObservers(event);
-        return new_b.get();
-
+bool Map::deleteGameObject(state::GameObject* deleting_game_object) {
+    for(int i = 0; i < (int)list_game_object.size(); i++){
+        if(deleting_game_object->getGame_object_id() == list_game_object[i].get()->getGame_object_id())
+            //détruit l'objet situé à la position i
+            list_game_object.erase(list_game_object.begin() + (i-1));
     }
-    else {
-        std::unique_ptr<Unit> new_u (new Unit(1, static_cast<unsigned int>(list_game_object.size()), player_id, pos, units[type],
-                          static_cast<UnitType>(type)));
-        list_game_object.push_back(std::move(new_u));
-        notifyObservers(MapEvent(MapEventId::UNIT_CHANGED));
-        return new_u.get();
-    }
+    return true;
 }
-*/
 
 
 shared_ptr<Terrain> Map::getTerrain (unsigned int X, unsigned int Y)

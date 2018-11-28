@@ -15,18 +15,18 @@ CommandTypeId HandleCreation::getTypeId() const {
 
 bool HandleCreation::execute(state::State &state, unsigned int pos_x, unsigned int pos_y, int type, bool is_static) {
 
-    Property farmer = Property("unit_farmer",10,10,100,false,3);
-    Property infantry = Property("unit_infantry",10,10,100,false);
-    Property archer = Property("unit_archer",10,10,100,false);
+    Property farmer = Property("unit_farmer",10,10,10,false,false,1);
+    Property infantry = Property("unit_infantry",10,10,10,false,false,1);
+    Property archer = Property("unit_archer",10,10,10,false,false,3);
 
-    Property mine = Property("building_mine",10,10,100,true);
-    Property farm = Property("building_farm",10,10,100,true);
-    Property turret = Property("building_turret",10,10,100,true);
-    Property town = Property("building_town",10,10,100,true);
-    Property barrack = Property("building_barrack",10,10,100,true);
+    Property mine = Property("building_mine",10,10,10,true,false,0);
+    Property farm = Property("building_farm",10,10,10,true,false,0);
+    Property turret = Property("building_turret",10,10,10,true,false,0);
+    Property town = Property("building_town",10,10,10,true,false,0);
+    Property barrack = Property("building_barrack",10,10,10,true,false,0);
 
     std::vector<Property> buildings = {mine,farm,turret,town, barrack};
-    std::vector<Property> units = {farmer,infantry, archer};
+    std::vector<Property> units = {farmer,archer,infantry};
 
     unsigned int buildings_limit = 5;
     unsigned int units_limit = 10;
@@ -49,7 +49,7 @@ bool HandleCreation::execute(state::State &state, unsigned int pos_x, unsigned i
             cout<< " can't find the building ! " << endl;
             return false;
         }
-        if(state.getCurrentPlayer(current_player_id).get()->getPlayerBuildingList().size() > buildings_limit){
+        if(state.getCurrentPlayer().get()->getPlayerBuildingList().size() > buildings_limit){
             cout << " can't build more buildings !" <<endl;
             return false;
         }
@@ -68,7 +68,7 @@ bool HandleCreation::execute(state::State &state, unsigned int pos_x, unsigned i
             cout << "can't find the unit !" << endl;
             return false;
         }
-        if(state.getCurrentPlayer(current_player_id).get()->getPlayerUnitList().size() > units_limit){
+        if(state.getCurrentPlayer().get()->getPlayerUnitList().size() > units_limit){
             cout << "can't create more units; go fight someone already !" << endl;
         }
         //Unit::Unit (unsigned int movement_range, unsigned int gameobject_id, unsigned int player_id, state::Position pos, state::Property property, UnitType unit_type)

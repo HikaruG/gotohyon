@@ -78,7 +78,7 @@ int main(int argc,char* argv[]) {
 bool test_randomAI() {
     // state to test
 
-    shared_ptr<State> test_state (new State(1));
+    shared_ptr<State> test_state (new State(2,2));
 
     static int const terrain_int[] = {
             4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
@@ -134,13 +134,15 @@ bool test_randomAI() {
     sf::sleep(delayTime);
 
 
-    //init player AI
-    test_state->initializePlayer();
-    
 
-    //create the first units
-    cout << "test : create unit in 6,6" << endl;
     HandleCreation test_creation = HandleCreation();
+    HandleTurn test_turn = HandleTurn();
+
+
+
+    cout << "test : create units and building for the 1st npc" << endl;
+    //create the first units for the 1st npc
+    cout << "test : create unit in 6,6" << endl;
     test_creation.execute(* test_state.get(), 6, 6, 1, false);//should instanciate an unit in 6,6
     //testdraw.updateState(test_state);
 
@@ -157,12 +159,43 @@ bool test_randomAI() {
     test_creation.execute(* test_state.get(),0,0,1,true);//should instanciate a building in 0,0
     testdraw.updateState(test_state);
 
-    Player * current_player = test_state.get()->getCurrentPlayer(0).get();
 
-    for(int i =0; i<100;i++) {
-        test_randomAI.run(test_engine, * current_player, * test_state.get());
-        testdraw.updateState(test_state);
-        sf::sleep(delayTime);
+    //end 1st npc's first turn
+    cout << "npc1 : end 1st turn"<<endl;
+    test_turn.execute(*test_state.get());
+
+    //create the first units for the 2nd npc
+
+    cout << "test : create units and building for the 2nd npc" << endl;
+    cout << "test : create unit in 12,12" << endl;
+    test_creation.execute(* test_state.get(), 12, 12, 2, false);//should instanciate an unit in 6,6
+    //testdraw.updateState(test_state);
+
+    cout << "test : create unit in 15,15" << endl;
+    test_creation.execute(* test_state.get(), 15, 15, 2, false);//should instanciate an unit in 0,0
+    //testdraw.updateState(test_state);
+
+
+    cout << "test : create unit in 12,15" << endl;
+    test_creation.execute(* test_state.get(), 1, 0, 2, false);//should instanciate an unit in 3,1
+    testdraw.updateState(test_state);
+
+    cout << "test : create building in 15,15"<<endl;
+    test_creation.execute(* test_state.get(),15,15,2,true);//should instanciate a building in 0,0
+    testdraw.updateState(test_state);
+
+
+    //end 2nd npc's first turn
+    cout << "npc 2: end 1st turn"<<endl;
+    test_turn.execute(*test_state.get());
+
+
+    for(int i =0; i<50;i++) {
+        if(test_state.get()->current_player.get()->getIsNpc()) {
+            test_randomAI.run(test_engine, *test_state.get());
+            testdraw.updateState(test_state);
+            sf::sleep(delayTime);
+        }
     }
 
     return true;

@@ -13,13 +13,12 @@ CommandTypeId HandleGrowth::getTypeId() const {
 
 bool HandleGrowth::execute(state::State &state) {
 
-    unsigned int current_player = state.getCurrentPlayerId();
     unsigned int count_farm = 0, count_mine = 0;
 
             ;
 
-    for(int i = 0; i < (int)state.getCurrentPlayer(current_player)->getPlayerBuildingList().size(); i ++){
-        state::Building * building_i = state.getCurrentPlayer(current_player)->getPlayerBuildingList()[i].get();
+    for(int i = 0; i < (int)state.getCurrentPlayer()->getPlayerBuildingList().size(); i ++){
+        state::Building * building_i = state.getCurrentPlayer()->getPlayerBuildingList()[i].get();
         if(building_i->getBuildingType() == state::farm){
             count_farm ++;
         }
@@ -27,6 +26,6 @@ bool HandleGrowth::execute(state::State &state) {
             count_mine ++;
         }
     }
-    state.getCurrentPlayer(current_player)->setRessource(count_farm * 100, count_mine * 100);
+    state.getCurrentPlayer()->setRessource(count_farm * 100, count_mine * 100);
     return true;
 }

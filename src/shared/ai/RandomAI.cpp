@@ -18,19 +18,16 @@ RandomAI::RandomAI(int random_seed) {
 
 RandomAI::~RandomAI() = default;
 
-bool RandomAI::run(engine::Engine &engine, state::Player& player, state::State& state) {
+bool RandomAI::run(engine::Engine &engine, state::State& state) {
 
-    unsigned int current_player_id = state.getCurrentPlayerId();
+
 
     //récupération de la liste des bâtiments du pc
-    vector<shared_ptr<Building>> list_building = state.getCurrentPlayer(current_player_id)->getPlayerBuildingList();
-    //std::cout<<"size for player "<<player.getPlayerId()<<" "<<list_building->size()<<std::endl;
+    vector<shared_ptr<Building>> list_building = state.getCurrentPlayer()->getPlayerBuildingList();
+
 
     //récupération de la liste des unités du pc
-    vector<shared_ptr<Unit>> list_unit = state.getCurrentPlayer(current_player_id)->getPlayerUnitList();
-
-
-    //std::cout<<"size for player "<<player.getPlayerId()<<" "<<list_unit->size()<<std::endl;
+    vector<shared_ptr<Unit>> list_unit = state.getCurrentPlayer()->getPlayerUnitList();
 
 
     //variables pour déterminer la nouvelle position de l'unité
@@ -39,6 +36,7 @@ bool RandomAI::run(engine::Engine &engine, state::Player& player, state::State& 
     engine::HandleMovement commande_movement = engine::HandleMovement();
     engine::HandleCanAttack commande_canattack = engine::HandleCanAttack();
     engine::HandleDamage commande_damage = engine::HandleDamage();
+    engine::HandleTurn commande_turn = engine::HandleTurn();
 
     vector<shared_ptr<GameObject>> ennemy_objects;
 
@@ -66,6 +64,7 @@ bool RandomAI::run(engine::Engine &engine, state::Player& player, state::State& 
         //si l'unité peut attaquer, il attaque
 
         if(commande_canattack.execute(* unit_i, state, ennemy_objects)){
+            cout<< unit_i->getGame_object_id() <<"can attack"<<endl;
 
             int size_ennemy_list = ennemy_objects.size();
             std::uniform_int_distribution<int> dis_i(0,size_ennemy_list - 1);
@@ -77,13 +76,15 @@ bool RandomAI::run(engine::Engine &engine, state::Player& player, state::State& 
             //terrain sur lequel l'object est situé
 
             state::Terrain * object_terrain = state.getMap().get()->getTerrain(position_ennemy.getX(),position_ennemy.getY()).get();
-            commande_damage.execute(* unit_i, * ennemy_objects[i_object].get(),* object_terrain);
+            commande_damage.execute(state,unit_i, ennemy_objects[i_object].get(),* object_terrain);
+            cout<< unit_i->getGame_object_id() << "attacked "<< endl;
         }
     }
 
     /***  implémentation des créations d'unités   ***/
 
-
+    //commande de fin de tour; préparation pour le joueur suivant
+    commande_turn.execute(state);
 
 
 

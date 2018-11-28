@@ -5,14 +5,17 @@
 
 using namespace state;
 
-Property::Property(std::string type_name, unsigned int defense, unsigned int attack, unsigned int health_max,bool is_static, unsigned int attack_range) {
-    this->attack_range = attack_range;
+Property::Property(std::string type_name, unsigned int defense, unsigned int attack, unsigned int health_max,bool is_static,bool is_available ,unsigned int attack_range) {
+
     this->type_game_object = type_name;
-    this->attack = attack;
     this->defense = defense;
+    this->attack = attack;
     this->health_max = health_max;
-    this->healthBar = health_max;
     this->is_static = is_static;
+    this->is_available = is_available;
+    this->attack_range = attack_range;
+
+    this->healthBar = health_max;
 }
 
 Property::Property() {
@@ -49,6 +52,15 @@ std::string Property::getStringType() {
     return type_game_object;
 }
 
+bool Property::setAvailability(bool is_available) {
+    this->is_available = is_available;
+    return true;
+}
+
+bool Property::getAvailability() {
+    return this->is_available;
+}
+
 bool Property::isStatic (){
     return is_static;
 }
@@ -70,8 +82,10 @@ bool Property::regenHealth (unsigned int health){
         healthBar = health_max;
     }
     return true;
-
 }
+
 int Property::getHealth (){
     return healthBar;
 }
+
+
