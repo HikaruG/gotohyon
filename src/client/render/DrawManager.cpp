@@ -3,12 +3,16 @@
 //
 #include "DrawManager.h"
 #include "state.h"
+#include "render.h"
 #include <iostream>
 using namespace render;
 using namespace std;
 
 DrawManager::DrawManager ( shared_ptr<state::State> current_state, sf::RenderWindow& window)
+:terrain_layer(OnMapLayer("res/tileset_terrain.png")),building_layer(OnMapLayer("res/tileset_building.png")),
+unit_layer(OnMapLayer("res/tileset_unit.png"))
 {
+
     this->current_state = current_state;
     this->window = &window;
     //utilisation d'un unique ptr :
@@ -22,9 +26,7 @@ DrawManager::DrawManager ( shared_ptr<state::State> current_state, sf::RenderWin
 
     this->map_size_x = (unsigned int) tmp_x;
     this->map_size_y = (unsigned int) tmp_y;
-    drawer = MapSurface();
-    if(!drawer.loadTextures("res/tileset_terrain.png"))
-        std::cout<<"Error: Textures failed to load, launch like this: bin/client whatever" << std::endl;
+
 }
 
 
@@ -42,22 +44,22 @@ bool DrawManager::updateState(shared_ptr<state::State> new_state) {
 }
 
 
-
-
-
-
 bool DrawManager::setTerrain ()
 {
     shared_ptr<state::Map> current_map = this->current_state->getMap();
     drawer.initQuads(this->map_size_x+this->map_size_x*this->map_size_y);
+    std::vector<DrawElement> elem;
     for(unsigned int x = 0; x < this->map_size_x;x ++)
     {
         for(unsigned int y=0; y< this->map_size_y;y++)
-        {
-            state::Terrain * local_terrain = current_map.get()->getTerrain(x,y).get();
-            drawer.setSpriteLocation(x+y*map_size_x,x,y);
-            //std::cout<<"adding "<<local_terrain->getTerrainType()<<" as "<<local_terrain->getTerrainType()<<std::endl;
-            drawer.setSpriteTexture(0,local_terrain->getTerrainType(),x+y*map_size_x);
+        {/*
+           ///state::Terrain * local_terrain = current_map.get()->getTerrain(x,y).get();
+          ///  drawer.setSpriteLocation(x+y*map_size_x,x,y);
+         ///   //std::cout<<"adding "<<local_terrain->getTerrainType()<<" as "<<local_terrain->getTerrainType()<<std::endl;
+        ///drawer.setSpriteTexture(0,local_terrain->getTerrainType(),x+y*map_size_x);
+       ///*/
+        state::Terrain * local_terrain = current_map.get()->getTerrain(x,y).get();
+        elem.push_back(DrawElement(state::Position(x,y),local_terrain->getTerrainType()));
         }
     }
     drawer.draw(*window,state_sfml);
@@ -119,8 +121,9 @@ bool DrawManager::setBuilding ()
 }
 
 bool DrawManager::stateChanged(const state::Event &event) {
-    std::cout<<"mkay i should redraw right ? "<<std::endl;
-    event
+    state::EventTypeId this_event = event.getEventType();
+    std::cout << "event : "<< this_event<<std::endl;
+
     updateState(current_state);
     return true;
 }

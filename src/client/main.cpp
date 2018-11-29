@@ -159,9 +159,10 @@ bool test_randomAI() {
     Player * current_player = test_state.get()->getCurrentPlayer(0).get();
 
     for(int i =0; i<100;i++) {
+        cout<<"##################turn "<<i<<" out of 10"<<endl;
         test_randomAI.run(test_engine, * current_player, * test_state.get());
         testdraw.updateState(test_state);
-        sf::sleep(delayTime);
+        //sf::sleep(delayTime);
     }
 
     return true;
@@ -225,7 +226,7 @@ bool test_engine()
     cout << "test : new drawmanager instance"<<endl;
     render::DrawManager testdraw = render::DrawManager(testState,window);
     testState.addObserver(&testdraw);
-    thisMap.addObserver(&testdraw);
+    thisMap.addObserver                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&(&testdraw);
     sf::sleep(delayTime);
 
     cout << "test : new unit in 0,1"<<endl;

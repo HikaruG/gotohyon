@@ -7,10 +7,12 @@ using namespace state;
 
 
 StateEvent::~StateEvent () = default;
-StateEvent::StateEvent (StateEventId state_event){
+
+StateEvent::StateEvent(StateEventId state_event):Event(EventTypeId::MAP_EVENT)
+{
     this->state_event = state_event;
 }
 
-const EventTypeId StateEvent::getEventType (){
+EventTypeId StateEvent::getEventType () const {
     return EventTypeId::STATE_EVENT;
 }
