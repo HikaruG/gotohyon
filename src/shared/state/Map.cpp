@@ -29,16 +29,22 @@ Map::Map (unsigned int X, unsigned int Y, std::vector<int>& terrain_int)
 bool Map::addGameObject(shared_ptr<GameObject> game_object) {
     shared_ptr<GameObject> new_object = game_object;
     list_game_object.push_back(new_object);
+    MapEvent event = MapEvent(MapEventId::UNIT_CHANGED);
+    notifyObservers(event);
     return true;
 }
 
 
 bool Map::deleteGameObject(state::GameObject* deleting_game_object) {
     for(int i = 0; i < (int)list_game_object.size(); i++){
-        if(deleting_game_object->getGame_object_id() == list_game_object[i].get()->getGame_object_id())
+        if(deleting_game_object->getGame_object_id() == list_game_object[i].get()->getGame_object_id()) {
             //détruit l'objet situé à la position i
-            list_game_object.erase(list_game_object.begin() + (i-1));
+            list_game_object.erase(list_game_object.begin() + i);
+            break;
+        }
     }
+    MapEvent event = MapEvent(MapEventId::TERRAIN_CHANGED);
+    notifyObservers(event);
     return true;
 }
 

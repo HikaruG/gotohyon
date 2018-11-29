@@ -13,7 +13,7 @@ CommandTypeId HandleCanAttack::getTypeId() const{
     return CommandTypeId::HANDLE_ATTACK;
 }
 
-bool HandleCanAttack::execute(state::Unit& current_unit, state::State& state, vector<shared_ptr<GameObject>> list_in_range ) {
+bool HandleCanAttack::execute(state::Unit& current_unit, state::State& state, vector<shared_ptr<GameObject>>& list_in_range ) {
 
     //current_x et current_y sont les coordonnées de l'unité considéré
     int current_x, current_y;
@@ -32,7 +32,7 @@ bool HandleCanAttack::execute(state::Unit& current_unit, state::State& state, ve
 
         //les objets avec un player_id différent de celui de l'unité "current_unit"
         if(state.getMap().get()->getListGameObject()[i].get()->getPlayerId() != current_unit.getPlayerId()){
-            list_ennemies_object.push_back(move(state.getMap().get()->getListGameObject()[i]));
+            list_ennemies_object.push_back(state.getMap().get()->getListGameObject()[i]);
         }
     }
 
@@ -54,7 +54,7 @@ bool HandleCanAttack::execute(state::Unit& current_unit, state::State& state, ve
             others_y = s->getPosition().getY();
             if (std::abs(current_x + current_y - (others_x + others_y)) < distance) {
                 canattack = true; //si une unité ennemie se trouve dans un rayon de "distance" ou moins, l'archer peut attaquer
-                list_in_range.push_back(move(s));
+                list_in_range.push_back(s);
             }
         }
     }
@@ -67,12 +67,12 @@ bool HandleCanAttack::execute(state::Unit& current_unit, state::State& state, ve
             if (others_y == current_y - 1 || others_y == current_y + 1) {//cible ennemie en haut ou en bas de l'unité considéré
                 if (others_x == current_x) {
                     canattack = true;
-                    list_in_range.push_back(move(s));
+                    list_in_range.push_back(s);
                 }
             } else if (others_x == current_x - 1 || others_x == current_x + 1) {//cible ennemie à gauche u à droite de l'unité considéré
                 if (others_y == current_y) {
                     canattack = true;
-                    list_in_range.push_back(move(s));
+                    list_in_range.push_back(s);
                 }
             }
         }
@@ -80,6 +80,8 @@ bool HandleCanAttack::execute(state::Unit& current_unit, state::State& state, ve
     if(canattack){
         return true;
     }
+    //si l'unité ne peut pas attaquer, elle devient indisponible
+    current_unit.getProperty()->setAvailability(false);
     return false;
 }
 

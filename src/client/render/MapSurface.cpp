@@ -39,11 +39,12 @@ bool MapSurface::initQuads(int count) {
 bool MapSurface::setSpriteLocation(int count, int x, int y) {
     sf::Vertex* quad = &quads[count*4];
     int offset = 480; // taille map * taille texture longueur, pour eviter d'arriver dans les negatifs
+    int offset_y = 200;
     int t_map_x = 64;
     int t_map_y = 32;
     int cc = -(y * t_map_x);
     int k = (x * t_map_x)/2 + cc/2 + t_map_x/2 + offset;
-    int l = ((x + y) * t_map_y) / 2;
+    int l = ((x + y) * t_map_y) / 2 + offset_y;
     //std::cout<<"Debug : adding sprite nbr "<<count<<" in "<<x<<" "<<y<<" : "<<k<<" "<<l<<std::endl;
     quad[0].position = sf::Vector2f(k, l);
     quad[1].position = sf::Vector2f(k + t_map_x/2, l + t_map_y/2);

@@ -75,7 +75,8 @@ bool Player::deletePlayerBuilding(state::Building* deleting_building) {
     for(int i=0; (int)list_size; i++) {
         if(deleting_building->getGame_object_id()==player_building_list[i].get()->getGame_object_id()){
             //détruit le pointeur associé au batiment situé à la position i
-            player_building_list.erase(player_building_list.begin() + (i-1));
+            player_building_list.erase(player_building_list.begin() + i);
+            break;
         }
     }
     if(list_size == player_building_list.size() + 1) {
@@ -90,7 +91,8 @@ bool Player::deletePlayerUnit(state::Unit* deleting_unit) {
     for(int i=0; (int)player_unit_list.size(); i++) {
         if(deleting_unit->getGame_object_id()==player_unit_list[i].get()->getGame_object_id()){
             //détruit le pointeur associé à l'unité située à la position i
-            player_unit_list.erase(player_unit_list.begin() + (i-1));
+            player_unit_list.erase(player_unit_list.begin() + i);
+            break;
         }
     }
 

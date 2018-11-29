@@ -38,7 +38,11 @@ bool RandomAI::run(engine::Engine &engine, state::State& state) {
     engine::HandleDamage commande_damage = engine::HandleDamage();
     engine::HandleTurn commande_turn = engine::HandleTurn();
 
+    //liste de game_object ennemie
     vector<shared_ptr<GameObject>> ennemy_objects;
+    //indice de l'ennemi choisi comme cible lors de l'attaque
+    int i_object = 0;
+
 
 
 
@@ -64,20 +68,21 @@ bool RandomAI::run(engine::Engine &engine, state::State& state) {
         //si l'unité peut attaquer, il attaque
 
         if(commande_canattack.execute(* unit_i, state, ennemy_objects)){
-            cout<< unit_i->getGame_object_id() <<"can attack"<<endl;
 
             int size_ennemy_list = ennemy_objects.size();
             std::uniform_int_distribution<int> dis_i(0,size_ennemy_list - 1);
-            int i_object = dis_i(randgen);
+            i_object = dis_i(randgen);
+            cout << "la cible ennemie choisie est la " << i_object << endl;
 
             //identification de la position de l'objet choisi aléatoirement
             state::Position position_ennemy = ennemy_objects[i_object]->getPosition();
+            cout << "la cible ennemie se situe à X: " << ennemy_objects[i_object]->getPosition().getX() << endl;
+            cout << "\nla cible ennemie se situe à Y: " << ennemy_objects[i_object]->getPosition().getY() << endl;
+
 
             //terrain sur lequel l'object est situé
-
             state::Terrain * object_terrain = state.getMap().get()->getTerrain(position_ennemy.getX(),position_ennemy.getY()).get();
             commande_damage.execute(state,unit_i, ennemy_objects[i_object].get(),* object_terrain);
-            cout<< unit_i->getGame_object_id() << "attacked "<< endl;
         }
     }
 

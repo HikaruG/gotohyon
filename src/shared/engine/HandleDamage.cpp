@@ -17,14 +17,14 @@ bool HandleDamage::execute(state::State& state, state::GameObject* object, state
         if(ennemy_object->getProperty()->isStatic()){
             state::Building * ptr_destroyed_building = (state::Building * )ennemy_object;
             state.deleteBuilding(ptr_destroyed_building);
-            delete[] ptr_destroyed_building;
+            //delete[] ptr_destroyed_building;
         }
         else{
             state::Unit * ptr_destroyed_unit = (state::Unit *)ennemy_object;
             state.deleteUnit(ptr_destroyed_unit);
-            delete[] ptr_destroyed_unit;
+            //delete[] ptr_destroyed_unit;
         }
-        delete[] ennemy_object;
+        //delete[] ennemy_object;
     }
     return true;
 }

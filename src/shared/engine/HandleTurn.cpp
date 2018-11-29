@@ -3,10 +3,11 @@
 //
 
 #include "HandleTurn.h"
-
+#include <iostream>
 using namespace engine;
 using namespace std;
 using namespace state;
+
 
 HandleTurn::HandleTurn() = default;
 
@@ -19,18 +20,17 @@ CommandTypeId HandleTurn::getTypeId() const {
 //pour le moment, dés que tous les objets deviennent indisponibles, le tour se finit automatiquement
 bool HandleTurn::execute(state::State &state) {
 
-    //si il n'y a plus d'unités/batiments disponibles
-    if(!state.getCurrentPlayer().get()->checkAvailability()){
-        if(state.getCurrentPlayerId() > state.getPlayerNbr()){
-            throw invalid_argument(" can't find the player ! aborting");
-        }
-        //incrémente le current player id pour passer au tour suivant
-        state.setCurrentPlayerId();
-        state.setCurrentPlayer();
-        state.setDay();
-        //remet disponible tous les objets du joueur suivant
-        state.resetAvailability();
+    if(state.getCurrentPlayerId() > state.getPlayerNbr()){
+        throw invalid_argument(" can't find the player ! aborting");
     }
+    //incrémente le current player id pour passer au tour suivant
+    state.setCurrentPlayerId();
+    cout << "prochain joueur id : " << state.getCurrentPlayerId() << endl;
+    state.setCurrentPlayer();
+    state.setDay();
+    cout << "le nouveau jour : " << state.getDay() << endl;
+    //remet disponible tous les objets du joueur suivant
+    state.resetAvailability();
     return true;
 }
 

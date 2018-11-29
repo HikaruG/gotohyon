@@ -33,6 +33,8 @@ Property& Property::operator=(const state::Property& orig) {
     this->attack = orig.attack;
     this->defense = orig.defense;
     this->health_max = orig.health_max;
+    this->attack_range = orig.attack_range;
+    this->is_available = orig.is_available;
     return *this;
 }
 

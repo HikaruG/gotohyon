@@ -80,6 +80,7 @@ bool test_randomAI() {
 
     shared_ptr<State> test_state (new State(2,2));
 
+    /*
     static int const terrain_int[] = {
             4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
             4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
@@ -97,6 +98,25 @@ bool test_randomAI() {
             4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
             4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
             4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+    };
+     */
+    static int const terrain_int [] = {
+            0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0,
+            1, 1, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3,
+            0, 1, 0, 0, 2, 0, 3, 3, 3, 0, 1, 1, 1, 0, 0, 0,
+            0, 1, 1, 0, 3, 3, 3, 0, 0, 0, 1, 1, 1, 2, 0, 0,
+            0, 0, 1, 0, 3, 0, 2, 2, 0, 0, 1, 1, 1, 1, 2, 0,
+            2, 0, 1, 0, 3, 0, 2, 2, 2, 0, 1, 1, 1, 1, 1, 1,
+            0, 0, 1, 0, 3, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1,
+            0, 0, 1, 0, 3, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1,
+            2, 0, 1, 0, 3, 0, 2, 2, 2, 0, 1, 1, 1, 1, 1, 1,
+            0, 0, 1, 0, 3, 0, 2, 2, 0, 0, 1, 1, 1, 1, 2, 0,
+            0, 1, 1, 0, 3, 3, 3, 0, 0, 0, 1, 1, 1, 2, 0, 0,
+            0, 1, 0, 0, 2, 0, 3, 3, 3, 0, 1, 1, 1, 0, 0, 0,
+            1, 1, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3,
+            0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     };
     vector<int> test_terrain;//to do mettre la taille
     for (int i = 0; i < 256; i++) {
@@ -117,12 +137,16 @@ bool test_randomAI() {
                             "test engine");
 
 
+
     cout << "test : new engine instance" << endl;
     Engine test_engine = Engine();
 
 
     cout << "test : new drawmanager instance" << endl;
     render::DrawManager testdraw = render::DrawManager(test_state, window);
+    test_state.get()->addObserver(&testdraw);
+    test_state.get()->getMap().get()->addObserver(&testdraw);
+
 
     cout << "test : new randomAI instance" << endl;
     ai::RandomAI test_randomAI = ai::RandomAI(0);
@@ -176,7 +200,7 @@ bool test_randomAI() {
     //testdraw.updateState(test_state);
 
 
-    cout << "test : create unit in 12,15" << endl;
+    cout << "test : create unit in 1,0" << endl;
     test_creation.execute(* test_state.get(), 1, 0, 2, false);//should instanciate an unit in 3,1
     testdraw.updateState(test_state);
 

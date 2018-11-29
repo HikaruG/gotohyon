@@ -70,23 +70,43 @@ bool State::addBuilding(shared_ptr<Building> building) {
 
 
 bool State::deleteUnit(state::Unit* deleting_unit) {
-    if(game_map.get()->deleteGameObject(deleting_unit))
-        if(getCurrentPlayer().get()->deletePlayerUnit(deleting_unit))
-            return true;
-    return false;
+    bool success = false;
+    //recherche du play associé à l'unité détruite
+    for(int i= 0; i < (int) player_nbr - 1;i++){
+        if(deleting_unit->getPlayerId() == list_player[i].get()->getPlayerId()) {
+            Player * attacked_player = list_player[i].get();
+            success = attacked_player->deletePlayerUnit(deleting_unit);
+            break;
+        }
+    }
+    //vérifie la suppression du pointeur dans la liste du joueur
+    if(success) success = game_map.get()->deleteGameObject(deleting_unit);
+    //retourne true si la suppression * de l'unité dans la liste de map a été effectuée
+    return success;
 }
 
+
 bool State::deleteBuilding(state::Building* deleting_building) {
-    if(game_map.get()->deleteGameObject(deleting_building))
-        if(getCurrentPlayer().get()->deletePlayerBuilding(deleting_building))
-            return true;
-    return false;
+    bool success = false;
+    //recherche du player associé au batiment détruit
+    for(int i= 0; i < (int) player_nbr - 1;i++){
+        if(deleting_building->getPlayerId() == list_player[i].get()->getPlayerId()) {
+            Player * attacked_player = list_player[i].get();
+            success = attacked_player->deletePlayerBuilding(deleting_building);
+            break;
+        }
+    }
+    if(success) success = game_map.get()->deleteGameObject(deleting_building);
+    return success;
 }
 
 bool State::resetAvailability(){
+    //pour le moment les batiments ne sont pas dispo
+    /*
     for(int i =0; i < (int)this->current_player.get()->getPlayerBuildingList().size(); i++){
         this->current_player.get()->getPlayerBuildingList()[i].get()->getProperty()->setAvailability(true);
     }
+    */
     for(int i =0; i < (int)this->current_player.get()->getPlayerUnitList().size(); i++){
         this->current_player.get()->getPlayerUnitList()[i].get()->getProperty()->setAvailability(true);
     }
@@ -129,8 +149,9 @@ unsigned int State::getDay()
 
 //met à jour l'id de joueur courant après un fin de tour
 bool State::setCurrentPlayerId() {
-    if(this->current_player_id == this->player_nbr){
+    if(this->current_player_id == this->player_nbr - 1){ //le player_id commence à 0 tandis que le player_nbr commence à 1
         this->current_player_id = 0;
+        return true;
     }
     this->current_player_id ++;
     return true;
