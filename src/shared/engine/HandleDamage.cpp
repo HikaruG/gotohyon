@@ -13,8 +13,9 @@ CommandTypeId HandleDamage::getTypeId() const {
 
 bool HandleDamage::execute(state::State& state, state::GameObject* object, state::GameObject* ennemy_object, state::Terrain &terrain) {
     ennemy_object->getProperty()->takeDamage(object->getProperty()->getAttack());
+    cout << "player no " << ennemy_object->getPlayerId() << " s object" << ennemy_object->getProperty()->getStringType() << " got hit for " << object->getProperty()->getAttack() <<"hp \n" <<endl;
     if(!ennemy_object->getProperty()->isAlive()){
-        cout << ennemy_object->getProperty()->getStringType() <<"destroyed" << endl;
+        cout << "player n " << ennemy_object->getPlayerId() << " s object" << ennemy_object->getProperty()->getStringType() <<" got destroyed" << endl;
         //commande delete
         if(ennemy_object->getProperty()->isStatic()){
             state::Building * ptr_destroyed_building = (state::Building * )ennemy_object;

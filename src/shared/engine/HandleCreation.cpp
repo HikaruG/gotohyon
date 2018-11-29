@@ -29,7 +29,7 @@ bool HandleCreation::execute(state::State &state, unsigned int pos_x, unsigned i
     std::vector<Property> units = {farmer,archer,infantry};
 
     unsigned int buildings_limit = 5;
-    unsigned int units_limit = 10;
+    unsigned int units_limit = 3;
     unsigned int current_player_id = state.getCurrentPlayerId();
     unsigned int my_gold = 0, my_food = 0, req_gold, req_food;
     state.getCurrentPlayer().get()->getRessource(my_food, my_gold);
@@ -52,7 +52,7 @@ bool HandleCreation::execute(state::State &state, unsigned int pos_x, unsigned i
             return false;
         }
         if(state.getCurrentPlayer().get()->getPlayerBuildingList().size() > buildings_limit){
-            cout << " can't build more buildings !" <<endl;
+            //cout << " can't build more buildings !" <<endl;
             return false;
         }
 
@@ -103,7 +103,7 @@ bool HandleCreation::execute(state::State &state, unsigned int pos_x, unsigned i
             return false;
         }
         if(state.getCurrentPlayer().get()->getPlayerUnitList().size() > units_limit){
-            cout << "can't create more units; go fight someone already !" << endl;
+           // cout << "can't create more units; go fight someone already !" << endl;
         }
 
         switch(type){
@@ -125,7 +125,7 @@ bool HandleCreation::execute(state::State &state, unsigned int pos_x, unsigned i
         }
         if(my_food > req_food && my_gold > req_food) {
             //Unit::Unit (unsigned int movement_range, unsigned int gameobject_id, unsigned int player_id, state::Position pos, state::Property property, UnitType unit_type)
-            shared_ptr<state::Unit> new_unit(new Unit(4,
+            shared_ptr<state::Unit> new_unit(new Unit(1,
                                                       (unsigned int) state.getMap().get()->getListGameObject().size(),
                                                       current_player_id, position,
                                                       units[type],

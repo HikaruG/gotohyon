@@ -103,7 +103,7 @@ bool RandomAI::run(engine::Engine &engine, state::State& state) {
                 int pos_y = unit_i->getPosition().getY();
                 for(shared_ptr<GameObject> obstacle: list_building){
                     if(obstacle.get()->getPosition() == unit_i->getPosition()){
-                        cout<< "cannot build here, already a constructed building present!" <<endl;
+                        //cout<< "cannot build here, already a constructed building present!" <<endl;
                     }
                     else{
                         building_type = dis_buildings(randgen);

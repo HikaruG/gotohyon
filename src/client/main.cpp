@@ -135,19 +135,19 @@ bool test_randomAI() {
 
     cout << "test : create units and building for the 1st npc" << endl;
     //create the first units for the 1st npc
-    test_creation.execute(* test_state.get(), 7, 2, farmer,false);
+    test_creation.execute(* test_state.get(), 7, 5, farmer,false);
     cout << "test : create farmer in 7,3" << endl;
     //testdraw.updateState(test_state);
 
-    test_creation.execute(* test_state.get(), 8, 2, infantry, false);
+    test_creation.execute(* test_state.get(), 8, 5, infantry, false);
     cout << "test : create infantry in 8,2," << endl;
 
 
     cout << "test : create archer in 6,2" << endl;
-    test_creation.execute(* test_state.get(), 6, 2, archer, false);
+    test_creation.execute(* test_state.get(), 6, 5, archer, false);
 
     cout << "test : create town in 7,2"<<endl;
-    test_creation.execute(* test_state.get(),7,2,town,true);
+    test_creation.execute(* test_state.get(),7,5,town,true);
 
 
     //end 1st npc's first turn
@@ -157,18 +157,18 @@ bool test_randomAI() {
     //create the first units for the 2nd npc
 
     cout << "test : create units and building for the 2nd npc" << endl;
-    test_creation.execute(* test_state.get(), 7, 12, farmer,false);
+    test_creation.execute(* test_state.get(), 7, 9, farmer,false);
     cout << "test : create farmer in 7,12" << endl;
 
-    test_creation.execute(* test_state.get(), 8, 13, infantry, false);
+    test_creation.execute(* test_state.get(), 8, 9, infantry, false);
     cout << "test : create infantry in 8,13," << endl;
 
 
     cout << "test : create archer in 6,13" << endl;
-    test_creation.execute(* test_state.get(), 6,13, archer, false);
+    test_creation.execute(* test_state.get(), 6,9, archer, false);
 
     cout << "test : create town in 7,13"<<endl;
-    test_creation.execute(* test_state.get(),7,13,town,true);
+    test_creation.execute(* test_state.get(),7,9,town,true);
 
 
     //end 2nd npc's first turn
