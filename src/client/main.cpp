@@ -25,10 +25,11 @@ bool test_render();
 bool test_engine();
 bool test_randomAI();
 
-/*
+
 int main(int argc,char* argv[])
 {
     if ( argc > 1 ){
+
         if ( !strcmp(argv[1],"hello") ){
             cout << "It works !" << endl;
         }
@@ -43,13 +44,14 @@ int main(int argc,char* argv[])
         if( !strcmp(argv[1],"render") ) {
             cout << "render test sequence  activated . . ." << endl;
             if (test_render()) {
-                cout << "render testing" << endl;
+                cout << "test render successful" << endl;
             }
         }
+
         if( !strcmp(argv[1],"engine") ) {
             cout << "engine test sequence activated . . ." << endl;
             if (test_engine()) {
-                cout << "render testing" << endl;
+                cout << "test render successful" << endl;
             }
         }
         if( !strcmp(argv[1],"random_ai") ) {
@@ -62,56 +64,24 @@ int main(int argc,char* argv[])
 
     return 0;
 }
-*/
-
-int main(int argc,char* argv[]) {
-    if (argc > 1) {
-        if( !strcmp(argv[1],"random_ai") ) {
-            cout << "test random ai sequence activated . . ." << endl;
-            if (test_randomAI()) {
-                cout << "test random_ai successful" << endl;
-            }
-        }
-    }
-}
 
 bool test_randomAI() {
     // state to test
 
     shared_ptr<State> test_state (new State(2,2));
 
-    /*
-    static int const terrain_int[] = {
-            4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
-            4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
-            4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
-            4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
-            4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
-            4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
-            4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
-            4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
-            4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
-            4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
-            4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
-            4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
-            4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
-            4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
-            4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
-            4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
-    };
-     */
     static int const terrain_int [] = {
             0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
             0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0,
             1, 1, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3,
             0, 1, 0, 0, 2, 0, 3, 3, 3, 0, 1, 1, 1, 0, 0, 0,
-            0, 1, 1, 0, 3, 3, 3, 0, 0, 0, 1, 1, 1, 2, 0, 0,
-            0, 0, 1, 0, 3, 0, 2, 2, 0, 0, 1, 1, 1, 1, 2, 0,
-            2, 0, 1, 0, 3, 0, 2, 2, 2, 0, 1, 1, 1, 1, 1, 1,
-            0, 0, 1, 0, 3, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1,
-            0, 0, 1, 0, 3, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1,
-            2, 0, 1, 0, 3, 0, 2, 2, 2, 0, 1, 1, 1, 1, 1, 1,
-            0, 0, 1, 0, 3, 0, 2, 2, 0, 0, 1, 1, 1, 1, 2, 0,
+            0, 1, 1, 0, 3, 3, 2, 0, 0, 0, 1, 1, 1, 2, 0, 0,
+            0, 0, 1, 0, 3, 0, 3, 3, 0, 0, 1, 1, 1, 1, 2, 0,
+            2, 0, 1, 0, 3, 0, 2, 3, 3, 0, 1, 1, 1, 1, 1, 1,
+            0, 0, 1, 0, 3, 3, 3, 3, 0, 0, 0, 0, 1, 1, 1, 1,
+            0, 0, 1, 0, 3, 2, 3, 3, 0, 0, 0, 0, 1, 1, 1, 1,
+            2, 0, 1, 0, 3, 0, 3, 3, 3, 0, 1, 1, 1, 1, 1, 1,
+            0, 0, 1, 0, 3, 0, 2, 3, 0, 0, 1, 1, 1, 1, 2, 0,
             0, 1, 1, 0, 3, 3, 3, 0, 0, 0, 1, 1, 1, 2, 0, 0,
             0, 1, 0, 0, 2, 0, 3, 3, 3, 0, 1, 1, 1, 0, 0, 0,
             1, 1, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3,
@@ -131,10 +101,10 @@ bool test_randomAI() {
     size_t x_window = 1024;
     size_t y_window = 1024;
 
-    sf::Time delayTime = sf::milliseconds(1000);
+    //sf::Time delayTime = sf::milliseconds(1000);
     // create the window
-    sf::RenderWindow window(sf::VideoMode(static_cast<unsigned int>(x_window), static_cast<unsigned int>(y_window)),
-                            "test engine");
+    shared_ptr<sf::RenderWindow> window (new sf::RenderWindow(sf::VideoMode(static_cast<unsigned int>(x_window), static_cast<unsigned int>(y_window)),
+                            "test engine"));
 
 
 
@@ -155,7 +125,6 @@ bool test_randomAI() {
 
     cout << "test : updates... " << endl;
     testdraw.updateState(test_state);
-    sf::sleep(delayTime);
 
 
 
@@ -166,22 +135,19 @@ bool test_randomAI() {
 
     cout << "test : create units and building for the 1st npc" << endl;
     //create the first units for the 1st npc
-    cout << "test : create unit in 6,6" << endl;
-    test_creation.execute(* test_state.get(), 6, 6, 1, false);//should instanciate an unit in 6,6
+    test_creation.execute(* test_state.get(), 7, 2, farmer,false);
+    cout << "test : create farmer in 7,3" << endl;
     //testdraw.updateState(test_state);
 
-    cout << "test : create unit in 0,0" << endl;
-    test_creation.execute(* test_state.get(), 0, 0, 1, false);//should instanciate an unit in 0,0
-    //testdraw.updateState(test_state);
+    test_creation.execute(* test_state.get(), 8, 2, infantry, false);
+    cout << "test : create infantry in 8,2," << endl;
 
 
-    cout << "test : create unit in 3,1" << endl;
-    test_creation.execute(* test_state.get(), 1, 0, 1, false);//should instanciate an unit in 3,1
-    testdraw.updateState(test_state);
+    cout << "test : create archer in 6,2" << endl;
+    test_creation.execute(* test_state.get(), 6, 2, archer, false);
 
-    cout << "test : create building in 0,0"<<endl;
-    test_creation.execute(* test_state.get(),0,0,1,true);//should instanciate a building in 0,0
-    testdraw.updateState(test_state);
+    cout << "test : create town in 7,2"<<endl;
+    test_creation.execute(* test_state.get(),7,2,town,true);
 
 
     //end 1st npc's first turn
@@ -191,22 +157,18 @@ bool test_randomAI() {
     //create the first units for the 2nd npc
 
     cout << "test : create units and building for the 2nd npc" << endl;
-    cout << "test : create unit in 12,12" << endl;
-    test_creation.execute(* test_state.get(), 12, 12, 2, false);//should instanciate an unit in 6,6
-    //testdraw.updateState(test_state);
+    test_creation.execute(* test_state.get(), 7, 12, farmer,false);
+    cout << "test : create farmer in 7,12" << endl;
 
-    cout << "test : create unit in 15,15" << endl;
-    test_creation.execute(* test_state.get(), 15, 15, 2, false);//should instanciate an unit in 0,0
-    //testdraw.updateState(test_state);
+    test_creation.execute(* test_state.get(), 8, 13, infantry, false);
+    cout << "test : create infantry in 8,13," << endl;
 
 
-    cout << "test : create unit in 1,0" << endl;
-    test_creation.execute(* test_state.get(), 1, 0, 2, false);//should instanciate an unit in 3,1
-    testdraw.updateState(test_state);
+    cout << "test : create archer in 6,13" << endl;
+    test_creation.execute(* test_state.get(), 6,13, archer, false);
 
-    cout << "test : create building in 15,15"<<endl;
-    test_creation.execute(* test_state.get(),15,15,2,true);//should instanciate a building in 0,0
-    testdraw.updateState(test_state);
+    cout << "test : create town in 7,13"<<endl;
+    test_creation.execute(* test_state.get(),7,13,town,true);
 
 
     //end 2nd npc's first turn
@@ -218,30 +180,30 @@ bool test_randomAI() {
         if(test_state.get()->current_player.get()->getIsNpc()) {
             test_randomAI.run(test_engine, *test_state.get());
             testdraw.updateState(test_state);
-            sf::sleep(delayTime);
+            //sf::sleep(delayTime);
         }
     }
 
     return true;
 }
 
-/*
+
 bool test_engine()
 {
-    // state to test
-    State testState = State(1);
+    shared_ptr<State> test_state (new State(2,2));
+
     static int const terrain_int [] = {
             0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
             0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0,
             1, 1, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3,
             0, 1, 0, 0, 2, 0, 3, 3, 3, 0, 1, 1, 1, 0, 0, 0,
-            0, 1, 1, 0, 3, 3, 3, 0, 0, 0, 1, 1, 1, 2, 0, 0,
-            0, 0, 1, 0, 3, 0, 2, 2, 0, 0, 1, 1, 1, 1, 2, 0,
-            2, 0, 1, 0, 3, 0, 2, 2, 2, 0, 1, 1, 1, 1, 1, 1,
-            0, 0, 1, 0, 3, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1,
-            0, 0, 1, 0, 3, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1,
-            2, 0, 1, 0, 3, 0, 2, 2, 2, 0, 1, 1, 1, 1, 1, 1,
-            0, 0, 1, 0, 3, 0, 2, 2, 0, 0, 1, 1, 1, 1, 2, 0,
+            0, 1, 1, 0, 3, 3, 2, 0, 0, 0, 1, 1, 1, 2, 0, 0,
+            0, 0, 1, 0, 3, 0, 3, 3, 0, 0, 1, 1, 1, 1, 2, 0,
+            2, 0, 1, 0, 3, 0, 2, 3, 3, 0, 1, 1, 1, 1, 1, 1,
+            0, 0, 1, 0, 3, 3, 3, 3, 0, 0, 0, 0, 1, 1, 1, 1,
+            0, 0, 1, 0, 3, 2, 3, 3, 0, 0, 0, 0, 1, 1, 1, 1,
+            2, 0, 1, 0, 3, 0, 3, 3, 3, 0, 1, 1, 1, 1, 1, 1,
+            0, 0, 1, 0, 3, 0, 2, 3, 0, 0, 1, 1, 1, 1, 2, 0,
             0, 1, 1, 0, 3, 3, 3, 0, 0, 0, 1, 1, 1, 2, 0, 0,
             0, 1, 0, 0, 2, 0, 3, 3, 3, 0, 1, 1, 1, 0, 0, 0,
             1, 1, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3,
@@ -249,87 +211,116 @@ bool test_engine()
             0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     };
     vector<int> test_terrain;//to do mettre la taille
-    for (int i = 0; i < 256;i++)
-    {
+    for (int i = 0; i < 256; i++) {
         test_terrain.push_back(terrain_int[i]);
     }
-    Map test_map = Map(16,16,test_terrain);
+    //init map terrain
+    test_state->initializeMap(16, 16, test_terrain);
 
-    testState.initializeMap(test_map);
-
-    Map thisMap = testState.getMap();
-
-    //init window
+    //Map * thisMap = test_state.getMap().get();
 
     //init windows
     size_t x_window = 1024;
     size_t y_window = 1024;
 
-    sf::Time delayTime = sf::milliseconds(1000);
+//    sf::Time delayTime = sf::milliseconds(1000);
     // create the window
-    sf::RenderWindow window(sf::VideoMode(static_cast<unsigned int>(x_window), static_cast<unsigned int>(y_window)), "test engine");
+    shared_ptr<sf::RenderWindow> window (new sf::RenderWindow(sf::VideoMode(static_cast<unsigned int>(x_window), static_cast<unsigned int>(y_window)),
+                            "test engine"));
 
-    // tests starts here
-    cout << "test : new engine instance"<<endl;
+
+
+    cout << "test : new engine instance" << endl;
     Engine test_engine = Engine();
 
-    cout << "test : new handlers instance"<<endl;
+
+    cout << "test : new drawmanager instance" << endl;
+    render::DrawManager testdraw = render::DrawManager(test_state, window);
+    test_state.get()->addObserver(&testdraw);
+    test_state.get()->getMap().get()->addObserver(&testdraw);
+
+
+
+    // tests starts here
+
+    cout << "test : updates... " << endl;
+    testdraw.updateState(test_state);
+
+
+
     HandleCreation test_creation = HandleCreation();
+    HandleTurn test_turn = HandleTurn();
     HandleMovement test_movement = HandleMovement();
 
+
+
+    cout << "test : create units and building for the 1st npc" << endl;
+    //create the first units for the 1st npc
+    cout << "test : create unit in 6,6" << endl;
+    test_creation.execute(* test_state.get(), 7, 2, 1, false);//should instanciate an unit in 6,6
+    //testdraw.updateState(test_state);
+
+    cout << "test : create unit in 0,0" << endl;
+    test_creation.execute(* test_state.get(), 8, 2, 1, false);//should instanciate an unit in 0,0
+    //testdraw.updateState(test_state);
+
+
+    cout << "test : create unit in 3,1" << endl;
+    test_creation.execute(* test_state.get(), 6, 2, 1, false);//should instanciate an unit in 3,1
+    testdraw.updateState(test_state);
+
     cout << "test : create building in 0,0"<<endl;
-    test_creation.execute(testState,0,0,1,true);//should instanciate a building in 0,0
-
-    cout << "test : new drawmanager instance"<<endl;
-    render::DrawManager testdraw = render::DrawManager(testState,window);
-    testState.addObserver(&testdraw);
-    thisMap.addObserver(&testdraw);
-    sf::sleep(delayTime);
-
-    cout << "test : new unit in 0,1"<<endl;
-    test_creation.execute(testState,0,1,1,false);//should instanciate a unit in 1,1
-
-    cout << "test : updates... "<<endl;
-    //testdraw.updateState(testState);
-    sf::sleep(delayTime);
+    test_creation.execute(* test_state.get(),7,2,3,true);//should instanciate a building in 0,0
+    testdraw.updateState(test_state);
 
 
-    cout << "test : cheating sequence -- start"<<endl;
+    //end 1st npc's first turn
+    cout << "npc1 : end 1st turn"<<endl;
+    test_turn.execute(*test_state.get());
 
-    //cheating a bit to recover a unit pointer:
-    //
-    vector<GameObject *> onTheTile;
-    cout << "debug : a"<<endl;
+    //create the first units for the 2nd npc
 
-    thisMap->getGameObject(0,1,&onTheTile);
-    cout << "debug : b"<<endl;
-    Unit * theUnit = (Unit*)onTheTile[0];
-    //
-     //end of cheating part
+    cout << "test : create units and building for the 2nd npc" << endl;
+    cout << "test : create unit in 12,12" << endl;
+    test_creation.execute(* test_state.get(), 7, 1, 1, false);//should instanciate an unit in 6,6
+    //testdraw.updateState(test_state);
 
-    cout << "test : cheating sequence -- end"<<endl;
+    cout << "test : create unit in 15,15" << endl;
+    test_creation.execute(* test_state.get(), 8, 13, 1, false);//should instanciate an unit in 0,0
+    //testdraw.updateState(test_state);
 
 
-    //test_movement.execute(*theUnit,testState,0,0);
+    cout << "test : create unit in 1,0" << endl;
+    test_creation.execute(* test_state.get(), 6, 13, 1, false);//should instanciate an unit in 3,1
+    testdraw.updateState(test_state);
 
-    //testdraw.updateState(testState);
+    cout << "test : create building in 15,15"<<endl;
+    test_creation.execute(* test_state.get(),7,13,3,true);//should instanciate a building in 0,0
+    testdraw.updateState(test_state);
+
+    //end 2nd npc's first turn
+    cout << "npc2 : end 1st turn"<<endl;
+    test_turn.execute(*test_state.get());
+
+
+    Unit * test_unit = (Unit*) test_state.get()->getCurrentPlayer().get()->getPlayerUnitList()[0].get();
+
+    test_movement.execute(*test_unit, * test_state.get(), 8,2);
+
 
 
 
     // end window
 
-    while (window.isOpen())
+    while (window.get()->isOpen())
     {
         // check all the window's events that were triggered since the last iteration of the loop
         sf::Event event;
-        float x_cart = 0, y_cart = 0;
-        float x_iso = 0, y_iso = 0;
-        //int cc = -(y * t_map_x);
+        int x_cart = 0, y_cart = 0;
+        int x_iso = 0, y_iso = 0;
         float t_map_x = 64;
         float t_map_y = 32;
-        //int k = (x * t_map_x)/2 + cc/2 + t_map_x/2 + offset;
-        //int l = ((x + y) * t_map_y) / 2;
-        while (window.pollEvent(event))
+        while (window.get()->pollEvent(event))
         {
             if (event.type == sf::Event::MouseButtonPressed)
             {
@@ -339,8 +330,8 @@ bool test_engine()
                     x_cart = (event.mouseButton.x)/t_map_x;
                     y_cart = (event.mouseButton.y)/t_map_y;
 
-                    x_iso = x_cart - 8 + y_cart;
-                    y_iso = y_cart - x_cart + 8;
+                    x_iso = y_cart - x_cart;
+                    y_iso = y_cart + x_cart - 8;
                     std::cout << "mouse x carte: " << x_cart<< std::endl; // valeur de x en cartésien
                     std::cout << "mouse x iso: " << x_iso << std::endl; // valeur de x en cartésien
                     std::cout << "mouse y carte: " << y_cart << std::endl; // valeur de y en cartésien
@@ -350,7 +341,7 @@ bool test_engine()
             }
             // "close requested" event: we close the window
             if (event.type == sf::Event::Closed)
-                window.close();
+                window.get()->close();
         }
 
     }
@@ -361,6 +352,7 @@ bool test_engine()
 
 bool test_state()
 {
+    /*
     State testState = State(1);
     static int const terrain_int [] = {
             0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -440,6 +432,7 @@ bool test_state()
     }
 
 
+     */
     return true;
 }
 
@@ -447,20 +440,20 @@ bool test_state()
 
 
 bool test_render(){
+    shared_ptr<State> test_state (new State(2,2));
 
-    State testState = State(1);
     static int const terrain_int [] = {
             0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
             0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0,
             1, 1, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3,
             0, 1, 0, 0, 2, 0, 3, 3, 3, 0, 1, 1, 1, 0, 0, 0,
-            0, 1, 1, 0, 3, 3, 3, 0, 0, 0, 1, 1, 1, 2, 0, 0,
-            0, 0, 1, 0, 3, 0, 2, 2, 0, 0, 1, 1, 1, 1, 2, 0,
-            2, 0, 1, 0, 3, 0, 2, 2, 2, 0, 1, 1, 1, 1, 1, 1,
-            0, 0, 1, 0, 3, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1,
-            0, 0, 1, 0, 3, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1,
-            2, 0, 1, 0, 3, 0, 2, 2, 2, 0, 1, 1, 1, 1, 1, 1,
-            0, 0, 1, 0, 3, 0, 2, 2, 0, 0, 1, 1, 1, 1, 2, 0,
+            0, 1, 1, 0, 3, 3, 2, 0, 0, 0, 1, 1, 1, 2, 0, 0,
+            0, 0, 1, 0, 3, 0, 3, 3, 0, 0, 1, 1, 1, 1, 2, 0,
+            2, 0, 1, 0, 3, 0, 2, 3, 3, 0, 1, 1, 1, 1, 1, 1,
+            0, 0, 1, 0, 3, 3, 3, 3, 0, 0, 0, 0, 1, 1, 1, 1,
+            0, 0, 1, 0, 3, 2, 3, 3, 0, 0, 0, 0, 1, 1, 1, 1,
+            2, 0, 1, 0, 3, 0, 3, 3, 3, 0, 1, 1, 1, 1, 1, 1,
+            0, 0, 1, 0, 3, 0, 2, 3, 0, 0, 1, 1, 1, 1, 2, 0,
             0, 1, 1, 0, 3, 3, 3, 0, 0, 0, 1, 1, 1, 2, 0, 0,
             0, 1, 0, 0, 2, 0, 3, 3, 3, 0, 1, 1, 1, 0, 0, 0,
             1, 1, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3,
@@ -468,51 +461,70 @@ bool test_render(){
             0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     };
     vector<int> test_terrain;//to do mettre la taille
-    for (unsigned int i = 0; i < 256;i++)
-    {
+    for (int i = 0; i < 256; i++) {
         test_terrain.push_back(terrain_int[i]);
     }
-    Map test_map = Map(16,16,test_terrain);
+    //init map terrain
+    test_state->initializeMap(16, 16, test_terrain);
 
-    testState.initializeMap(test_map);
-
-    Map * thisMap = testState.getMap();
-
-    //adding some stuff to the map
-    Position default_pos = Position(0,0);
-
-    thisMap->addGameObject(1,default_pos,true,2);
-    default_pos.setPosition(1,2);
-    thisMap->addGameObject(1,default_pos,true, 2);
-    default_pos.setPosition(1,5);
-    thisMap->addGameObject(1,default_pos,true, 2);
-    default_pos.setPosition(6,2);
-    thisMap->addGameObject(1,default_pos,false, 2);
-    default_pos.setPosition(14,7);
-    thisMap->addGameObject(1,default_pos,false, 2);
-
+    //Map * thisMap = test_state.getMap().get();
 
     //init windows
     size_t x_window = 1024;
     size_t y_window = 1024;
+
+//    sf::Time delayTime = sf::milliseconds(1000);
     // create the window
-    sf::RenderWindow window(sf::VideoMode(static_cast<unsigned int>(x_window), static_cast<unsigned int>(y_window)), "Tilemap");
+    shared_ptr<sf::RenderWindow> window (new sf::RenderWindow(sf::VideoMode(static_cast<unsigned int>(x_window), static_cast<unsigned int>(y_window)),
+                                                              "test engine"));
 
-    render::DrawManager testdraw = render::DrawManager(testState,window);
 
-    while (window.isOpen())
+
+
+    cout << "test : new drawmanager instance" << endl;
+    render::DrawManager testdraw = render::DrawManager(test_state, window);
+    test_state.get()->addObserver(&testdraw);
+    test_state.get()->getMap().get()->addObserver(&testdraw);
+
+
+
+    // tests starts here
+
+    cout << "test : updates... " << endl;
+    testdraw.updateState(test_state);
+
+
+
+    //adding some stuff to the map
+    Position default_pos = Position(0,0);
+    Position default_pos2 = Position(1,2);
+    Position default_pos3 = Position(0,5);
+
+    Property farmer = Property("unit_farmer",10,10,10,false,false,1);
+    Property infantry = Property("unit_infantry",10,10,10,false,false,1);
+    Property archer = Property("unit_archer",10,10,10,false,false,3);
+
+    shared_ptr<Unit> test_unit1 (new Unit(1,0,0,default_pos,infantry,state::infantry));
+    shared_ptr<Unit> test_unit2 (new Unit(1,0,0,default_pos2,infantry,state::infantry));
+    shared_ptr<Unit> test_unit3 (new Unit(1,0,0,default_pos3,infantry,state::infantry));
+
+    test_state.get()->getMap()->addGameObject(test_unit1);
+    test_state.get()->getMap()->addGameObject(test_unit2);
+    test_state.get()->getMap()->addGameObject(test_unit3);
+
+
+    while (window.get()->isOpen())
     {
         // check all the window's events that were triggered since the last iteration of the loop
         sf::Event event;
-        while (window.pollEvent(event))
+        while (window.get()->pollEvent(event))
         {
             // "close requested" event: we close the window
             if (event.type == sf::Event::Closed)
-                window.close();
+                window.get()->close();
         }
 
     }
     return true;
 
 }
-*/

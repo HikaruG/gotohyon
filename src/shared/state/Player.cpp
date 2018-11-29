@@ -11,8 +11,8 @@ using namespace std;
 Player::Player(size_t player_id, bool is_npc){
     this->player_id = player_id;
     this->is_npc = is_npc;
-    this->in_food = 600;
-    this->in_gold = 600;
+    this->in_food = 2000;
+    this->in_gold = 2000;
 }
 
 

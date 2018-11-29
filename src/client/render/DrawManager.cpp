@@ -7,10 +7,10 @@
 using namespace render;
 using namespace std;
 
-DrawManager::DrawManager ( shared_ptr<state::State> current_state, sf::RenderWindow& window)
+DrawManager::DrawManager ( shared_ptr<state::State> current_state, shared_ptr<sf::RenderWindow> window)
 {
     this->current_state = current_state;
-    this->window = &window;
+    this->window = window;
     //utilisation d'un unique ptr :
     //étapes: instancier un pointeur, puis lui attribuer le "unique_ptr".get()
     shared_ptr<state::Map> current_map = (this->current_state->getMap());
@@ -31,13 +31,13 @@ DrawManager::DrawManager ( shared_ptr<state::State> current_state, sf::RenderWin
 
 bool DrawManager::updateState(shared_ptr<state::State> new_state) {
     this->current_state = new_state;
-    window->clear(sf::Color::Black);
+    window.get()->clear(sf::Color::Black);
 
     setTerrain();
     setBuilding();
     setUnit();
 
-    window->display();
+    window.get()->display();
 
     return true;
 }
@@ -57,7 +57,7 @@ bool DrawManager::setTerrain ()
             drawer.setSpriteTexture(0,local_terrain->getTerrainType(),x+y*map_size_x);
         }
     }
-    drawer.draw(*window,state_sfml);
+    drawer.draw(*window.get(),state_sfml);
     return true;
 }
 
@@ -84,7 +84,7 @@ bool DrawManager::setUnit ()
         drawer.setSpriteLocation(i,pos.getX(), pos.getY());
     }
 
-    drawer.draw(*window,state_sfml);
+    drawer.draw(*window.get(),state_sfml);
     return true;
 }
 
@@ -111,12 +111,11 @@ bool DrawManager::setBuilding ()
         drawer.setSpriteLocation(i,pos.getX(), pos.getY());
     }
 
-    drawer.draw(*window,state_sfml);
+    drawer.draw(*window.get(),state_sfml);
     return true;
 }
 
 bool DrawManager::stateChanged(const state::Event &event) {
-    std::cout<<"mkay i should redraw right ? "<<std::endl;
     updateState(current_state);
     return true;
 }

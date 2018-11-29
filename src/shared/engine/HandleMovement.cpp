@@ -56,7 +56,7 @@ bool HandleMovement::execute(state::Unit &unit, state::State& state, unsigned in
                     };
                 }
 
-                //si le joueur dans la liste list_player esyt le joueur actuel
+                //si le joueur dans la liste list_player est le joueur actuel
                 else{
                     vector<shared_ptr<state::Unit>>ally_units = list_player[i].get()->getPlayerUnitList();
 
@@ -69,10 +69,15 @@ bool HandleMovement::execute(state::Unit &unit, state::State& state, unsigned in
                 }
 
             }
-            //fin gestion
+            //fin gestion de la collision d'objets
+            size_t terrain_type = state.getMap().get()->getTerrain(new_x,new_y).get()->getTerrainType();
+            if(terrain_type == state::water){
+                std::cout << "wow wow you can't go there !" << std::endl;
+                return false;
+            }
 
             if (state.getMap().get()->moveGameObject(unit.getGame_object_id(), position)) {
-                std::cout << "successfully moved" << std::endl;
+                //std::cout << "successfully moved" << std::endl;
             }
         }
         //l'objet se retrouvera en dehors de la carte

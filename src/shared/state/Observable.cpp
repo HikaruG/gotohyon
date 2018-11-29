@@ -39,11 +39,8 @@ bool const Observable::removeAllObservers (){
 }
 
 bool Observable::notifyObservers (const Event& event){
-    std::cout<<"debug : notify"<<std::endl;
-    std::cout<<"obs size:"<<observers.size()<<" obs addr : "<<&observers<<std::endl;
     for(auto observer : observers)
     {
-        std::cout<<"to new observer"<<std::endl;
         observer->stateChanged(event);
     }
     return true;

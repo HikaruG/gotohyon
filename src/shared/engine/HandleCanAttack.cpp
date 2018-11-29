@@ -36,8 +36,6 @@ bool HandleCanAttack::execute(state::Unit& current_unit, state::State& state, ve
         }
     }
 
-
-    cout << "current_x :" << current_x << "current_y"<< current_y <<endl;
     Terrain * terrain = state.getMap().get()->getTerrain(current_x,current_y).get();
 
     //cas de l'archer

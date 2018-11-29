@@ -3,6 +3,7 @@
 //
 
 #include "HandleDamage.h"
+#include <iostream>
 
 using namespace engine;
 using namespace std;
@@ -13,6 +14,7 @@ CommandTypeId HandleDamage::getTypeId() const {
 bool HandleDamage::execute(state::State& state, state::GameObject* object, state::GameObject* ennemy_object, state::Terrain &terrain) {
     ennemy_object->getProperty()->takeDamage(object->getProperty()->getAttack());
     if(!ennemy_object->getProperty()->isAlive()){
+        cout << ennemy_object->getProperty()->getStringType() <<"destroyed" << endl;
         //commande delete
         if(ennemy_object->getProperty()->isStatic()){
             state::Building * ptr_destroyed_building = (state::Building * )ennemy_object;

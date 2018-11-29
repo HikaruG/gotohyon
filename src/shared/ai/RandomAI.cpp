@@ -20,6 +20,9 @@ RandomAI::~RandomAI() = default;
 
 bool RandomAI::run(engine::Engine &engine, state::State& state) {
 
+    engine::HandleGrowth commande_growth = engine::HandleGrowth();
+    //rajout des ressources
+    commande_growth.execute(state);
 
 
     //récupération de la liste des bâtiments du pc
@@ -37,20 +40,28 @@ bool RandomAI::run(engine::Engine &engine, state::State& state) {
     engine::HandleCanAttack commande_canattack = engine::HandleCanAttack();
     engine::HandleDamage commande_damage = engine::HandleDamage();
     engine::HandleTurn commande_turn = engine::HandleTurn();
+    engine::HandleCreation commande_create = engine::HandleCreation();
 
     //liste de game_object ennemie
     vector<shared_ptr<GameObject>> ennemy_objects;
     //indice de l'ennemi choisi comme cible lors de l'attaque
     int i_object = 0;
 
+    //randgen de 1/2
+    std::uniform_int_distribution<int> dis_half(0,1);
+    int execute = dis_half(randgen);
+    //randgen pour les différents batiments: -1 signifie le batiment vide
+    std::uniform_int_distribution<int> dis_buildings(mine, state::maxBuilding - 1);
+    int building_type = -1;
 
-
-
-    /***  implémentation des déplacements et des attaques aléatoires  ***/
 
     for(int i= 0; i < (int)list_unit.size(); i++)
     {
         Unit * unit_i = list_unit[i].get();
+        /***  implémentation des constructions de batiments aléatoires ***/
+        if(unit_i->getUnitType()==farmer){}
+
+        /***  début de l'implémentation des déplacements  ***/
         state::Position position_unit = unit_i->getPosition();
         old_y = (int)position_unit.getY();
         old_x = (int)position_unit.getX();
@@ -64,6 +75,9 @@ bool RandomAI::run(engine::Engine &engine, state::State& state) {
         std::uniform_int_distribution<int> dis_y(-distance_y,distance_y);
         new_y = old_y + dis_y(randgen);
         commande_movement.execute(*unit_i, state, new_x, new_y);
+        /***  fin de l'implémentation des déplacements  ***/
+
+        /***  début de l'implémentation des attaques et créations de batiments pour les farmer  ***/
 
         //si l'unité peut attaquer, il attaque
 
@@ -72,21 +86,64 @@ bool RandomAI::run(engine::Engine &engine, state::State& state) {
             int size_ennemy_list = ennemy_objects.size();
             std::uniform_int_distribution<int> dis_i(0,size_ennemy_list - 1);
             i_object = dis_i(randgen);
-            cout << "la cible ennemie choisie est la " << i_object << endl;
 
             //identification de la position de l'objet choisi aléatoirement
             state::Position position_ennemy = ennemy_objects[i_object]->getPosition();
-            cout << "la cible ennemie se situe à X: " << ennemy_objects[i_object]->getPosition().getX() << endl;
-            cout << "\nla cible ennemie se situe à Y: " << ennemy_objects[i_object]->getPosition().getY() << endl;
 
 
             //terrain sur lequel l'object est situé
             state::Terrain * object_terrain = state.getMap().get()->getTerrain(position_ennemy.getX(),position_ennemy.getY()).get();
             commande_damage.execute(state,unit_i, ennemy_objects[i_object].get(),* object_terrain);
         }
+
+        //si le farmeur n'a pas attaqué, il peut créer un batiment
+        if(unit_i->getUnitType()==farmer){
+            if(execute) {//une chance sur deux de créer un batiment (si il possède les ressources nécéssaire)
+                int pos_x = unit_i->getPosition().getX();
+                int pos_y = unit_i->getPosition().getY();
+                for(shared_ptr<GameObject> obstacle: list_building){
+                    if(obstacle.get()->getPosition() == unit_i->getPosition()){
+                        cout<< "cannot build here, already a constructed building present!" <<endl;
+                    }
+                    else{
+                        building_type = dis_buildings(randgen);
+                        commande_create.execute(state, pos_x, pos_y, building_type, true);
+                    }
+                }
+
+            }
+        }
     }
 
     /***  implémentation des créations d'unités   ***/
+
+
+    //randgen pour les différentes unités offensives: -1 signifie l'unité vide
+    std::uniform_int_distribution<int> dis_units(infantry,maxUnit -1);
+    int unit_type = -1;
+
+    for(shared_ptr<Building> b : list_building){
+        if(b.get()->getBuildingType()==state::town){
+            if(execute){
+               int pos_x = b.get()->getPosition().getX();
+               int pos_y = b.get()->getPosition().getY();
+               commande_create.execute(state,pos_x, pos_y, farmer, false);
+            }
+        }
+        else if(b.get()->getBuildingType()==state::barrack){
+            if(execute){
+                int pos_x = b.get()->getPosition().getX();
+                int pos_y = b.get()->getPosition().getY();
+                unit_type = dis_units(randgen);
+                commande_create.execute(state,pos_x, pos_y, unit_type, false);
+            }
+        }
+
+    }
+
+
+
+
 
     //commande de fin de tour; préparation pour le joueur suivant
     commande_turn.execute(state);

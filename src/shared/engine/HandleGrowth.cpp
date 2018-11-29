@@ -15,8 +15,6 @@ bool HandleGrowth::execute(state::State &state) {
 
     unsigned int count_farm = 0, count_mine = 0;
 
-            ;
-
     for(int i = 0; i < (int)state.getCurrentPlayer()->getPlayerBuildingList().size(); i ++){
         state::Building * building_i = state.getCurrentPlayer()->getPlayerBuildingList()[i].get();
         if(building_i->getBuildingType() == state::farm){
@@ -29,3 +27,6 @@ bool HandleGrowth::execute(state::State &state) {
     state.getCurrentPlayer()->setRessource(count_farm * 100, count_mine * 100);
     return true;
 }
+
+HandleGrowth::HandleGrowth() = default;
+HandleGrowth::~HandleGrowth() = default;
