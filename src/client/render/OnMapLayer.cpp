@@ -25,13 +25,20 @@ void OnMapLayer::updateElements(std::vector<render::DrawElement> new_list) {
 
 }
 
-void OnMapLayer::draw()
+void OnMapLayer::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-
+    states.texture = &texture_to_apply;
+    target.draw(quads,states.texture);
 
     if(this->nextLayer)
-        this->nextLayer->draw();
+        this->nextLayer->draw(target, states);
 
+}
+
+bool OnMapLayer::setSpriteLocation (unsigned int count, unsigned int x, unsigned int y)
+{
+
+    return true;
 }
 
 
@@ -54,10 +61,6 @@ bool OnMapLayer::change_map_size(unsigned int size_x, unsigned int size_y) {
     return true;
 }
 
-void OnMapLayer::draw(sf::RenderTarget &target, sf::RenderStates states) const{
-    states.texture = &texture_to_apply;
-    target.draw(quads,states.texture);
-}
 
 bool OnMapLayer::loadTexture(const std::string& terrain_file) {
     // load the tileset texture
