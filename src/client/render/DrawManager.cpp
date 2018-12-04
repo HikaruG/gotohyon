@@ -27,6 +27,9 @@ unit_layer(OnMapLayer("res/tileset_unit.png"))
     this->map_size_x = (unsigned int) tmp_x;
     this->map_size_y = (unsigned int) tmp_y;
 
+    terrain_layer.setNext(&building_layer);
+    building_layer.setNext(&unit_layer);
+
 }
 
 
@@ -37,7 +40,7 @@ bool DrawManager::updateState(shared_ptr<state::State> new_state) {
     setTerrain();
     setBuilding();
     setUnit();
-
+    terrain_layer.draw(*window,state_sfml);
     window->display();
 
     return true;
@@ -91,11 +94,13 @@ bool DrawManager::setBuilding ()
         if(current_map->getListGameObject()[i].get()->getProperty()->isStatic())
         {
             //cast en pointeur de building l'unique pointeur pour pouvoir utiliser les méthodes de building
-            elem.push_back((state::Building*)current_map->getListGameObject()[i].get());
+            build_go = (state::Building*)current_map->getListGameObject()[i].get();
+            elem.push_back(DrawElement(build_go->getPosition(),build_go->getBuildingType()));
         }
 
     }
-
+    building_layer.updateElements(elem);
+    delete build_go;
     return true;
 }
 
@@ -104,5 +109,8 @@ bool DrawManager::stateChanged(const state::Event &event) {
     std::cout << "event : "<< this_event<<std::endl;
 
     updateState(current_state);
+
+    //call the right to update
+
     return true;
 }

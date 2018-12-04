@@ -9,6 +9,9 @@ using namespace render;
 
 unsigned int OnMapLayer::map_size_x;
 unsigned int OnMapLayer::map_size_y;
+unsigned int OnMapLayer::zoom_level;
+unsigned int OnMapLayer::scalar_top_right_x;
+unsigned int OnMapLayer::scalar_top_right_y;
 
 
 OnMapLayer::OnMapLayer(std::string sprite_path):DrawLayer(sprite_path)
@@ -16,12 +19,22 @@ OnMapLayer::OnMapLayer(std::string sprite_path):DrawLayer(sprite_path)
     this->zoom_level = 1;
     this->scalar_top_right_x = 0;
     this->scalar_top_right_y = 0;
-
+    quads.setPrimitiveType(sf::Quads);
+    nextLayer = nullptr;
+    loadTexture(sprite_path);
 
 }
 
 
 void OnMapLayer::updateElements(std::vector<render::DrawElement> new_list) {
+    quads.resize(new_list.size() * 4);
+    vertex_count = 0;
+    for(vertex_count = 0; vertex_count<new_list.size(); vertex_count++)
+    {
+        setSpriteLocation();
+        setSpriteTexture();
+    }
+
 
 }
 
@@ -33,12 +46,6 @@ void OnMapLayer::draw(sf::RenderTarget& target, sf::RenderStates states) const
     if(this->nextLayer)
         this->nextLayer->draw(target, states);
 
-}
-
-bool OnMapLayer::setSpriteLocation (unsigned int count, unsigned int x, unsigned int y)
-{
-
-    return true;
 }
 
 
@@ -76,11 +83,15 @@ bool OnMapLayer::initQuads(int count) {
     return true;
 }
 
-bool OnMapLayer::setSpriteLocation(unsigned int count, unsigned int x, unsigned int y) {
-    sf::Vertex* quad = &quads[count*4];
+bool OnMapLayer::setSpriteLocation() {
+    sf::Vertex* quad = &quads[vertex_count*4];
+    DrawElement * tile = &draw_array[vertex_count];
     int offset = 480; // taille map * taille texture longueur, pour eviter d'arriver dans les negatifs
-    int t_map_x = 64;
-    int t_map_y = 32;
+    int t_map_x = tile->sprite_x;
+    int t_map_y = tile->sprite_y;
+    int x = tile->pos_x;
+    int y = tile->pos_y;
+
     int cc = -(y * t_map_x);
     int k = (x * t_map_x)/2 + cc/2 + t_map_x/2 + offset;
     int l = ((x + y) * t_map_y) / 2;
@@ -92,11 +103,13 @@ bool OnMapLayer::setSpriteLocation(unsigned int count, unsigned int x, unsigned 
     return true;
 }
 
-bool OnMapLayer::setSpriteTexture(unsigned int tileset_layer, unsigned int tileset_position_x) {
-    sf::Vertex* quad = &quads[count*4];
-    int t_map_x = 64;
-    int t_map_y = 32;
-    int tu = (tileset_position_x) % (texture_to_apply.getSize().x / t_map_x);
+bool OnMapLayer::setSpriteTexture() {
+    sf::Vertex* quad = &quads[vertex_count*4];
+    DrawElement * tile = &draw_array[vertex_count];
+
+    int t_map_x = tile->sprite_x;;
+    int t_map_y = tile->sprite_y;;
+    int tu = (tile->sprite_nbr) % (texture_to_apply.getSize().x / t_map_x);
 
     int ku = tu*t_map_x + t_map_x/2;
     //std::cout<<"Debug : adding sprite on layer "<<tileset_layer<<" tile id "<<tileset_position_x<<" count "<<count<<std::endl;
