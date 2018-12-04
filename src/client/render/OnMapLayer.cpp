@@ -3,6 +3,7 @@
 //
 
 #include "OnMapLayer.h"
+#include <iostream>
 
 using namespace render;
 
@@ -28,6 +29,7 @@ OnMapLayer::OnMapLayer(std::string sprite_path):DrawLayer(sprite_path)
 
 void OnMapLayer::updateElements(std::vector<render::DrawElement> new_list) {
     quads.resize(new_list.size() * 4);
+    draw_array = new_list;
     vertex_count = 0;
     for(vertex_count = 0; vertex_count<new_list.size(); vertex_count++)
     {

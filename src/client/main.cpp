@@ -101,7 +101,7 @@ bool test_randomAI() {
     size_t x_window = 1024;
     size_t y_window = 1024;
 
-    //sf::Time delayTime = sf::milliseconds(1000);
+    sf::Time delayTime = sf::milliseconds(1000);
     // create the window
     shared_ptr<sf::RenderWindow> window (new sf::RenderWindow(sf::VideoMode(static_cast<unsigned int>(x_window), static_cast<unsigned int>(y_window)),
                             "test engine"));
@@ -180,7 +180,7 @@ bool test_randomAI() {
         if(test_state.get()->current_player.get()->getIsNpc()) {
             test_randomAI.run(test_engine, *test_state.get());
             testdraw.updateState(test_state);
-            //sf::sleep(delayTime);
+            sf::sleep(delayTime);
         }
 
     }

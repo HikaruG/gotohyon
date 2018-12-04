@@ -15,6 +15,7 @@ DrawLayer::DrawLayer (std::string sprite_path)
 
 bool DrawLayer::setNext (DrawLayer* next_layer){
     this->nextLayer = next_layer;
+    return true;
 }
 
 DrawLayer* DrawLayer::getNext ()

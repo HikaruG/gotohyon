@@ -9,7 +9,7 @@ using namespace render;
 using namespace std;
 
 
-DrawManager::DrawManager ( shared_ptr<state::State> current_state, sf::RenderWindow& window)
+DrawManager::DrawManager ( shared_ptr<state::State> current_state, shared_ptr<sf::RenderWindow> window)
 :terrain_layer(OnMapLayer("res/tileset_terrain.png")),building_layer(OnMapLayer("res/tileset_building.png")),
 unit_layer(OnMapLayer("res/tileset_unit.png"))
 {
@@ -41,13 +41,9 @@ bool DrawManager::updateState(shared_ptr<state::State> new_state) {
     setTerrain();
     setBuilding();
     setUnit();
-<<<<<<< HEAD
 
-    window.get()->display();
-=======
     terrain_layer.draw(*window,state_sfml);
     window->display();
->>>>>>> refactor
 
     return true;
 }
@@ -55,19 +51,17 @@ bool DrawManager::updateState(shared_ptr<state::State> new_state) {
 
 bool DrawManager::setTerrain ()
 {
+
     shared_ptr<state::Map> current_map = this->current_state->getMap();
     std::vector<DrawElement> elem;
     for(unsigned int x = 0; x < this->map_size_x;x ++) {
         for (unsigned int y = 0; y < this->map_size_y; y++) {
-            state::Terrain *local_terrain = current_map.get()->getTerrain(x, y).get();
-            elem.push_back(DrawElement(state::Position(x, y), local_terrain->getTerrainType()));
+            shared_ptr<state::Terrain> local_terrain = current_map.get()->getTerrain(x, y);
+            elem.push_back(DrawElement(state::Position(x, y), local_terrain.get()->getTerrainType()));
         }
     }
-<<<<<<< HEAD
-    drawer.draw(*window.get(),state_sfml);
-=======
+
     terrain_layer.updateElements(elem);
->>>>>>> refactor
     return true;
 }
 
@@ -75,76 +69,46 @@ bool DrawManager::setUnit ()
 {
     state::Map * current_map = this->current_state->getMap().get();
 
-    state::Unit * units_go;
+
     state::Position pos;
-    std::vector<DrawElement> elem;
+    vector<DrawElement> elem;
     for (unsigned int i = 0; i< current_map->getListGameObject().size();i++)
     {
 
         if(!current_map->getListGameObject()[i].get()->getProperty()->isStatic())
         {
             //cast en pointeur le unique pointeur => on peut utiliser les méthodes de la classe
-            units_go = (state::Unit *) current_map->getListGameObject()[i].get();
+            state::Unit * units_go = (state::Unit *) current_map->getListGameObject()[i].get();
             elem.push_back(DrawElement(units_go->getPosition(),units_go->getUnitType()));
         }
     }
-<<<<<<< HEAD
-    drawer.initQuads(static_cast<int>(units_go.size()));
-    for(unsigned int i = 0; i<units_go.size(); i++)
-    {
-        drawer.setSpriteTexture(2,units_go[i]->getUnitType(), i);
-        pos = units_go[i]->getPosition();
-        drawer.setSpriteLocation(i,pos.getX(), pos.getY());
-    }
 
-    drawer.draw(*window.get(),state_sfml);
-=======
     unit_layer.updateElements(elem);
-    delete units_go;
->>>>>>> refactor
     return true;
 }
 
 bool DrawManager::setBuilding ()
 {
-    std::vector<DrawElement> elem;
+    vector<DrawElement> elem;
     state::Map * current_map = this->current_state->getMap().get();
-    state::Building * build_go;
     state::Position pos;
-    for (unsigned int i = 0; i< current_map->getListGameObject().size();i++)
-    {
-        if(current_map->getListGameObject()[i].get()->getProperty()->isStatic())
-        {
+    for (unsigned int i = 0; i< current_map->getListGameObject().size();i++) {
+        if (current_map->getListGameObject()[i].get()->getProperty()->isStatic()) {
             //cast en pointeur de building l'unique pointeur pour pouvoir utiliser les méthodes de building
-            build_go = (state::Building*)current_map->getListGameObject()[i].get();
-            elem.push_back(DrawElement(build_go->getPosition(),build_go->getBuildingType()));
+            state::Building * build_go = (state::Building *) current_map->getListGameObject()[i].get();
+            elem.push_back(DrawElement(build_go->getPosition(), build_go->getBuildingType()));
         }
 
     }
-<<<<<<< HEAD
-    drawer.initQuads(build_go.size());
-    for(unsigned int i = 0; i<build_go.size(); i++)
-    {
-        drawer.setSpriteTexture(1,build_go[i]->getBuildingType(), i);
-        pos = build_go[i]->getPosition();
-        drawer.setSpriteLocation(i,pos.getX(), pos.getY());
-    }
-
-    drawer.draw(*window.get(),state_sfml);
-=======
     building_layer.updateElements(elem);
-    delete build_go;
->>>>>>> refactor
     return true;
 }
 
 bool DrawManager::stateChanged(const state::Event &event) {
-<<<<<<< HEAD
-=======
+
     state::EventTypeId this_event = event.getEventType();
     std::cout << "event : "<< this_event<<std::endl;
 
->>>>>>> refactor
     updateState(current_state);
 
     //call the right to update
