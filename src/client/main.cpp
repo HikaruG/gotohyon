@@ -182,6 +182,7 @@ bool test_randomAI() {
             testdraw.updateState(test_state);
             //sf::sleep(delayTime);
         }
+
     }
 
     return true;
@@ -279,6 +280,7 @@ bool test_engine()
     test_turn.execute(*test_state.get());
 
     //create the first units for the 2nd npc
+
 
     cout << "test : create units and building for the 2nd npc" << endl;
     cout << "test : create unit in 12,12" << endl;

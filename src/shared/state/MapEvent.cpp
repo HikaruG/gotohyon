@@ -6,10 +6,10 @@
 using namespace state;
 
 MapEvent::~MapEvent () = default;
-MapEvent::MapEvent (MapEventId map_event){
+MapEvent::MapEvent (MapEventId map_event):Event(EventTypeId::MAP_EVENT){
     this->map_event = map_event;
 }
 
-const EventTypeId MapEvent::getEventType (){
+EventTypeId MapEvent::getEventType () const{
     return EventTypeId::MAP_EVENT;
 }
