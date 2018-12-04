@@ -11,7 +11,7 @@ using namespace std;
 
 DrawManager::DrawManager ( shared_ptr<state::State> current_state, shared_ptr<sf::RenderWindow> window)
 :terrain_layer(OnMapLayer("res/tileset_terrain.png")),building_layer(OnMapLayer("res/tileset_building.png")),
-unit_layer(OnMapLayer("res/tileset_unit.png"))
+unit_layer(OnMapLayer("res/tileset_unit.png")),user_interact(InputManager(window))
 {
 
     this->current_state = current_state;
@@ -38,10 +38,21 @@ bool DrawManager::updateState(shared_ptr<state::State> new_state) {
     this->current_state = new_state;
     window.get()->clear(sf::Color::Black);
 
+
+
+    terrain_layer.draw(*window,state_sfml);
+    window->display();
+
+    return true;
+}
+
+bool DrawManager::forceRefresh (std::shared_ptr<state::State> state)
+{
+    this->current_state = state;
+    window.get()->clear(sf::Color::Black);
     setTerrain();
     setBuilding();
     setUnit();
-
     terrain_layer.draw(*window,state_sfml);
     window->display();
 
@@ -109,7 +120,30 @@ bool DrawManager::stateChanged(const state::Event &event) {
     state::EventTypeId this_event = event.getEventType();
     std::cout << "event : "<< this_event<<std::endl;
 
+    /*
+     * events:
+     * 0 Player changed
+     * 1 Unit selected -- or other gui related stuuf
+     * 2 terrain changed
+     * 3 building changed
+     * 4 unit changed
+     * setTerrain();
+    setBuilding();
+    setUnit();
+     */
     updateState(current_state);
+    switch(this_event) {
+        case 0 : break;
+        case 1 : break;
+        case 2 : setTerrain();
+            break;
+        case 3 :setBuilding();
+            break;
+        case 4 : setUnit();
+            break;
+        default: std::cout<<"invalid event from state received"<<endl;
+    }
+
 
     //call the right to update
 

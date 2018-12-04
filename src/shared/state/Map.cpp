@@ -20,7 +20,7 @@ Map::Map (unsigned int X, unsigned int Y, std::vector<int>& terrain_int)
         Position newPos = Position(i%Y,i/Y);
         this->list_map.push_back(move(shared_ptr<Terrain> (new Terrain(newPos, 1, static_cast<TerrainType >(terrain_int[i])))));
     }
-    MapEvent event = MapEvent(MapEventId::TERRAIN_CHANGED);
+    Event event = Event(EventTypeId::TERRAIN_CHANGED);
     notifyObservers(event);
 
 }
@@ -29,7 +29,7 @@ Map::Map (unsigned int X, unsigned int Y, std::vector<int>& terrain_int)
 bool Map::addGameObject(shared_ptr<GameObject> game_object) {
     shared_ptr<GameObject> new_object = game_object;
     list_game_object.push_back(new_object);
-    MapEvent event = MapEvent(MapEventId::UNIT_CHANGED);
+    Event event = Event(EventTypeId::UNIT_CHANGED);
     notifyObservers(event);
     return true;
 }
@@ -43,7 +43,7 @@ bool Map::deleteGameObject(state::GameObject* deleting_game_object) {
             break;
         }
     }
-    MapEvent event = MapEvent(MapEventId::TERRAIN_CHANGED);
+    Event event = Event(EventTypeId::TERRAIN_CHANGED);
     notifyObservers(event);
     return true;
 }
@@ -87,7 +87,7 @@ bool Map::moveGameObject (unsigned int game_object_id, Position new_position)
     {
         if(list_game_object[GOind].get()->getGame_object_id() == game_object_id)
         {
-            MapEvent event = MapEvent(MapEventId::UNIT_CHANGED);
+            Event event = Event(EventTypeId::UNIT_CHANGED);
             notifyObservers(event);
             return list_game_object[GOind].get()->setPosition(new_position);
         }

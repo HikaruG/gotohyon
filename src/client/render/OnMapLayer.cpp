@@ -60,6 +60,7 @@ bool OnMapLayer::updateZoom(unsigned int newZoom) {
 bool OnMapLayer::updateMapBorder(unsigned int new_x, unsigned int new_y) {
     scalar_top_right_x = new_x;
     scalar_top_right_y = new_y;
+    return true;
 }
 
 

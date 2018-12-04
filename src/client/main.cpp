@@ -24,6 +24,7 @@ bool test_state();
 bool test_render();
 bool test_engine();
 bool test_randomAI();
+bool test_input();
 
 
 int main(int argc,char* argv[])
@@ -60,10 +61,84 @@ int main(int argc,char* argv[])
                 cout << "test random_ai successful" << endl;
             }
         }
+        if( !strcmp(argv[1],"input") ) {
+            cout << "test input activated . . ." << endl;
+            if (test_input()) {
+                cout << "test input successful" << endl;
+            }
+        }
     }
 
     return 0;
 }
+
+
+
+bool test_input(){
+    shared_ptr<State> test_state (new State(2,2));
+
+    static int const terrain_int [] = {
+            0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0,
+            1, 1, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3,
+            0, 1, 0, 0, 2, 0, 3, 3, 3, 0, 1, 1, 1, 0, 0, 0,
+            0, 1, 1, 0, 3, 3, 2, 0, 0, 0, 1, 1, 1, 2, 0, 0,
+            0, 0, 1, 0, 3, 0, 3, 3, 0, 0, 1, 1, 1, 1, 2, 0,
+            2, 0, 1, 0, 3, 0, 2, 3, 3, 0, 1, 1, 1, 1, 1, 1,
+            0, 0, 1, 0, 3, 3, 3, 3, 0, 0, 0, 0, 1, 1, 1, 1,
+            0, 0, 1, 0, 3, 2, 3, 3, 0, 0, 0, 0, 1, 1, 1, 1,
+            2, 0, 1, 0, 3, 0, 3, 3, 3, 0, 1, 1, 1, 1, 1, 1,
+            0, 0, 1, 0, 3, 0, 2, 3, 0, 0, 1, 1, 1, 1, 2, 0,
+            0, 1, 1, 0, 3, 3, 3, 0, 0, 0, 1, 1, 1, 2, 0, 0,
+            0, 1, 0, 0, 2, 0, 3, 3, 3, 0, 1, 1, 1, 0, 0, 0,
+            1, 1, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3,
+            0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    };
+    vector<int> test_terrain;//to do mettre la taille
+    for (int i = 0; i < 256; i++) {
+        test_terrain.push_back(terrain_int[i]);
+    }
+    //init map terrain
+    test_state->initializeMap(16, 16, test_terrain);
+
+    //Map * thisMap = test_state.getMap().get();
+
+    //init windows
+    size_t x_window = 1024;
+    size_t y_window = 1024;
+
+    sf::Time delayTime = sf::milliseconds(1000);
+    // create the window
+    shared_ptr<sf::RenderWindow> window (new sf::RenderWindow(sf::VideoMode(static_cast<unsigned int>(x_window), static_cast<unsigned int>(y_window)),
+                                                              "test engine"));
+
+
+
+    cout << "test : new engine instance" << endl;
+    Engine test_engine = Engine();
+
+
+    cout << "test : new drawmanager instance" << endl;
+    render::DrawManager testdraw = render::DrawManager(test_state, window);
+    test_state.get()->addObserver(&testdraw);
+    test_state.get()->getMap().get()->addObserver(&testdraw);
+
+    cout << "test : new randomAI instance" << endl;
+    ai::RandomAI test_randomAI = ai::RandomAI(0);
+
+
+
+    cout << "test : updates... " << endl;
+    testdraw.forceRefresh(test_state);
+
+    while(!test_state.get()->is_game_finished)
+    {
+
+    }
+
+}
+
 
 bool test_randomAI() {
     // state to test
@@ -124,7 +199,7 @@ bool test_randomAI() {
 
 
     cout << "test : updates... " << endl;
-    testdraw.updateState(test_state);
+    testdraw.forceRefresh(test_state);
 
 
 
@@ -137,7 +212,7 @@ bool test_randomAI() {
     //create the first units for the 1st npc
     test_creation.execute(* test_state.get(), 7, 5, farmer,false);
     cout << "test : create farmer in 7,3" << endl;
-    //testdraw.updateState(test_state);
+    //testdraw.forceRefresh(test_state);
 
     test_creation.execute(* test_state.get(), 8, 5, infantry, false);
     cout << "test : create infantry in 8,2," << endl;
@@ -179,7 +254,7 @@ bool test_randomAI() {
     for(int i =0; i<50;i++) {
         if(test_state.get()->current_player.get()->getIsNpc()) {
             test_randomAI.run(test_engine, *test_state.get());
-            testdraw.updateState(test_state);
+            testdraw.forceRefresh(test_state);
             sf::sleep(delayTime);
         }
 
@@ -245,7 +320,7 @@ bool test_engine()
     // tests starts here
 
     cout << "test : updates... " << endl;
-    testdraw.updateState(test_state);
+    testdraw.forceRefresh(test_state);
 
 
 
@@ -259,20 +334,20 @@ bool test_engine()
     //create the first units for the 1st npc
     cout << "test : create unit in 6,6" << endl;
     test_creation.execute(* test_state.get(), 7, 2, 1, false);//should instanciate an unit in 6,6
-    //testdraw.updateState(test_state);
+    //testdraw.forceRefresh(test_state);
 
     cout << "test : create unit in 0,0" << endl;
     test_creation.execute(* test_state.get(), 8, 2, 1, false);//should instanciate an unit in 0,0
-    //testdraw.updateState(test_state);
+    //testdraw.forceRefresh(test_state);
 
 
     cout << "test : create unit in 3,1" << endl;
     test_creation.execute(* test_state.get(), 6, 2, 1, false);//should instanciate an unit in 3,1
-    testdraw.updateState(test_state);
+    testdraw.forceRefresh(test_state);
 
     cout << "test : create building in 0,0"<<endl;
     test_creation.execute(* test_state.get(),7,2,3,true);//should instanciate a building in 0,0
-    testdraw.updateState(test_state);
+    testdraw.forceRefresh(test_state);
 
 
     //end 1st npc's first turn
@@ -285,20 +360,20 @@ bool test_engine()
     cout << "test : create units and building for the 2nd npc" << endl;
     cout << "test : create unit in 12,12" << endl;
     test_creation.execute(* test_state.get(), 7, 1, 1, false);//should instanciate an unit in 6,6
-    //testdraw.updateState(test_state);
+    //testdraw.forceRefresh(test_state);
 
     cout << "test : create unit in 15,15" << endl;
     test_creation.execute(* test_state.get(), 8, 13, 1, false);//should instanciate an unit in 0,0
-    //testdraw.updateState(test_state);
+    //testdraw.forceRefresh(test_state);
 
 
     cout << "test : create unit in 1,0" << endl;
     test_creation.execute(* test_state.get(), 6, 13, 1, false);//should instanciate an unit in 3,1
-    testdraw.updateState(test_state);
+    testdraw.forceRefresh(test_state);
 
     cout << "test : create building in 15,15"<<endl;
     test_creation.execute(* test_state.get(),7,13,3,true);//should instanciate a building in 0,0
-    testdraw.updateState(test_state);
+    testdraw.forceRefresh(test_state);
 
     //end 2nd npc's first turn
     cout << "npc2 : end 1st turn"<<endl;
@@ -493,7 +568,7 @@ bool test_render(){
     // tests starts here
 
     cout << "test : updates... " << endl;
-    testdraw.updateState(test_state);
+    testdraw.forceRefresh(test_state);
 
 
 

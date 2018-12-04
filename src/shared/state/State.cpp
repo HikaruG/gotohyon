@@ -17,7 +17,7 @@ State::State(unsigned int player_number,unsigned int npc_number)
     this->player_nbr = player_number;
     day = 0;
     cout << " construit " << this << endl;
-
+    is_game_finished = false;
     initializePlayer(player_number, npc_number);
 }
 
