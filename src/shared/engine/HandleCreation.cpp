@@ -35,6 +35,7 @@ bool HandleCreation::execute(state::State &state, unsigned int pos_x, unsigned i
     state.getCurrentPlayer().get()->getRessource(my_food, my_gold);
     //all_objects_count = 0;
 
+    string debug_info = "none";
     state::Position position(pos_x, pos_y);
 
     state::Map * map = state.getMap().get();
@@ -61,22 +62,27 @@ bool HandleCreation::execute(state::State &state, unsigned int pos_x, unsigned i
             case state::town:
                 req_gold = 600;
                 req_food = 600;
+                debug_info = "town";
                 break;
             case state::farm:
                 req_gold = 400;
                 req_food = 200;
+                debug_info = "farm";
                 break;
             case state::mine:
                 req_gold = 200;
                 req_food = 400;
+                debug_info = "mine";
                 break;
             case state::barrack:
                 req_gold = 400;
                 req_food = 400;
+                debug_info = "barrack";
                 break;
             case state::turret:
                 req_gold = 500;
                 req_food = 500;
+                debug_info = "turret";
                 break;
             default:
                 cout << "wow wow, unknown building type" <<endl;
@@ -91,8 +97,9 @@ bool HandleCreation::execute(state::State &state, unsigned int pos_x, unsigned i
                                  buildings[type],
                                  (state::BuildingType) type));
             state.addBuilding(move(new_building));
-            my_food -= req_food;
-            my_gold -= req_gold;
+            state.getCurrentPlayer().get()->setRessource(-req_gold,-req_food);
+            cout << "created new building : " << debug_info <<endl;
+
         }
 
     }
@@ -110,14 +117,17 @@ bool HandleCreation::execute(state::State &state, unsigned int pos_x, unsigned i
             case state::farmer:
                 req_gold = 75;
                 req_food = 75;
+                debug_info = "farmer";
                 break;
             case state::archer:
                 req_gold = 100;
                 req_food = 140;
+                debug_info = "archer";
                 break;
             case state::infantry:
                 req_gold = 140;
                 req_food = 100;
+                debug_info = "infantry";
                 break;
             default:
                 cout << "wow wow, unknown unit type" <<endl;
@@ -131,8 +141,9 @@ bool HandleCreation::execute(state::State &state, unsigned int pos_x, unsigned i
                                                       units[type],
                                                       (state::UnitType) type));
             state.addUnit(move(new_unit));
-            my_food -= req_food;
-            my_gold -= req_gold;
+            cout << "created new unit : " << debug_info <<endl;
+            state.getCurrentPlayer().get()->setRessource(-req_gold,-req_food);
+
         }
     }
     return true;

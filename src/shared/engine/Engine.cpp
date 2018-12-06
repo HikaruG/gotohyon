@@ -4,18 +4,23 @@
 
 #include "Engine.h"
 #include <SFML/Graphics.hpp>
-using namespace engine;
+#include <iostream>
 
-Engine::Engine() {}
+using namespace engine;
+using namespace std;
+
+Engine::Engine() {
+}
 
 Engine::~Engine() {
 
 }
 
 
-bool Engine::addCommands(Command* command)
+bool Engine::addCommands(shared_ptr<Command> command)
 {
-    //current_command.push_back(*command);
+    shared_ptr<Command> new_command = command;
+    list_commandes.push_back(new_command);
     return true;
 }
 
