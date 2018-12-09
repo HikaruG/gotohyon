@@ -149,125 +149,114 @@ bool test_input(){
 bool test_heuristicAI(){
         // state to test
 
-        shared_ptr<State> test_state (new State(2,2));
+    shared_ptr<State> test_state (new State(2,2));
 
-        static int const terrain_int [] = {
-                0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0,
-                1, 1, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3,
-                0, 1, 0, 0, 2, 0, 3, 3, 3, 0, 1, 1, 1, 0, 0, 0,
-                0, 1, 1, 0, 3, 3, 2, 0, 0, 0, 1, 1, 1, 2, 0, 0,
-                0, 0, 1, 0, 3, 0, 3, 3, 0, 0, 1, 1, 1, 1, 2, 0,
-                2, 0, 1, 0, 3, 0, 2, 3, 3, 0, 1, 1, 1, 1, 1, 1,
-                0, 0, 1, 0, 3, 3, 3, 3, 0, 0, 0, 0, 1, 1, 1, 1,
-                0, 0, 1, 0, 3, 2, 3, 3, 0, 0, 0, 0, 1, 1, 1, 1,
-                2, 0, 1, 0, 3, 0, 3, 3, 3, 0, 1, 1, 1, 1, 1, 1,
-                0, 0, 1, 0, 3, 0, 2, 3, 0, 0, 1, 1, 1, 1, 2, 0,
-                0, 1, 1, 0, 3, 3, 3, 0, 0, 0, 1, 1, 1, 2, 0, 0,
-                0, 1, 0, 0, 2, 0, 3, 3, 3, 0, 1, 1, 1, 0, 0, 0,
-                1, 1, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3,
-                0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-        };
-        vector<int> test_terrain;//to do mettre la taille
-        for (int i = 0; i < 256; i++) {
-            test_terrain.push_back(terrain_int[i]);
-        }
-        //init map terrain
-        test_state->initializeMap(16, 16, test_terrain);
-
-        //Map * thisMap = test_state.getMap().get();
-
-        //init windows
-        size_t x_window = 1024;
-        size_t y_window = 1024;
-
-        sf::Time delayTime = sf::milliseconds(1000);
-        // create the window
-        shared_ptr<sf::RenderWindow> window (new sf::RenderWindow(sf::VideoMode(static_cast<unsigned int>(x_window), static_cast<unsigned int>(y_window)),
-                                                                  "test engine"));
-
-
-
-        cout << "test : new engine instance" << endl;
-        Engine test_engine = Engine();
-
-
-        cout << "test : new drawmanager instance" << endl;
-        render::DrawManager testdraw = render::DrawManager(test_state, window);
-        test_state.get()->addObserver(&testdraw);
-        test_state.get()->getMap().get()->addObserver(&testdraw);
-
-
-        cout << "test : new randomAI instance" << endl;
-        ai::HeuristicAI test_heuristicAI = ai::HeuristicAI(0);
-
-
-
-        cout << "test : updates... " << endl;
-        testdraw.forceRefresh(test_state);
-
-
-
-        HandleCreation test_creation = HandleCreation();
-        HandleTurn test_turn = HandleTurn();
-
-
-
-        cout << "test : create units and building for the 1st npc" << endl;
-        //create the first units for the 1st npc
-        test_creation.execute(* test_state.get(), 7, 5, farmer,false);
-        cout << "test : create farmer in 7,3" << endl;
-        //testdraw.forceRefresh(test_state);
-
-        test_creation.execute(* test_state.get(), 8, 5, infantry, false);
-        cout << "test : create infantry in 8,2," << endl;
-
-
-        cout << "test : create archer in 6,2" << endl;
-        test_creation.execute(* test_state.get(), 6, 5, archer, false);
-
-        cout << "test : create town in 7,2"<<endl;
-        test_creation.execute(* test_state.get(),7,5,town,true);
-
-
-        //end 1st npc's first turn
-        cout << "npc1 : end 1st turn"<<endl;
-        test_turn.execute(*test_state.get());
-
-        //create the first units for the 2nd npc
-
-        cout << "test : create units and building for the 2nd npc" << endl;
-        test_creation.execute(* test_state.get(), 7, 9, farmer,false);
-        cout << "test : create farmer in 7,12" << endl;
-
-        test_creation.execute(* test_state.get(), 8, 9, infantry, false);
-        cout << "test : create infantry in 8,13," << endl;
-
-
-        cout << "test : create archer in 6,13" << endl;
-        test_creation.execute(* test_state.get(), 6,9, archer, false);
-
-        cout << "test : create town in 7,13"<<endl;
-        test_creation.execute(* test_state.get(),7,9,town,true);
-
-
-        //end 2nd npc's first turn
-        cout << "npc 2: end 1st turn"<<endl;
-        test_turn.execute(*test_state.get());
-
-
-        for(int i =0; i<50;i++) {
-            if(test_state.get()->current_player.get()->getIsNpc()) {
-                test_heuristicAI.run(test_engine, *test_state.get());
-                testdraw.forceRefresh(test_state);
-                sf::sleep(delayTime);
-            }
-
-        }
-
-        return true;
+    static int const terrain_int [] = {
+            0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0,
+            1, 1, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3,
+            0, 1, 0, 0, 2, 0, 3, 3, 3, 0, 1, 1, 1, 0, 0, 0,
+            0, 1, 1, 0, 3, 3, 2, 0, 0, 0, 1, 1, 1, 2, 0, 0,
+            0, 0, 1, 0, 3, 0, 3, 3, 0, 0, 1, 1, 1, 1, 2, 0,
+            2, 0, 1, 0, 3, 0, 2, 3, 3, 0, 1, 1, 1, 1, 1, 1,
+            0, 0, 1, 0, 3, 3, 3, 3, 0, 0, 0, 0, 1, 1, 1, 1,
+            0, 0, 1, 0, 3, 2, 3, 3, 0, 0, 0, 0, 1, 1, 1, 1,
+            2, 0, 1, 0, 3, 0, 3, 3, 3, 0, 1, 1, 1, 1, 1, 1,
+            0, 0, 1, 0, 3, 0, 2, 3, 0, 0, 1, 1, 1, 1, 2, 0,
+            0, 1, 1, 0, 3, 3, 3, 0, 0, 0, 1, 1, 1, 2, 0, 0,
+            0, 1, 0, 0, 2, 0, 3, 3, 3, 0, 1, 1, 1, 0, 0, 0,
+            1, 1, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3,
+            0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    };
+    vector<int> test_terrain;//to do mettre la taille
+    for (int i = 0; i < 256; i++) {
+        test_terrain.push_back(terrain_int[i]);
     }
+    //init map terrain
+    test_state->initializeMap(16, 16, test_terrain);
+
+    //Map * thisMap = test_state.getMap().get();
+
+    //init windows
+    size_t x_window = 1024;
+    size_t y_window = 1024;
+
+    sf::Time delayTime = sf::milliseconds(1000);
+    // create the window
+    shared_ptr<sf::RenderWindow> window (new sf::RenderWindow(sf::VideoMode(static_cast<unsigned int>(x_window), static_cast<unsigned int>(y_window)),
+                                                              "test engine"));
+
+
+
+    cout << "test : new engine instance" << endl;
+    Engine test_engine = Engine();
+
+
+    cout << "test : new drawmanager instance" << endl;
+    render::DrawManager testdraw = render::DrawManager(test_state, window);
+    test_state.get()->addObserver(&testdraw);
+    test_state.get()->getMap().get()->addObserver(&testdraw);
+
+
+    cout << "test : new randomAI instance" << endl;
+    ai::HeuristicAI test_heuristicAI = ai::HeuristicAI(0);
+
+
+
+    cout << "test : updates... " << endl;
+    testdraw.forceRefresh(test_state);
+
+
+
+    HandleCreation test_creation = HandleCreation();
+    HandleTurn test_turn = HandleTurn();
+
+
+
+    cout << "test : create units and building for the 1st npc" << endl;
+    //create the first units for the 1st npc
+    test_creation.execute(* test_state.get(), 7, 5, farmer,false);
+    //testdraw.forceRefresh(test_state);
+
+    test_creation.execute(* test_state.get(), 8, 5, infantry, false);
+
+    test_creation.execute(* test_state.get(), 6, 5, archer, false);
+
+    test_creation.execute(* test_state.get(),7,4,town,true);
+
+
+    //end 1st npc's first turn
+    cout << "npc1 : end 1st turn"<<endl;
+    test_turn.execute(*test_state.get());
+
+    //create the first units for the 2nd npc
+
+    cout << "test : create units and building for the 2nd npc" << endl;
+    test_creation.execute(* test_state.get(), 7, 9, farmer,false);
+
+    test_creation.execute(* test_state.get(), 8, 9, infantry, false);
+
+    test_creation.execute(* test_state.get(), 6,9, archer, false);
+
+    test_creation.execute(* test_state.get(),7,10,town,true);
+
+    //end 2nd npc's first turn
+    cout << "npc 2: end 1st turn"<<endl;
+    test_turn.execute(*test_state.get());
+
+
+    for(int i =0; i<50;i++) {
+        if(test_state.get()->current_player.get()->getIsNpc()) {
+            test_heuristicAI.run(test_engine, *test_state.get());
+            testdraw.forceRefresh(test_state);
+            sf::sleep(delayTime);
+        }
+
+    }
+
+    return true;
+}
 
 
 

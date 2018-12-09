@@ -53,6 +53,7 @@ bool collisionHandler(State &state, unsigned int pos_x, unsigned int pos_y){
         }
 
     }
+    return true;
     //fin gestion de la collision d'objets
 
 }
@@ -150,6 +151,10 @@ bool HandleCreation::execute(state::State &state, unsigned int pos_x, unsigned i
                 state.getCurrentPlayer().get()->setRessource(-req_gold, -req_food);
                 cout << "created new building : " << debug_info << endl;
             }
+            else {
+                cout << "couldn't build here" << endl;
+                return false;
+            }
         }
 
     }
@@ -195,6 +200,10 @@ bool HandleCreation::execute(state::State &state, unsigned int pos_x, unsigned i
                 state.addUnit(move(new_unit));
                 cout << "created new unit : " << debug_info << endl;
                 state.getCurrentPlayer().get()->setRessource(-req_gold, -req_food);
+            }
+            else {
+                cout << "couldn't build here" << endl;
+                return false;
             }
         }
     }

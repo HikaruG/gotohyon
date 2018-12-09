@@ -104,18 +104,23 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
             }
         }
     }
+    cout << "size of the ennemy towns : " << towns.size() << endl;
 
-    int town_distance = 40;
+    int town_distance = 400;
     //récupération de la ville ennemie la plus proche
     for(Building * closest_town : towns){
         int ennemy_x = closest_town->getPosition().getX();
         int ennemy_y = closest_town->getPosition().getY();
         if(town_distance > distance_pos(ennemy_x, my_x, ennemy_y, my_y))
             town_playerid = closest_town->getPlayerId();
-            town_x = ennemy_x;
+        cout << "ennemy player id is : " << town_playerid << endl;
+        town_x = ennemy_x;
             town_y = ennemy_y;
             town_distance = distance_pos(ennemy_x, my_x, ennemy_y, my_y);
     }
+
+    cout << "ennemy player id is : " << town_playerid << endl;
+    Player * ennemy = state.getListPlayer()[town_playerid].get();
 
 
     engine::HandleMovement commande_movement = engine::HandleMovement();
@@ -327,8 +332,10 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
     /***  implémentation des créations d'unités  c ***/
 
     /*** AI pour les batiments ***/
+    int ennemy_army_size = ennemy->getPlayerUnitList().size();
+    int my_army_size = my_list_unit.size();
 
-    if(number_advantage(my_list_unit.size(), state.getListPlayer()[town_playerid].get()->getPlayerUnitList().size())) {
+    if(number_advantage(my_army_size,ennemy_army_size)) {
 
         //randgen pour les différentes unités offensives: -1 signifie l'unité vide
         std::uniform_int_distribution<int> dis_units(infantry, maxUnit - 1);
