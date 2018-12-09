@@ -79,7 +79,8 @@ bool HandleCanAttack::execute(state::Unit& current_unit, state::State& state, ve
         return true;
     }
     //si l'unité ne peut pas attaquer, elle devient indisponible
-    current_unit.getProperty()->setAvailability(false);
+    if(current_unit.getUnitType()!=farmer)
+        current_unit.getProperty()->setAvailability(false);
     return false;
 }
 

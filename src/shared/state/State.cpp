@@ -15,6 +15,7 @@ State::State(unsigned int player_number,unsigned int npc_number)
 
 {
     this->player_nbr = player_number;
+    this->remaining_players = player_number;
     day = 0;
     cout << " construit " << this << endl;
     is_game_finished = false;
@@ -73,7 +74,6 @@ bool State::deleteUnit(state::Unit* deleting_unit) {
     bool success = false;
     //recherche du play associé à l'unité détruite
     for(int i= 0; i < (int) player_nbr;i++){
-        cout << "current player : " << list_player[i].get()->getPlayerId() << endl;
         if(deleting_unit->getPlayerId() == list_player[i].get()->getPlayerId()) {
             success = list_player[i].get()->deletePlayerUnit(deleting_unit);
             cout << success << endl;
@@ -147,6 +147,18 @@ unsigned int State::getPlayerNbr(){
 unsigned int State::getDay()
 {
     return day;
+}
+
+int State::getRemainingPlayers() {
+    return this->remaining_players;
+}
+
+bool State::setPlayerDead(){
+    this->current_player.get()->setIsDead();
+    this->remaining_players--;
+    if(remaining_players == 1)
+        this->is_game_finished =true;
+    return true;
 }
 
 //met à jour l'id de joueur courant après un fin de tour

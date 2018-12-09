@@ -17,7 +17,7 @@ CommandTypeId HandleTurn::getTypeId() const {
     return CommandTypeId ::HANDLE_TURN;
 }
 
-//pour le moment, dés que tous les objets deviennent indisponibles, le tour se finit automatiquement
+//pour le moment, le tour se finit automatiquement dés qu'on lance cette commande
 bool HandleTurn::execute(state::State &state) {
 
     if(state.getCurrentPlayerId() > state.getPlayerNbr()){

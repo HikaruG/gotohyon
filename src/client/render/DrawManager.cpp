@@ -16,15 +16,9 @@ unit_layer(OnMapLayer("res/tileset_unit.png")),user_interact(InputManager(window
 
     this->current_state = current_state;
     this->window = window;
-    //utilisation d'un unique ptr :
-    //étapes: instancier un pointeur, puis lui attribuer le "unique_ptr".get()
-    shared_ptr<state::Map> current_map = (this->current_state->getMap());
-
-    //this->game_object_list = move(current_state.getMap().get()->getListGameObject());
     int tmp_x = 0;
     int tmp_y = 0;
-    current_map.get()->getSize(tmp_x,tmp_y);
-
+    current_state.get()->getMap().get()->getSize(tmp_x,tmp_y);
     this->map_size_x = (unsigned int) tmp_x;
     this->map_size_y = (unsigned int) tmp_y;
 

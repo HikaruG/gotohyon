@@ -76,15 +76,15 @@ CommandTypeId HandleCreation::getTypeId() const {
 
 bool HandleCreation::execute(state::State &state, unsigned int pos_x, unsigned int pos_y, int type, bool is_static) {
 
-    Property farmer = Property("unit_farmer",10,10,10,false,false,1);
-    Property infantry = Property("unit_infantry",10,10,10,false,false,1);
-    Property archer = Property("unit_archer",10,10,10,false,false,3);
+    Property farmer = Property("farmer",10,10,80,false,false,1);
+    Property infantry = Property("infantry",10,20,120,false,false,1);
+    Property archer = Property("archer",10,10,100,false,false,3);
 
-    Property mine = Property("building_mine",10,10,10,true,false,0);
-    Property farm = Property("building_farm",10,10,10,true,false,0);
-    Property turret = Property("building_turret",10,10,10,true,false,0);
-    Property town = Property("building_town",10,10,10,true,false,0);
-    Property barrack = Property("building_barrack",10,10,10,true,false,0);
+    Property mine = Property("mine",10,10,50,true,false,0);
+    Property farm = Property("farm",10,10,50,true,false,0);
+    Property turret = Property("turret",10,10,150,true,false,0);
+    Property town = Property("town",10,10,400,true,false,0);
+    Property barrack = Property("barrack",10,10,200,true,false,0);
 
     std::vector<Property> buildings = {mine,farm,turret,town, barrack};
     std::vector<Property> units = {farmer,archer,infantry};
@@ -204,7 +204,7 @@ bool HandleCreation::execute(state::State &state, unsigned int pos_x, unsigned i
             //vérifie si la case est disponible pour la création
             if(collisionHandler(state, pos_x,pos_y, is_static)) {
                 //Unit::Unit (unsigned int movement_range, unsigned int gameobject_id, unsigned int player_id, state::Position pos, state::Property property, UnitType unit_type)
-                shared_ptr<state::Unit> new_unit(new Unit(1,
+                shared_ptr<state::Unit> new_unit(new Unit(2,
                                                           (unsigned int) state.getMap().get()->getListGameObject().size(),
                                                           current_player_id, position,
                                                           units[type],

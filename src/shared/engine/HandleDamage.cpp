@@ -12,22 +12,29 @@ CommandTypeId HandleDamage::getTypeId() const {
 }
 
 bool HandleDamage::execute(state::State& state, state::GameObject* object, state::GameObject* ennemy_object, state::Terrain &terrain) {
+    cout << "player n" << object->getPlayerId() << " s " << object->getProperty()->getStringType() << " attacks ! " <<endl;
     ennemy_object->getProperty()->takeDamage(object->getProperty()->getAttack());
-    cout << "player no " << ennemy_object->getPlayerId() << " s object" << ennemy_object->getProperty()->getStringType() << " got hit for " << object->getProperty()->getAttack() <<"hp \n" <<endl;
+
+    cout << "player n" << ennemy_object->getPlayerId() << " s " << ennemy_object->getProperty()->getStringType() << " got hit for " << object->getProperty()->getAttack() <<"hp \n" <<endl;
     if(!ennemy_object->getProperty()->isAlive()){
         //commande delete
         if(ennemy_object->getProperty()->isStatic()){
+            //tue le player si sa centre ville est détruite
+            if(ennemy_object->getProperty()->getStringType() == "town")
+                state.setPlayerDead();
+            //ensuite, détruit le batiment
             state::Building * ptr_destroyed_building = (state::Building * )ennemy_object;
             if(state.deleteBuilding(ptr_destroyed_building))
-                cout << "player n " << ennemy_object->getPlayerId() << " s object" << ennemy_object->getProperty()->getStringType() <<" got destroyed" << endl;
+                cout << "player n" << ennemy_object->getPlayerId() << " s " << ennemy_object->getProperty()->getStringType() <<" got destroyed" << endl;
         }
         else{
             state::Unit * ptr_destroyed_unit = (state::Unit *)ennemy_object;
             if(state.deleteUnit(ptr_destroyed_unit))
-                cout << "player n " << ennemy_object->getPlayerId() << " s object" << ennemy_object->getProperty()->getStringType() <<" got destroyed" << endl;
+                cout << "player n" << ennemy_object->getPlayerId() << " s " << ennemy_object->getProperty()->getStringType() <<" got destroyed" << endl;
 
         }
     }
+    object->getProperty()->setAvailability(false);
     return true;
 }
 

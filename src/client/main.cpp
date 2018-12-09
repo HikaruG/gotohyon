@@ -143,11 +143,11 @@ bool test_input(){
     {
 
     }
+    return true;
 
 }
 
 bool test_heuristicAI(){
-        // state to test
 
     shared_ptr<State> test_state (new State(2,2));
 
@@ -176,7 +176,6 @@ bool test_heuristicAI(){
     //init map terrain
     test_state->initializeMap(16, 16, test_terrain);
 
-    //Map * thisMap = test_state.getMap().get();
 
     //init windows
     size_t x_window = 1024;
@@ -246,8 +245,8 @@ bool test_heuristicAI(){
     test_turn.execute(*test_state.get());
 
 
-    for(int i =0; i<50;i++) {
-        if(test_state.get()->current_player.get()->getIsNpc()) {
+    while(!test_state.get()->is_game_finished) {
+        if(test_state.get()->getCurrentPlayer().get()->getIsNpc()) {
             test_heuristicAI.run(test_engine, *test_state.get());
             testdraw.forceRefresh(test_state);
             //sf::sleep(delayTime);
@@ -261,7 +260,6 @@ bool test_heuristicAI(){
 
 
 bool test_randomAI() {
-    // state to test
 
     shared_ptr<State> test_state (new State(2,2));
 
@@ -289,8 +287,6 @@ bool test_randomAI() {
     }
     //init map terrain
     test_state->initializeMap(16, 16, test_terrain);
-
-    //Map * thisMap = test_state.getMap().get();
 
     //init windows
     size_t x_window = 1024;
@@ -367,8 +363,8 @@ bool test_randomAI() {
     test_turn.execute(*test_state.get());
 
 
-    for(int i =0; i<50;i++) {
-        if(test_state.get()->current_player.get()->getIsNpc()) {
+    while(!test_state.get()->is_game_finished) {
+        if(test_state.get()->getCurrentPlayer().get()->getIsNpc()) {
             test_randomAI.run(test_engine, *test_state.get());
             testdraw.forceRefresh(test_state);
             sf::sleep(delayTime);
@@ -509,29 +505,8 @@ bool test_engine()
     {
         // check all the window's events that were triggered since the last iteration of the loop
         sf::Event event;
-        int x_cart = 0, y_cart = 0;
-        int x_iso = 0, y_iso = 0;
-        float t_map_x = 64;
-        float t_map_y = 32;
         while (window.get()->pollEvent(event))
         {
-            /*if (event.type == sf::Event::MouseButtonPressed)
-            {
-                if (event.mouseButton.button == sf::Mouse::Left)
-                {
-                    std::cout << "the right button was pressed" << std::endl;
-                    x_cart = (event.mouseButton.x)/t_map_x;
-                    y_cart = (event.mouseButton.y)/t_map_y;
-
-                    x_iso = y_cart - x_cart;
-                    y_iso = y_cart + x_cart - 8;
-                    std::cout << "mouse x carte: " << x_cart<< std::endl; // valeur de x en cartésien
-                    std::cout << "mouse x iso: " << x_iso << std::endl; // valeur de x en cartésien
-                    std::cout << "mouse y carte: " << y_cart << std::endl; // valeur de y en cartésien
-                    std::cout << "mouse y iso: " << y_iso << std::endl; // valeur de y en cartésien
-
-                }
-            }*/
             // "close requested" event: we close the window
             if (event.type == sf::Event::Closed)
                 window.get()->close();

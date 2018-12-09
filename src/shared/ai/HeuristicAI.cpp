@@ -61,8 +61,8 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
     commande_growth.execute(state);
     unsigned int food, gold;
     current_player->getRessource(food, gold);
-    cout << "current gold is " << gold << endl;
-    cout << "current food is " << food << endl;
+    cout << "player"<< current_player->getPlayerId() << "'s current gold is " << gold << endl;
+    cout << "player"<< current_player->getPlayerId() << "'s current food is " << food << endl;
 
 
     //récupération de la liste des bâtiments du joueur courant
@@ -104,19 +104,18 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
             }
         }
     }
-    cout << "size of the ennemy towns : " << towns.size() << endl;
 
     int town_distance = 400;
     //récupération de la ville ennemie la plus proche
     for(Building * closest_town : towns){
         int ennemy_x = closest_town->getPosition().getX();
         int ennemy_y = closest_town->getPosition().getY();
-        if(town_distance > distance_pos(ennemy_x, my_x, ennemy_y, my_y))
+        if(town_distance > distance_pos(ennemy_x, my_x, ennemy_y, my_y)) {
             town_playerid = closest_town->getPlayerId();
-        cout << "ennemy player id is : " << town_playerid << endl;
-        town_x = ennemy_x;
+            town_x = ennemy_x;
             town_y = ennemy_y;
             town_distance = distance_pos(ennemy_x, my_x, ennemy_y, my_y);
+        }
     }
 
     cout << "ennemy player id is : " << town_playerid << endl;
@@ -137,226 +136,296 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
 
 
     /*** AI pour les unités ***/
-    for(int i= 0; i < (int)my_list_unit.size(); i++)
-    {
-        Unit * unit_i = my_list_unit[i].get();
-
+    for(int i= 0; i < (int)my_list_unit.size(); i++) {
+        Unit *unit_i = my_list_unit[i].get();
         //liste de game_object ennemie
         vector<shared_ptr<GameObject>> ennemy_objects{}; //instancie au vecteur nul
 
-        /***  début de l'implémentation des déplacements  ***/
-        state::Position position_unit = unit_i->getPosition();
-        old_y = (int)position_unit.getY();
-        old_x = (int)position_unit.getX();
-        cout <<" player no" << unit_i->getPlayerId() << unit_i->getProperty()->getStringType() << "'s current position x : "<< old_x << endl;
-        cout <<" player no" << unit_i->getPlayerId() << unit_i->getProperty()->getStringType() << "'s current position y : "<< old_y << endl;
-        distance = unit_i->getMovementRange();
-        //cout << "mouvements restants possible:  "<< distance << endl;
+        //si c'est un archer, il attaque à distance: (donc ne se déplace pas tant qu'il reste des cibles ennemies à tuer
+        if (unit_i->getUnitType() == archer) {
+            if (commande_canattack.execute(*unit_i, state, ennemy_objects)) {
 
+                GameObject *ennemy_unit = ennemy_objects[0].get();
+                int hp = ennemy_unit->getProperty()->getHealth();
 
-
-        //tant que l'unité peut se déplacer || tant qu'il n'a pas atteint la ville
-        while (distance > 0) {
-            /* les cas particuliers */
-
-            //si l'objet se trouve à la bonne position en x et en y
-            if(town_x == old_x && town_y == old_y -1) {
-                distance = 0;
-                break;
-            }
-            if(town_x == old_x && town_y == old_y + 1){
-                distance = 0;
-                break;
-            }
-
-
-            if(town_x == old_x - 1 && town_y == old_y){
-                distance = 0;
-                break;
-            }
-
-            if(town_x + 1  == old_x && town_y == old_y){
-                distance = 0;
-                break;
-            }
-
-            //si l'objet se trouve déjà à la bonne position en x
-            if (town_x == old_x) {
-                movement_y = movement_finder(old_y, town_y,distance);
-                if(movement_y == 0){
-                    distance = 0;
-                    break;
-                }
-                new_x = old_x;
-                new_y = old_y + movement_y - 1; //L'unité peut cheater => il pourra bouger d'une case en plus si l'unité atteint la ville
-                //cout <<" player no" << unit_i->getPlayerId() << unit_i->getProperty()->getStringType() << "'s new position y : "<< new_y << endl;
-                distance -= abs(movement_y);
-                cout << "mouvements restants possible:  "<< distance << endl;
-                break;
-            }
-
-            //si l'objet se trouve déjà à la bonne position en y
-            if (town_y == old_y) {
-                movement_x = movement_finder(old_x, town_x, distance);
-                if(movement_x == 0){
-                    distance = 0;
-                    break;
-                }
-                new_y = old_y;
-                new_x = old_x + movement_x - 1; //L'unité peut cheater => il pourra bouger d'une case en plus si l'unité atteint la ville
-                //cout <<" player no" << unit_i->getPlayerId() << unit_i->getProperty()->getStringType() << "'s new position x : "<< new_x << endl;
-                distance -= abs(movement_x);
-                cout << "mouvements restants possible:  "<< distance << endl;
-                break;
-            }
-
-            /* cas général */
-
-            //si l'objet est autant éloigné en x qu'en y
-            if(abs(town_x - old_x) == abs(town_y - old_y)){
-                movement_x = movement_finder(old_x, town_x, distance);
-                if(movement_x == 0) {
-                    distance = 0;
-                    break;
-                }
-                new_y = old_y;
-                new_x = old_x + movement_x;
-                distance -= abs(movement_x);
-                cout << "mouvements restants possible:  "<< distance << endl;
-                break;
-            }
-
-            //si l'objet est plus éloigné en x qu'en y
-            if (abs(town_x - old_x) > abs(town_y - old_y)) {
-                movement_x = movement_finder(old_x, town_x, distance);
-                if(movement_x == 0){
-                    distance = 0;
-                    break;
-                }
-                new_y = old_y;
-                new_x = old_x + movement_x;
-                distance -= abs(movement_x);
-                cout << "mouvements restants possible:  "<< distance << endl;
-                break;
-            }
-
-            //si l'objet est plus éloigné en y qu'en x
-            if (abs(town_x - old_x) < abs(town_y - old_y)) {
-                movement_y = movement_finder(old_y, town_y, distance);
-                if(movement_y == 0){
-                    distance = 0;
-                    break;
-                }
-                cout << "mouvement en y de "<< movement_y << endl;
-                new_x = old_x;
-                new_y = old_y + movement_y;
-                //cout <<" player no" << unit_i->getPlayerId() << unit_i->getProperty()->getStringType() << "'s new position y : "<< new_y << endl;
-                distance -= abs(movement_y);
-                cout << "mouvements restants possible:  "<< distance << endl;
-                break;
-            }
-
-
-        }
-
-
-        cout <<" player no" << unit_i->getPlayerId() << unit_i->getProperty()->getStringType() << "'s new position x : "<< new_x << endl;
-        cout <<" player no" << unit_i->getPlayerId() << unit_i->getProperty()->getStringType() << "'s new position x : "<< new_y << endl;
-        commande_movement.execute(*unit_i, state, new_x, new_y);
-        /***  fin de l'implémentation des déplacements  ***/
-
-
-        /***  début de l'implémentation des attaques et créations de batiments pour les farmer  ***/
-
-        //si l'unité peut attaquer, il attaque
-
-        if(commande_canattack.execute(* unit_i, state, ennemy_objects)){
-
-            GameObject * ennemy_unit = ennemy_objects[0].get();
-            int hp = ennemy_unit->getProperty()->getHealth();
-
-            for(shared_ptr<GameObject> weakest_ennemy : ennemy_objects){
-                if(hp > weakest_ennemy.get()->getProperty()->getHealth()){
-                    ennemy_unit = weakest_ennemy.get();
-                }
-            }
-            cout << "the chosen ennemy unit is : " << ennemy_unit->getPlayerId() << ennemy_unit->getProperty()->getStringType() << endl;
-
-            //identification de la position de l'objet choisi aléatoirement
-            state::Position position_ennemy = ennemy_unit->getPosition();
-
-
-            //terrain sur lequel l'object est situé
-            state::Terrain * object_terrain = state.getMap().get()->getTerrain(position_ennemy.getX(),position_ennemy.getY()).get();
-
-            //execution de la commande damage
-            commande_damage.execute(state,unit_i, ennemy_unit,* object_terrain);
-        }
-
-        //si le farmeur n'a pas attaqué, il peut créer un batiment
-        if(unit_i->getUnitType()==farmer){
-            //créer un batiment seulement si ressource > 1000
-            //en priorité les farms et les mines
-            if(ressource_check(food, gold)) {
-                //randgen pour les différents batiments:
-                std::uniform_int_distribution<int> dis_buildings(0, 9);
-                int build_i = dis_buildings(randgen);
-                if (build_i == 0 || build_i == 1 || build_i == 2)
-                    building_type = mine;
-                if (build_i == 3 || build_i == 4 || build_i == 5)
-                    building_type = farm;
-                if (build_i == 6 || build_i == 7)
-                    building_type = barrack;
-                if (build_i == 8 || build_i == 9)
-                    building_type = turret;
-
-                int pos_x = unit_i->getPosition().getX();
-                int pos_y = unit_i->getPosition().getY();
-                for (shared_ptr<GameObject> obstacle: my_list_building) {
-                    if (obstacle.get()->getPosition() == unit_i->getPosition()) {
-                        //cout<< "cannot build here, already a constructed building present!" <<endl;
-                    } else {
-                        commande_create.execute(state, pos_x, pos_y, building_type, true);
-                        current_player->getRessource(food, gold);
-                        cout << "current gold is " << gold << endl;
-                        cout << "current food is " << food << endl;
+                for (shared_ptr<GameObject> weakest_ennemy : ennemy_objects) {
+                    if (hp > weakest_ennemy.get()->getProperty()->getHealth()) {
+                        ennemy_unit = weakest_ennemy.get();
                     }
-
                 }
-            }
+                cout << "the chosen ennemy unit is : " << ennemy_unit->getPlayerId()
+                     << ennemy_unit->getProperty()->getStringType() << endl;
 
+                //identification de la position de l'objet choisi aléatoirement
+                state::Position position_ennemy = ennemy_unit->getPosition();
+
+
+                //terrain sur lequel l'object est situé
+                state::Terrain *object_terrain = state.getMap().get()->getTerrain(position_ennemy.getX(),
+                                                                                  position_ennemy.getY()).get();
+
+                //execution de la commande damage
+                commande_damage.execute(state, unit_i, ennemy_unit, *object_terrain);
             }
         }
 
-    /***  implémentation des créations d'unités  c ***/
+        //si c'est un archer et qu'il n'a pas trouvé de cibles à attaquer || toutes les autres unités
+        if (unit_i->getProperty()->getAvailability()) {
+            ennemy_objects = {}; //ré-initialise la liste des cibles disponibles
+
+
+            /***  début de l'implémentation des déplacements  ***/
+            state::Position position_unit = unit_i->getPosition();
+            old_y = (int) position_unit.getY();
+            old_x = (int) position_unit.getX();
+            cout << " player" << unit_i->getPlayerId() << unit_i->getProperty()->getStringType()
+                 << "'s current position x : " << old_x << endl;
+            cout << " player" << unit_i->getPlayerId() << unit_i->getProperty()->getStringType()
+                 << "'s current position y : " << old_y << endl;
+            distance = unit_i->getMovementRange();
+            //cout << "mouvements restants possible:  "<< distance << endl;
+
+
+
+            //tant que l'unité peut se déplacer || tant qu'il n'a pas atteint la ville
+            while (distance > 0) {
+                /* les cas particuliers */
+
+                //si l'objet se trouve à la bonne position en x et en y
+                if (town_x == old_x && town_y == old_y - 1) {
+                    distance = 0;
+                    break;
+                }
+                if (town_x == old_x && town_y == old_y + 1) {
+                    distance = 0;
+                    break;
+                }
+
+
+                if (town_x == old_x - 1 && town_y == old_y) {
+                    distance = 0;
+                    break;
+                }
+
+                if (town_x + 1 == old_x && town_y == old_y) {
+                    distance = 0;
+                    break;
+                }
+
+                //si l'objet se trouve déjà à la bonne position en x
+                if (town_x == old_x) {
+                    movement_y = movement_finder(old_y, town_y, distance);
+                    if (movement_y == 0) {
+                        distance = 0;
+                        break;
+                    }
+                    new_x = old_x;
+                    new_y = old_y + movement_y -
+                            1; //L'unité peut cheater => il pourra bouger d'une case en plus si l'unité atteint la ville
+                    //cout <<" player no" << unit_i->getPlayerId() << unit_i->getProperty()->getStringType() << "'s new position y : "<< new_y << endl;
+                    distance -= abs(movement_y);
+                    //cout << "mouvements restants possible:  "<< distance << endl;
+                    break;
+                }
+
+                //si l'objet se trouve déjà à la bonne position en y
+                if (town_y == old_y) {
+                    movement_x = movement_finder(old_x, town_x, distance);
+                    if (movement_x == 0) {
+                        distance = 0;
+                        break;
+                    }
+                    new_y = old_y;
+                    new_x = old_x + movement_x -
+                            1; //L'unité peut cheater => il pourra bouger d'une case en plus si l'unité atteint la ville
+                    //cout <<" player no" << unit_i->getPlayerId() << unit_i->getProperty()->getStringType() << "'s new position x : "<< new_x << endl;
+                    distance -= abs(movement_x);
+                    //cout << "mouvements restants possible:  "<< distance << endl;
+                    break;
+                }
+
+                /* cas général */
+
+                //si l'objet est autant éloigné en x qu'en y
+                if (abs(town_x - old_x) == abs(town_y - old_y)) {
+                    movement_x = movement_finder(old_x, town_x, distance);
+                    if (movement_x == 0) {
+                        distance = 0;
+                        break;
+                    }
+                    new_y = old_y;
+                    new_x = old_x + movement_x;
+                    distance -= abs(movement_x);
+                    //cout << "mouvements restants possible:  "<< distance << endl;
+                    break;
+                }
+
+                //si l'objet est plus éloigné en x qu'en y
+                if (abs(town_x - old_x) > abs(town_y - old_y)) {
+                    movement_x = movement_finder(old_x, town_x, distance);
+                    if (movement_x == 0) {
+                        distance = 0;
+                        break;
+                    }
+                    new_y = old_y;
+                    new_x = old_x + movement_x;
+                    distance -= abs(movement_x);
+                    //cout << "mouvements restants possible:  "<< distance << endl;
+                    break;
+                }
+
+                //si l'objet est plus éloigné en y qu'en x
+                if (abs(town_x - old_x) < abs(town_y - old_y)) {
+                    movement_y = movement_finder(old_y, town_y, distance);
+                    if (movement_y == 0) {
+                        distance = 0;
+                        break;
+                    }
+                    new_x = old_x;
+                    new_y = old_y + movement_y;
+                    //cout <<" player no" << unit_i->getPlayerId() << unit_i->getProperty()->getStringType() << "'s new position y : "<< new_y << endl;
+                    distance -= abs(movement_y);
+                    //cout << "mouvements restants possible:  "<< distance << endl;
+                    break;
+                }
+
+
+            }
+
+
+            cout << " player" << unit_i->getPlayerId() << unit_i->getProperty()->getStringType()
+                 << "'s new position x : " << new_x << endl;
+            cout << " player" << unit_i->getPlayerId() << unit_i->getProperty()->getStringType()
+                 << "'s new position x : " << new_y << endl;
+            commande_movement.execute(*unit_i, state, new_x, new_y);
+            /***  fin de l'implémentation des déplacements  ***/
+
+
+            /***  début de l'implémentation des attaques et créations de batiments pour les farmer  ***/
+
+            //si l'unité peut attaquer, il attaque
+
+            if (commande_canattack.execute(*unit_i, state, ennemy_objects)) {
+
+                GameObject *ennemy_unit = ennemy_objects[0].get();
+                int hp = ennemy_unit->getProperty()->getHealth();
+
+                for (shared_ptr<GameObject> weakest_ennemy : ennemy_objects) {
+                    if (hp > weakest_ennemy.get()->getProperty()->getHealth()) {
+                        ennemy_unit = weakest_ennemy.get();
+                    }
+                }
+                cout << "the chosen ennemy unit is : " << ennemy_unit->getPlayerId()
+                     << ennemy_unit->getProperty()->getStringType() << endl;
+
+                //identification de la position de l'objet choisi aléatoirement
+                state::Position position_ennemy = ennemy_unit->getPosition();
+
+
+                //terrain sur lequel l'object est situé
+                state::Terrain *object_terrain = state.getMap().get()->getTerrain(position_ennemy.getX(),
+                                                                                  position_ennemy.getY()).get();
+
+                //execution de la commande damage
+                commande_damage.execute(state, unit_i, ennemy_unit, *object_terrain);
+            }
+
+            //si le farmeur n'a pas attaqué, il peut créer un batiment
+            if (unit_i->getUnitType() == farmer) {
+                //créer un batiment seulement si ressource > 1000
+                //en priorité les farms et les mines
+                if (ressource_check(food, gold)) {
+                    //randgen pour les différents batiments:
+                    std::uniform_int_distribution<int> dis_buildings(0, 9);
+                    int build_i = dis_buildings(randgen);
+                    if (build_i == 0 || build_i == 1 || build_i == 2)
+                        building_type = mine;
+                    if (build_i == 3 || build_i == 4 || build_i == 5)
+                        building_type = farm;
+                    if (build_i == 6 || build_i == 7)
+                        building_type = barrack;
+                    if (build_i == 8 || build_i == 9)
+                        building_type = turret;
+
+                    int pos_x = unit_i->getPosition().getX();
+                    int pos_y = unit_i->getPosition().getY();
+                    for (shared_ptr<GameObject> obstacle: my_list_building) {
+                        if (obstacle.get()->getPosition() == unit_i->getPosition()) {
+                            //cout<< "cannot build here, already a constructed building present!" <<endl;
+                        } else {
+                            commande_create.execute(state, pos_x, pos_y, building_type, true);
+                            current_player->getRessource(food, gold);
+                            cout << "player" << current_player->getPlayerId() << "'s current gold is " << gold << endl;
+                            cout << "player" << current_player->getPlayerId() << "'s current food is " << food << endl;
+                        }
+
+                    }
+                }
+                unit_i->getProperty()->setAvailability(
+                        false); //rend inaccessible le villageois après la création du batiment
+            }
+        }
+    }
+
+    /***  implémentation des créations d'unités  ***/
 
     /*** AI pour les batiments ***/
     int ennemy_army_size = ennemy->getPlayerUnitList().size();
     int my_army_size = my_list_unit.size();
 
-    if(number_advantage(my_army_size,ennemy_army_size)) {
 
-        //randgen pour les différentes unités offensives: -1 signifie l'unité vide
-        std::uniform_int_distribution<int> dis_units(infantry, maxUnit - 1);
-        int unit_type = -1;
 
-        for (shared_ptr<Building> b : my_list_building) {
-            if (b.get()->getBuildingType() == state::town) {
-                    int pos_x = b.get()->getPosition().getX();
-                    int pos_y = b.get()->getPosition().getY();
+    //randgen pour les différentes unités offensives: -1 signifie l'unité vide
+    std::uniform_int_distribution<int> dis_farmers(1, 9);
+    std::uniform_int_distribution<int> dis_units(infantry, maxUnit -1);
+    int ai_farmers = dis_farmers(randgen);
+    int unit_type = -1;
+
+    for (shared_ptr<Building> b : my_list_building) {
+        if (b.get()->getBuildingType() == state::town) {
+            int pos_x = b.get()->getPosition().getX();
+            int pos_y = b.get()->getPosition().getY();
+            //si il est en manque de ressource, il aura plus de chances de créer des villageois
+            if (food < 200 || gold < 200) {
+                if (ai_farmers < 8)
                     commande_create.execute(state, pos_x, pos_y, farmer, false);
             }
-            else if (b.get()->getBuildingType() == state::barrack) {
-                    int pos_x = b.get()->getPosition().getX();
-                    int pos_y = b.get()->getPosition().getY();
-                    unit_type = dis_units(randgen);
+            //si il possède moyennement de l'argent, il a 1/3 de chances de créer un villageois
+            if (food < 1500 || gold < 1500) {
+                if (ai_farmers < 4)
+                    commande_create.execute(state, pos_x, pos_y, farmer, false);
+            }
+
+                //si il possède bcp d'argents, il ne crée quasiment pas de villageois
+            else {
+                if (ai_farmers < 2)
+                    commande_create.execute(state, pos_x, pos_y, farmer, false);
+            }
+
+        } else if (b.get()->getBuildingType() == state::barrack) {
+            int pos_x = b.get()->getPosition().getX();
+            int pos_y = b.get()->getPosition().getY();
+            unit_type = dis_units(randgen);
+            //si il est en manque de ressource, il aura quasiment pas de chances de créer une unité offensive
+            if (food < 200 || gold < 200) {
+                if (ai_farmers > 8)
                     commande_create.execute(state, pos_x, pos_y, unit_type, false);
             }
-        current_player->getRessource(food, gold);
-        cout << "current gold is " << gold << endl;
-        cout << "current food is " << food << endl;
+            //si il possède moyennement de l'argent, il a 1/3 de chances de créer un villageois
+            if (food < 1500 || gold < 1500) {
+                if (ai_farmers < 4)
+                    commande_create.execute(state, pos_x, pos_y, unit_type, false);
+            } else {
+                if (ai_farmers > 2)
+                    commande_create.execute(state, pos_x, pos_y, unit_type, false);
+            }
         }
-        }
+    }
+
+    current_player->getRessource(food, gold);
+    cout << "player"<< current_player->getPlayerId() << "'s current gold is " << gold << endl;
+    cout << "player"<< current_player->getPlayerId() << "'s current food is " << food << endl;
+
 
     //commande de fin de tour; préparation pour le joueur suivant
     commande_turn.execute(state);

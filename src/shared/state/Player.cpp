@@ -13,6 +13,7 @@ Player::Player(size_t player_id, bool is_npc){
     this->is_npc = is_npc;
     this->in_food = 2000;
     this->in_gold = 2000;
+    this->is_dead = false;
 }
 
 
@@ -56,6 +57,15 @@ bool Player::getRessource(unsigned int &in_food, unsigned int &in_gold) {
 bool Player::setRessource(unsigned int add_gold, unsigned int add_food) {
     in_gold += add_gold;
     in_food += add_food;
+    return true;
+}
+
+bool Player::getIsDead() {
+    return this->is_dead;
+}
+
+bool Player::setIsDead() {
+    this->is_dead = true;
     return true;
 }
 
