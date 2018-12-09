@@ -36,12 +36,17 @@ bool Map::addGameObject(shared_ptr<GameObject> game_object) {
 
 
 bool Map::deleteGameObject(state::GameObject* deleting_game_object) {
+    size_t list_size = list_game_object.size();
     for(int i = 0; i < (int)list_game_object.size(); i++){
         if(deleting_game_object->getGame_object_id() == list_game_object[i].get()->getGame_object_id()) {
             //détruit l'objet situé à la position i
             list_game_object.erase(list_game_object.begin() + i);
             break;
         }
+    }
+    if(list_size != list_game_object.size() + 1) {
+        cout << "error deleting map object" << endl;
+        return false;
     }
     Event event = Event(EventTypeId::TERRAIN_CHANGED);
     notifyObservers(event);

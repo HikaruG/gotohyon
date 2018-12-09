@@ -72,16 +72,18 @@ bool State::addBuilding(shared_ptr<Building> building) {
 bool State::deleteUnit(state::Unit* deleting_unit) {
     bool success = false;
     //recherche du play associé à l'unité détruite
-    for(int i= 0; i < (int) player_nbr - 1;i++){
+    for(int i= 0; i < (int) player_nbr;i++){
+        cout << "current player : " << list_player[i].get()->getPlayerId() << endl;
         if(deleting_unit->getPlayerId() == list_player[i].get()->getPlayerId()) {
-            Player * attacked_player = list_player[i].get();
-            success = attacked_player->deletePlayerUnit(deleting_unit);
+            success = list_player[i].get()->deletePlayerUnit(deleting_unit);
+            cout << success << endl;
             break;
         }
     }
     //vérifie la suppression du pointeur dans la liste du joueur
     if(success) success = game_map.get()->deleteGameObject(deleting_unit);
     //retourne true si la suppression * de l'unité dans la liste de map a été effectuée
+    cout << success << endl;
     return success;
 }
 
@@ -89,7 +91,7 @@ bool State::deleteUnit(state::Unit* deleting_unit) {
 bool State::deleteBuilding(state::Building* deleting_building) {
     bool success = false;
     //recherche du player associé au batiment détruit
-    for(int i= 0; i < (int) player_nbr - 1;i++){
+    for(int i= 0; i < (int) player_nbr;i++){
         if(deleting_building->getPlayerId() == list_player[i].get()->getPlayerId()) {
             Player * attacked_player = list_player[i].get();
             success = attacked_player->deletePlayerBuilding(deleting_building);

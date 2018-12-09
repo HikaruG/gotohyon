@@ -18,17 +18,15 @@ bool HandleDamage::execute(state::State& state, state::GameObject* object, state
         //commande delete
         if(ennemy_object->getProperty()->isStatic()){
             state::Building * ptr_destroyed_building = (state::Building * )ennemy_object;
-            state.deleteBuilding(ptr_destroyed_building);
-            cout << "player n " << ennemy_object->getPlayerId() << " s object" << ennemy_object->getProperty()->getStringType() <<" got destroyed" << endl;
-            //delete[] ptr_destroyed_building;
+            if(state.deleteBuilding(ptr_destroyed_building))
+                cout << "player n " << ennemy_object->getPlayerId() << " s object" << ennemy_object->getProperty()->getStringType() <<" got destroyed" << endl;
         }
         else{
             state::Unit * ptr_destroyed_unit = (state::Unit *)ennemy_object;
-            state.deleteUnit(ptr_destroyed_unit);
-            cout << "player n " << ennemy_object->getPlayerId() << " s object" << ennemy_object->getProperty()->getStringType() <<" got destroyed" << endl;
-            //delete[] ptr_destroyed_unit;
+            if(state.deleteUnit(ptr_destroyed_unit))
+                cout << "player n " << ennemy_object->getPlayerId() << " s object" << ennemy_object->getProperty()->getStringType() <<" got destroyed" << endl;
+
         }
-        //delete[] ennemy_object;
     }
     return true;
 }

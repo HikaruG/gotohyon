@@ -9,7 +9,7 @@ using namespace engine;
 using namespace std;
 using namespace state;
 
-bool collisionHandler(State &state, unsigned int pos_x, unsigned int pos_y){
+bool collisionHandler(State &state, unsigned int pos_x, unsigned int pos_y, bool is_static){
     Position position = Position(pos_x,pos_y);
     //début gestion de la collision d'objets
     vector<shared_ptr<state::Player>> list_player = state.getListPlayer();
@@ -42,12 +42,23 @@ bool collisionHandler(State &state, unsigned int pos_x, unsigned int pos_y){
 
             //si le joueur dans la liste list_player est le joueur actuel
         else{
-            vector<shared_ptr<state::Unit>>ally_units = list_player[i].get()->getPlayerUnitList();
+            if(is_static) {
+                vector<shared_ptr<state::Building>> ally_buildings = list_player[i].get()->getPlayerBuildingList();
+                for (int i = 0; i < (int) ally_buildings.size(); i++) {
+                    if (ally_buildings[i].get()->getPosition() == position) {
+                        cout << "cannot build there, already a building here !" << endl;
+                        return false;
+                    }
+                }
+            }
+            else {
+                vector<shared_ptr<state::Unit>> ally_units = list_player[i].get()->getPlayerUnitList();
 
-            for(int i =0; i < (int)ally_units.size(); i++){
-                if(ally_units[i].get()->getPosition() == position){
-                    cout << "cannot create there; respect your allies !" << endl;
-                    return false;
+                for (int i = 0; i < (int) ally_units.size(); i++) {
+                    if (ally_units[i].get()->getPosition() == position) {
+                        cout << "cannot create unit there; respect your allies !" << endl;
+                        return false;
+                    }
                 }
             }
         }
@@ -58,21 +69,22 @@ bool collisionHandler(State &state, unsigned int pos_x, unsigned int pos_y){
 
 }
 
+
 CommandTypeId HandleCreation::getTypeId() const {
     return CommandTypeId::HANDLE_CREATION;
 }
 
 bool HandleCreation::execute(state::State &state, unsigned int pos_x, unsigned int pos_y, int type, bool is_static) {
 
-    Property farmer = Property("unit_farmer",10,10,100,false,false,1);
-    Property infantry = Property("unit_infantry",10,10,100,false,false,1);
-    Property archer = Property("unit_archer",10,10,100,false,false,3);
+    Property farmer = Property("unit_farmer",10,10,10,false,false,1);
+    Property infantry = Property("unit_infantry",10,10,10,false,false,1);
+    Property archer = Property("unit_archer",10,10,10,false,false,3);
 
-    Property mine = Property("building_mine",10,10,100,true,false,0);
-    Property farm = Property("building_farm",10,10,100,true,false,0);
-    Property turret = Property("building_turret",10,10,100,true,false,0);
-    Property town = Property("building_town",10,10,100,true,false,0);
-    Property barrack = Property("building_barrack",10,10,100,true,false,0);
+    Property mine = Property("building_mine",10,10,10,true,false,0);
+    Property farm = Property("building_farm",10,10,10,true,false,0);
+    Property turret = Property("building_turret",10,10,10,true,false,0);
+    Property town = Property("building_town",10,10,10,true,false,0);
+    Property barrack = Property("building_barrack",10,10,10,true,false,0);
 
     std::vector<Property> buildings = {mine,farm,turret,town, barrack};
     std::vector<Property> units = {farmer,archer,infantry};
@@ -139,7 +151,7 @@ bool HandleCreation::execute(state::State &state, unsigned int pos_x, unsigned i
         }
         if(my_food > req_food && my_gold > req_food) {
             //vérifie si la case est disponible pour la création
-            if(collisionHandler(state, pos_x,pos_y)) {
+            if(collisionHandler(state, pos_x,pos_y,is_static)) {
                 //Building::Building (unsigned int gameobject_id, unsigned int player_id, state::Position pos, state::Property prop, state::BuildingType build_type)
                 shared_ptr<state::Building> new_building(
                         new Building((unsigned int) state.getMap().get()->getListGameObject().size(),
@@ -190,7 +202,7 @@ bool HandleCreation::execute(state::State &state, unsigned int pos_x, unsigned i
         }
         if(my_food > req_food && my_gold > req_food) {
             //vérifie si la case est disponible pour la création
-            if(collisionHandler(state, pos_x,pos_y)) {
+            if(collisionHandler(state, pos_x,pos_y, is_static)) {
                 //Unit::Unit (unsigned int movement_range, unsigned int gameobject_id, unsigned int player_id, state::Position pos, state::Property property, UnitType unit_type)
                 shared_ptr<state::Unit> new_unit(new Unit(1,
                                                           (unsigned int) state.getMap().get()->getListGameObject().size(),

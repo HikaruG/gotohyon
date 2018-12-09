@@ -73,7 +73,9 @@ bool Property::takeDamage (unsigned int damages){
 }
 
 bool Property::isAlive (){
-    return healthBar>0;
+    if(healthBar>0)
+        return true;
+    return false;
 }
 bool Property::regenHealth (unsigned int health){
     if(healthBar <= 0)

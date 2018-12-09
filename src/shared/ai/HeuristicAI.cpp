@@ -129,11 +129,6 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
     engine::HandleTurn commande_turn = engine::HandleTurn();
     engine::HandleCreation commande_create = engine::HandleCreation();
 
-    //liste de game_object ennemie
-    vector<shared_ptr<GameObject>> ennemy_objects;
-
-
-
     int building_type = -1;
 
 
@@ -145,6 +140,9 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
     for(int i= 0; i < (int)my_list_unit.size(); i++)
     {
         Unit * unit_i = my_list_unit[i].get();
+
+        //liste de game_object ennemie
+        vector<shared_ptr<GameObject>> ennemy_objects{}; //instancie au vecteur nul
 
         /***  début de l'implémentation des déplacements  ***/
         state::Position position_unit = unit_i->getPosition();
@@ -282,6 +280,7 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
                     ennemy_unit = weakest_ennemy.get();
                 }
             }
+            cout << "the chosen ennemy unit is : " << ennemy_unit->getPlayerId() << ennemy_unit->getProperty()->getStringType() << endl;
 
             //identification de la position de l'objet choisi aléatoirement
             state::Position position_ennemy = ennemy_unit->getPosition();
