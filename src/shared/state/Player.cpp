@@ -98,7 +98,7 @@ bool Player::deletePlayerBuilding(state::Building* deleting_building) {
 
 bool Player::deletePlayerUnit(state::Unit* deleting_unit) {
     size_t list_size = player_unit_list.size();
-    for(int i=0; (int)player_unit_list.size(); i++) {
+    for(int i=0; i<(int)player_unit_list.size(); i++) {
         if(deleting_unit->getGame_object_id()==player_unit_list[i].get()->getGame_object_id()){
             //détruit le pointeur associé à l'unité située à la position i
             player_unit_list.erase(player_unit_list.begin() + i);

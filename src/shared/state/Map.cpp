@@ -29,7 +29,7 @@ Map::Map (unsigned int X, unsigned int Y, std::vector<int>& terrain_int)
 bool Map::addGameObject(shared_ptr<GameObject> game_object) {
     shared_ptr<GameObject> new_object = game_object;
     list_game_object.push_back(new_object);
-    Event event = Event(EventTypeId::UNIT_CHANGED);
+    Event event = Event(EventTypeId::BUILDING_CHANGED);
     notifyObservers(event);
     return true;
 }
