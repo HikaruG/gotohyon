@@ -38,12 +38,6 @@ bool number_advantage(int my_list, int ennemy_list){
     return false;
 }
 
-bool ressource_check(int food, int gold){
-    if(food > 1000)
-        if(gold > 1000)
-            return true;
-    return false;
-}
 
 HeuristicAI::HeuristicAI(int random_seed) {
     std::mt19937 randgen(random_seed);
@@ -67,6 +61,19 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
 
     //récupération de la liste des bâtiments du joueur courant
     vector<shared_ptr<Building>> my_list_building = current_player->getPlayerBuildingList();
+
+    //récupération des données nécéssaires pour les différents types de batiments
+    int count_barrack =0, count_turret = 0, count_mine =0, count_farm = 0;
+    for(int i = 0; i < my_list_building.size(); i++){
+        if(my_list_building[i].get()->getBuildingType() == turret)
+            count_turret ++;
+        if(my_list_building[i].get()->getBuildingType() == barrack)
+            count_barrack ++;
+        if(my_list_building[i].get()->getBuildingType() == mine)
+            count_mine ++;
+        if(my_list_building[i].get()->getBuildingType() == farm)
+            count_farm ++;
+    }
 
     //récupération de la liste des unités du joueur courant
     vector<shared_ptr<Unit>> my_list_unit = current_player->getPlayerUnitList();
@@ -141,7 +148,119 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
         //liste de game_object ennemie
         vector<shared_ptr<GameObject>> ennemy_objects{}; //instancie au vecteur nul
 
-        //si c'est un archer, il attaque à distance: (donc ne se déplace pas tant qu'il reste des cibles ennemies à tuer
+        /*** cas d'un farmeur : il n'attaque pas, ne peut que construire***/
+
+        if (unit_i->getUnitType() == farmer) {
+            //ses positions
+            int pos_x = unit_i->getPosition().getX();
+            int pos_y = unit_i->getPosition().getY();
+
+            //son déplacement est pour le moment aléatoire, l'important étant sa phase de construction
+            int distance_x, distance_y;
+            state::Position position_unit = unit_i->getPosition();
+            old_y = (int)position_unit.getY();
+            old_x = (int)position_unit.getX();
+            distance_x = unit_i->getMovementRange();
+            std::uniform_int_distribution<int> dis_x(-distance_x,distance_x);
+            new_x = old_x + dis_x(randgen);
+            distance_y = distance_x - abs(old_x - new_x);
+            std::uniform_int_distribution<int> dis_y(-distance_y,distance_y);
+            new_y = old_y + dis_y(randgen);
+            commande_movement.execute(*unit_i, state, new_x, new_y);
+
+
+            if(count_mine == 0)
+                commande_create.execute(state, pos_x, pos_y, mine, true);
+            if(count_farm == 0)
+                commande_create.execute(state, pos_x, pos_y, farm, true);
+
+
+            //randgen pour les différents batiments:
+            std::uniform_int_distribution<int> dis_buildings(0, 9);
+            int build_i = dis_buildings(randgen);
+
+            //si déficite en nourriture
+            if (food < 400) {
+                if (build_i < 3)
+                    building_type = farm;
+                else if (build_i < 4)
+                    building_type = mine;
+                else
+                    building_type = -1;
+            }
+
+            //si déficite en argent
+            if (mine < 400) {
+                if (build_i < 3)
+                    building_type = mine;
+                else if (build_i < 4)
+                    building_type = farm;
+                else
+                    building_type = -1;
+            }
+
+            //si argent / food pas abondants
+            if (food < 800 || gold < 800) {
+                int build_i = dis_buildings(randgen);
+                if (build_i == 0)
+                    building_type = farm;
+                else if (build_i == 1)
+                    building_type = mine;
+                else if (build_i == 2)
+                    building_type = barrack;
+                else if(build_i == 3)
+                    building_type = turret;
+                else
+                    building_type = -1;
+            }
+
+            //si argent food abondants
+
+            //si argent / food abondants
+            if (food > 2000 || gold < 2000) {
+                int build_i = dis_buildings(randgen);
+                if (build_i == 0)
+                    building_type = farm;
+                else if (build_i == 1)
+                    building_type = mine;
+                else if (build_i < 4)
+                    building_type = barrack;
+                else if (build_i < 6)
+                    building_type = turret;
+                else
+                    building_type = -1;
+            }
+
+            //si argent / food abondants +
+            if (food > 4000 || gold < 4000) {
+                int build_i = dis_buildings(randgen);
+                if (build_i < 6)
+                    building_type = barrack;
+                else
+                    building_type = turret;
+            }
+
+            if(count_barrack >= 2 && building_type == barrack)
+                building_type = -1;
+            if(count_turret >= 1 && building_type == turret)
+                building_type = -1;
+
+            for (shared_ptr<GameObject> obstacle: my_list_building) {
+                if (obstacle.get()->getPosition() == unit_i->getPosition()) {
+                    //cout<< "cannot build here, already a constructed building present!" <<endl;
+                } else {
+                    commande_create.execute(state, pos_x, pos_y, building_type, true);
+                    current_player->getRessource(food, gold);
+                    cout << "player" << current_player->getPlayerId() << "'s current gold is " << gold << endl;
+                    cout << "player" << current_player->getPlayerId() << "'s current food is " << food << endl;
+                }
+
+            }
+            unit_i->getProperty()->setAvailability(false); //rend inaccessible le villageois après la création du batiment
+        }
+
+        /*** cas d'un archer: il attaque à distance, sinon il se déplace et attaque***/
+
         if (unit_i->getUnitType() == archer) {
             if (commande_canattack.execute(*unit_i, state, ennemy_objects)) {
 
@@ -169,7 +288,7 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
             }
         }
 
-        //si c'est un archer et qu'il n'a pas trouvé de cibles à attaquer || toutes les autres unités
+        /*** cas général : Infantry || Archer qui n'a pas attaqué ***/
         if (unit_i->getProperty()->getAvailability()) {
             ennemy_objects = {}; //ré-initialise la liste des cibles disponibles
 
@@ -300,7 +419,6 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
             commande_movement.execute(*unit_i, state, new_x, new_y);
             /***  fin de l'implémentation des déplacements  ***/
 
-
             /***  début de l'implémentation des attaques et créations de batiments pour les farmer  ***/
 
             //si l'unité peut attaquer, il attaque
@@ -329,41 +447,6 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
                 //execution de la commande damage
                 commande_damage.execute(state, unit_i, ennemy_unit, *object_terrain);
             }
-
-            //si le farmeur n'a pas attaqué, il peut créer un batiment
-            if (unit_i->getUnitType() == farmer) {
-                //créer un batiment seulement si ressource > 1000
-                //en priorité les farms et les mines
-                if (ressource_check(food, gold)) {
-                    //randgen pour les différents batiments:
-                    std::uniform_int_distribution<int> dis_buildings(0, 9);
-                    int build_i = dis_buildings(randgen);
-                    if (build_i == 0 || build_i == 1 || build_i == 2)
-                        building_type = mine;
-                    if (build_i == 3 || build_i == 4 || build_i == 5)
-                        building_type = farm;
-                    if (build_i == 6 || build_i == 7)
-                        building_type = barrack;
-                    if (build_i == 8 || build_i == 9)
-                        building_type = turret;
-
-                    int pos_x = unit_i->getPosition().getX();
-                    int pos_y = unit_i->getPosition().getY();
-                    for (shared_ptr<GameObject> obstacle: my_list_building) {
-                        if (obstacle.get()->getPosition() == unit_i->getPosition()) {
-                            //cout<< "cannot build here, already a constructed building present!" <<endl;
-                        } else {
-                            commande_create.execute(state, pos_x, pos_y, building_type, true);
-                            current_player->getRessource(food, gold);
-                            cout << "player" << current_player->getPlayerId() << "'s current gold is " << gold << endl;
-                            cout << "player" << current_player->getPlayerId() << "'s current food is " << food << endl;
-                        }
-
-                    }
-                }
-                unit_i->getProperty()->setAvailability(
-                        false); //rend inaccessible le villageois après la création du batiment
-            }
         }
     }
 
@@ -373,6 +456,11 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
     int ennemy_army_size = ennemy->getPlayerUnitList().size();
     int my_army_size = my_list_unit.size();
 
+    int count_farmers = 0;
+    for(int i = 0; i < my_list_unit.size(); i++){
+        if(my_list_unit[i].get()->getUnitType() == farmer)
+            count_farmers ++;
+    }
 
 
     //randgen pour les différentes unités offensives: -1 signifie l'unité vide
@@ -382,24 +470,22 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
     int unit_type = -1;
 
     for (shared_ptr<Building> b : my_list_building) {
-        if (b.get()->getBuildingType() == state::town) {
-            int pos_x = b.get()->getPosition().getX();
-            int pos_y = b.get()->getPosition().getY();
-            //si il est en manque de ressource, il aura plus de chances de créer des villageois
-            if (food < 200 || gold < 200) {
-                if (ai_farmers < 8)
-                    commande_create.execute(state, pos_x, pos_y, farmer, false);
-            }
-            //si il possède moyennement de l'argent, il a 1/3 de chances de créer un villageois
-            if (food < 1500 || gold < 1500) {
-                if (ai_farmers < 4)
-                    commande_create.execute(state, pos_x, pos_y, farmer, false);
-            }
 
-                //si il possède bcp d'argents, il ne crée quasiment pas de villageois
-            else {
-                if (ai_farmers < 2)
-                    commande_create.execute(state, pos_x, pos_y, farmer, false);
+        if (b.get()->getBuildingType() == state::town) {
+            if(count_farmers < 3) {
+                int pos_x = b.get()->getPosition().getX();
+                int pos_y = b.get()->getPosition().getY();
+                //si il est en manque de ressource, il aura plus de chances de créer des villageois
+
+                if (food < 100 || gold < 100) {
+                    if (ai_farmers < 8)
+                        commande_create.execute(state, pos_x, pos_y, farmer, false);
+                }
+                //si il possède moyennement de l'argent, il a 2/9 de chances de créer un villageois
+                if (food < 1500 || gold < 1500) {
+                    if (ai_farmers < 2)
+                        commande_create.execute(state, pos_x, pos_y, farmer, false);
+                }
             }
 
         } else if (b.get()->getBuildingType() == state::barrack) {

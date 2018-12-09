@@ -75,10 +75,13 @@ CommandTypeId HandleCreation::getTypeId() const {
 }
 
 bool HandleCreation::execute(state::State &state, unsigned int pos_x, unsigned int pos_y, int type, bool is_static) {
+    //vérifie si ce n'est pas une demmande de construction vide (pour les AI)
+    if(type == -1)
+        return false;
 
     Property farmer = Property("farmer",10,10,80,false,false,1);
     Property infantry = Property("infantry",10,20,120,false,false,1);
-    Property archer = Property("archer",10,10,100,false,false,3);
+    Property archer = Property("archer",10,1,100,false,false,3);
 
     Property mine = Property("mine",10,10,50,true,false,0);
     Property farm = Property("farm",10,10,50,true,false,0);
@@ -88,9 +91,10 @@ bool HandleCreation::execute(state::State &state, unsigned int pos_x, unsigned i
 
     std::vector<Property> buildings = {mine,farm,turret,town, barrack};
     std::vector<Property> units = {farmer,archer,infantry};
+    unsigned int mvt_range= 0;
 
-    unsigned int buildings_limit = 5;
-    unsigned int units_limit = 3;
+    unsigned int buildings_limit = 6;
+    unsigned int units_limit = 5;
     unsigned int current_player_id = state.getCurrentPlayerId();
     unsigned int my_gold = 0, my_food = 0, req_gold, req_food;
     state.getCurrentPlayer().get()->getRessource(my_food, my_gold);
@@ -182,16 +186,19 @@ bool HandleCreation::execute(state::State &state, unsigned int pos_x, unsigned i
 
         switch(type){
             case state::farmer:
+                mvt_range = 1;
                 req_gold = 75;
                 req_food = 75;
                 debug_info = "farmer";
                 break;
             case state::archer:
+                mvt_range = 3;
                 req_gold = 100;
                 req_food = 140;
                 debug_info = "archer";
                 break;
             case state::infantry:
+                mvt_range =2;
                 req_gold = 140;
                 req_food = 100;
                 debug_info = "infantry";
@@ -204,7 +211,7 @@ bool HandleCreation::execute(state::State &state, unsigned int pos_x, unsigned i
             //vérifie si la case est disponible pour la création
             if(collisionHandler(state, pos_x,pos_y, is_static)) {
                 //Unit::Unit (unsigned int movement_range, unsigned int gameobject_id, unsigned int player_id, state::Position pos, state::Property property, UnitType unit_type)
-                shared_ptr<state::Unit> new_unit(new Unit(2,
+                shared_ptr<state::Unit> new_unit(new Unit(mvt_range,
                                                           (unsigned int) state.getMap().get()->getListGameObject().size(),
                                                           current_player_id, position,
                                                           units[type],

@@ -249,7 +249,7 @@ bool test_heuristicAI(){
         if(test_state.get()->getCurrentPlayer().get()->getIsNpc()) {
             test_heuristicAI.run(test_engine, *test_state.get());
             testdraw.forceRefresh(test_state);
-            //sf::sleep(delayTime);
+            sf::sleep(delayTime);
         }
 
     }
