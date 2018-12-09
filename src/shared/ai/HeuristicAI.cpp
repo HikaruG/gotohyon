@@ -154,7 +154,7 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
 
         //tant que l'unité peut se déplacer || tant qu'il n'a pas atteint la ville
         while (distance > 0) {
-            //les cas particuliers
+            /* les cas particuliers */
 
             //si l'objet se trouve à la bonne position en x et en y
             if(town_x == old_x && town_y == old_y -1) {
@@ -207,7 +207,21 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
                 break;
             }
 
-            //cas général
+            /* cas général */
+
+            //si l'objet est autant éloigné en x qu'en y
+            if(abs(town_x - old_x) == abs(town_y - old_y)){
+                movement_x = movement_finder(old_x, town_x, distance);
+                if(movement_x == 0) {
+                    distance = 0;
+                    break;
+                }
+                new_y = old_y;
+                new_x = old_x + movement_x;
+                distance -= abs(movement_x);
+                cout << "mouvements restants possible:  "<< distance << endl;
+                break;
+            }
 
             //si l'objet est plus éloigné en x qu'en y
             if (abs(town_x - old_x) > abs(town_y - old_y)) {
@@ -238,7 +252,10 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
                 cout << "mouvements restants possible:  "<< distance << endl;
                 break;
             }
+
+
         }
+
 
         cout <<" player no" << unit_i->getPlayerId() << unit_i->getProperty()->getStringType() << "'s new position x : "<< new_x << endl;
         cout <<" player no" << unit_i->getPlayerId() << unit_i->getProperty()->getStringType() << "'s new position x : "<< new_y << endl;

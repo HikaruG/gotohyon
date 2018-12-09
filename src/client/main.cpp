@@ -459,20 +459,20 @@ bool test_engine()
 
     cout << "test : create units and building for the 1st npc" << endl;
     //create the first units for the 1st npc
-    cout << "test : create unit in 6,6" << endl;
+    cout << "test : create unit in 7,2" << endl;
     test_creation.execute(* test_state.get(), 7, 2, 1, false);//should instanciate an unit in 6,6
     //testdraw.forceRefresh(test_state);
 
-    cout << "test : create unit in 0,0" << endl;
+    cout << "test : create unit in 8,2" << endl;
     test_creation.execute(* test_state.get(), 8, 2, 1, false);//should instanciate an unit in 0,0
     //testdraw.forceRefresh(test_state);
 
 
-    cout << "test : create unit in 3,1" << endl;
+    cout << "test : create unit in 6,2" << endl;
     test_creation.execute(* test_state.get(), 6, 2, 1, false);//should instanciate an unit in 3,1
     testdraw.forceRefresh(test_state);
 
-    cout << "test : create building in 0,0"<<endl;
+    cout << "test : create building in 7,2"<<endl;
     test_creation.execute(* test_state.get(),7,2,3,true);//should instanciate a building in 0,0
     testdraw.forceRefresh(test_state);
 
@@ -485,20 +485,20 @@ bool test_engine()
 
 
     cout << "test : create units and building for the 2nd npc" << endl;
-    cout << "test : create unit in 12,12" << endl;
-    test_creation.execute(* test_state.get(), 7, 1, 1, false);//should instanciate an unit in 6,6
+    cout << "test : create unit in 7,13" << endl;
+    test_creation.execute(* test_state.get(), 7, 13, 1, false);//should instanciate an unit in 6,6
     //testdraw.forceRefresh(test_state);
 
-    cout << "test : create unit in 15,15" << endl;
+    cout << "test : create unit in 8,13" << endl;
     test_creation.execute(* test_state.get(), 8, 13, 1, false);//should instanciate an unit in 0,0
     //testdraw.forceRefresh(test_state);
 
 
-    cout << "test : create unit in 1,0" << endl;
+    cout << "test : create unit in 6,13" << endl;
     test_creation.execute(* test_state.get(), 6, 13, 1, false);//should instanciate an unit in 3,1
     testdraw.forceRefresh(test_state);
 
-    cout << "test : create building in 15,15"<<endl;
+    cout << "test : create building in 7,13"<<endl;
     test_creation.execute(* test_state.get(),7,13,3,true);//should instanciate a building in 0,0
     testdraw.forceRefresh(test_state);
 
@@ -526,7 +526,7 @@ bool test_engine()
         float t_map_y = 32;
         while (window.get()->pollEvent(event))
         {
-            if (event.type == sf::Event::MouseButtonPressed)
+            /*if (event.type == sf::Event::MouseButtonPressed)
             {
                 if (event.mouseButton.button == sf::Mouse::Left)
                 {
@@ -542,7 +542,7 @@ bool test_engine()
                     std::cout << "mouse y iso: " << y_iso << std::endl; // valeur de y en cartésien
 
                 }
-            }
+            }*/
             // "close requested" event: we close the window
             if (event.type == sf::Event::Closed)
                 window.get()->close();

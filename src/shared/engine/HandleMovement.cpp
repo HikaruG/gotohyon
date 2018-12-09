@@ -41,7 +41,7 @@ bool HandleMovement::execute(state::Unit &unit, state::State& state, unsigned in
                     for(int i = 0; i < (int)ennemy_buildings.size(); i++){
                         // si une unité est déjà présente, le déplacement devient impossible
                         if(ennemy_buildings[i].get()->getPosition() == position){
-                            //cout << "cannot move there; destroy the building first !" << endl;
+                            cout << "cannot move there; destroy the building first !" << endl;
                             return false;
                         }
                     };
@@ -50,7 +50,7 @@ bool HandleMovement::execute(state::Unit &unit, state::State& state, unsigned in
                     for(int i = 0; i < (int)ennemy_units.size(); i++){
                         //si un batiment est déjà présent, le déplacement devient impossible
                         if(ennemy_units[i].get()->getPosition() == position){
-                            //cout << "cannot move there; kill the unit first !" << endl;
+                            cout << "cannot move there; kill the unit first !" << endl;
                             return false;
                         }
                     };
@@ -62,7 +62,7 @@ bool HandleMovement::execute(state::Unit &unit, state::State& state, unsigned in
 
                     for(int i =0; i < (int)ally_units.size(); i++){
                         if(ally_units[i].get()->getPosition() == position){
-                            //cout << "cannot move there; respect your allies !" << endl;
+                            cout << "cannot move there; respect your allies !" << endl;
                             return false;
                         }
                     }
@@ -72,7 +72,7 @@ bool HandleMovement::execute(state::Unit &unit, state::State& state, unsigned in
             //fin gestion de la collision d'objets
             size_t terrain_type = state.getMap().get()->getTerrain(new_x,new_y).get()->getTerrainType();
             if(terrain_type == state::water){
-                //std::cout << "wow wow you can't go there !" << std::endl;
+                std::cout << "wow wow you can't go there !" << std::endl;
                 return false;
             }
 

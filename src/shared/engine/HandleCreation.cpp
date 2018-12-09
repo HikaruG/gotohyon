@@ -9,6 +9,54 @@ using namespace engine;
 using namespace std;
 using namespace state;
 
+bool collisionHandler(State &state, unsigned int pos_x, unsigned int pos_y){
+    Position position = Position(pos_x,pos_y);
+    //début gestion de la collision d'objets
+    vector<shared_ptr<state::Player>> list_player = state.getListPlayer();
+    for (int i = 0; i < (int)list_player.size(); i++){
+
+        //si le joueur dans la liste list_player n'est pas le joueur actuel
+        if(list_player[i].get()->getPlayerId() != state.getCurrentPlayerId()){
+            //récupère les listes des batiments et des unités des ennemis
+            vector<shared_ptr<state::Unit>>ennemy_units = list_player[i].get()->getPlayerUnitList();
+            vector<shared_ptr<state::Building>> ennemy_buildings = list_player[i].get()->getPlayerBuildingList();
+
+            //vérifie si il y a pas une unité ennemie déja présente à cette position
+            for(int i = 0; i < (int)ennemy_buildings.size(); i++){
+                // si une unité est déjà présente, la création devient impossible
+                if(ennemy_buildings[i].get()->getPosition() == position){
+                    cout << "cannot create there; destroy the ennemy's building first !" << endl;
+                    return false;
+                }
+            };
+
+            //vérifie si il n'y a pas un batiment ennemi déjà présent à cette position
+            for(int i = 0; i < (int)ennemy_units.size(); i++){
+                //si un batiment est déjà présent, la création devient impossible
+                if(ennemy_units[i].get()->getPosition() == position){
+                    cout << "cannot create there; kill the unit first !" << endl;
+                    return false;
+                }
+            };
+        }
+
+            //si le joueur dans la liste list_player est le joueur actuel
+        else{
+            vector<shared_ptr<state::Unit>>ally_units = list_player[i].get()->getPlayerUnitList();
+
+            for(int i =0; i < (int)ally_units.size(); i++){
+                if(ally_units[i].get()->getPosition() == position){
+                    cout << "cannot create there; respect your allies !" << endl;
+                    return false;
+                }
+            }
+        }
+
+    }
+    //fin gestion de la collision d'objets
+
+}
+
 CommandTypeId HandleCreation::getTypeId() const {
     return CommandTypeId::HANDLE_CREATION;
 }
@@ -89,17 +137,19 @@ bool HandleCreation::execute(state::State &state, unsigned int pos_x, unsigned i
                 return false;
         }
         if(my_food > req_food && my_gold > req_food) {
-            //Building::Building (unsigned int gameobject_id, unsigned int player_id, state::Position pos, state::Property prop, state::BuildingType build_type)
-            shared_ptr<state::Building> new_building(
-                    new Building((unsigned int) state.getMap().get()->getListGameObject().size(),
-                                 current_player_id,
-                                 position,
-                                 buildings[type],
-                                 (state::BuildingType) type));
-            state.addBuilding(move(new_building));
-            state.getCurrentPlayer().get()->setRessource(-req_gold,-req_food);
-            cout << "created new building : " << debug_info <<endl;
-
+            //vérifie si la case est disponible pour la création
+            if(collisionHandler(state, pos_x,pos_y)) {
+                //Building::Building (unsigned int gameobject_id, unsigned int player_id, state::Position pos, state::Property prop, state::BuildingType build_type)
+                shared_ptr<state::Building> new_building(
+                        new Building((unsigned int) state.getMap().get()->getListGameObject().size(),
+                                     current_player_id,
+                                     position,
+                                     buildings[type],
+                                     (state::BuildingType) type));
+                state.addBuilding(move(new_building));
+                state.getCurrentPlayer().get()->setRessource(-req_gold, -req_food);
+                cout << "created new building : " << debug_info << endl;
+            }
         }
 
     }
@@ -134,16 +184,18 @@ bool HandleCreation::execute(state::State &state, unsigned int pos_x, unsigned i
                 return false;
         }
         if(my_food > req_food && my_gold > req_food) {
-            //Unit::Unit (unsigned int movement_range, unsigned int gameobject_id, unsigned int player_id, state::Position pos, state::Property property, UnitType unit_type)
-            shared_ptr<state::Unit> new_unit(new Unit(1,
-                                                      (unsigned int) state.getMap().get()->getListGameObject().size(),
-                                                      current_player_id, position,
-                                                      units[type],
-                                                      (state::UnitType) type));
-            state.addUnit(move(new_unit));
-            cout << "created new unit : " << debug_info <<endl;
-            state.getCurrentPlayer().get()->setRessource(-req_gold,-req_food);
-
+            //vérifie si la case est disponible pour la création
+            if(collisionHandler(state, pos_x,pos_y)) {
+                //Unit::Unit (unsigned int movement_range, unsigned int gameobject_id, unsigned int player_id, state::Position pos, state::Property property, UnitType unit_type)
+                shared_ptr<state::Unit> new_unit(new Unit(1,
+                                                          (unsigned int) state.getMap().get()->getListGameObject().size(),
+                                                          current_player_id, position,
+                                                          units[type],
+                                                          (state::UnitType) type));
+                state.addUnit(move(new_unit));
+                cout << "created new unit : " << debug_info << endl;
+                state.getCurrentPlayer().get()->setRessource(-req_gold, -req_food);
+            }
         }
     }
     return true;
