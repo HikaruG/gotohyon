@@ -184,8 +184,30 @@ bool State::setDay() {
     return true;
 }
 
+Unit& State::getSelUnit() {
+}
 
-//instancie les shared pointers des unités sur la map: elle seront stockées dans 2 listes différentes
+Building& State::getSelBuilding() {}
+
+Position& State::getSelPosition() {}
+
+shared_ptr<GameObject> State::getSelTarget() {}
+
+bool State::setSelTarget(std::shared_ptr<state::GameObject> selected_target) {
+    return true;
+}
+
+bool State::setSelPosition(state::Position selected_position) {
+    return true;
+}
+
+bool State::setSelUnit(std::shared_ptr<state::Unit> selected_unit) {
+    return true;
+}
+
+bool State::setSelBuilding(std::shared_ptr<state::Building> selected_building) {
+    return true;
+}
 
 
 State::~State(){

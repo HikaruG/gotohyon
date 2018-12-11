@@ -144,7 +144,11 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
 
     /*** AI pour les unités ***/
     for(int i= 0; i < (int)my_list_unit.size(); i++) {
+
         Unit *unit_i = my_list_unit[i].get();
+        //rajout : pour utiliser les nouvelles commandes
+        state.setSelUnit(my_list_unit[i]);
+
         //liste de game_object ennemie
         vector<shared_ptr<GameObject>> ennemy_objects{}; //instancie au vecteur nul
 
@@ -166,7 +170,11 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
             distance_y = distance_x - abs(old_x - new_x);
             std::uniform_int_distribution<int> dis_y(-distance_y,distance_y);
             new_y = old_y + dis_y(randgen);
-            commande_movement.execute(*unit_i, state, new_x, new_y);
+            position_unit.setPosition(new_x,new_y);
+
+            //rajout : pour utiliser les nouvelles commandes
+            state.setSelPosition(position_unit);
+            commande_movement.execute(state);
 
 
             if(count_mine == 0)
@@ -264,12 +272,12 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
         if (unit_i->getUnitType() == archer) {
             if (commande_canattack.execute(*unit_i, state, ennemy_objects)) {
 
-                GameObject *ennemy_unit = ennemy_objects[0].get();
-                int hp = ennemy_unit->getProperty()->getHealth();
+                shared_ptr<GameObject>ennemy_unit = ennemy_objects[0];
+                int hp = ennemy_unit.get()->getProperty()->getHealth();
 
                 for (shared_ptr<GameObject> weakest_ennemy : ennemy_objects) {
                     if (hp > weakest_ennemy.get()->getProperty()->getHealth()) {
-                        ennemy_unit = weakest_ennemy.get();
+                        ennemy_unit = weakest_ennemy;
                     }
                 }
                 cout << "the chosen ennemy unit is : " << ennemy_unit->getPlayerId()
@@ -278,13 +286,12 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
                 //identification de la position de l'objet choisi aléatoirement
                 state::Position position_ennemy = ennemy_unit->getPosition();
 
-
-                //terrain sur lequel l'object est situé
-                state::Terrain *object_terrain = state.getMap().get()->getTerrain(position_ennemy.getX(),
-                                                                                  position_ennemy.getY()).get();
+                //rajout : pour utiliser les nouvelles commandes
+                state.setSelTarget(ennemy_unit);
+                state.setSelPosition(position_ennemy);
 
                 //execution de la commande damage
-                commande_damage.execute(state, unit_i, ennemy_unit, *object_terrain);
+                commande_damage.execute(state);
             }
         }
 
@@ -416,7 +423,12 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
                  << "'s new position x : " << new_x << endl;
             cout << " player" << unit_i->getPlayerId() << unit_i->getProperty()->getStringType()
                  << "'s new position x : " << new_y << endl;
-            commande_movement.execute(*unit_i, state, new_x, new_y);
+
+            position_unit.setPosition(new_x,new_y);
+            //rajout : pour utiliser les nouvelles commandes
+            state.setSelPosition(position_unit);
+
+            commande_movement.execute(state);
             /***  fin de l'implémentation des déplacements  ***/
 
             /***  début de l'implémentation des attaques et créations de batiments pour les farmer  ***/
@@ -425,27 +437,26 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
 
             if (commande_canattack.execute(*unit_i, state, ennemy_objects)) {
 
-                GameObject *ennemy_unit = ennemy_objects[0].get();
-                int hp = ennemy_unit->getProperty()->getHealth();
+                shared_ptr<GameObject>ennemy_unit = ennemy_objects[0];
+                int hp = ennemy_unit.get()->getProperty()->getHealth();
 
                 for (shared_ptr<GameObject> weakest_ennemy : ennemy_objects) {
                     if (hp > weakest_ennemy.get()->getProperty()->getHealth()) {
-                        ennemy_unit = weakest_ennemy.get();
+                        ennemy_unit = weakest_ennemy;
                     }
                 }
                 cout << "the chosen ennemy unit is : " << ennemy_unit->getPlayerId()
                      << ennemy_unit->getProperty()->getStringType() << endl;
 
-                //identification de la position de l'objet choisi aléatoirement
+                //identification de la position de l'objet le plus faible
                 state::Position position_ennemy = ennemy_unit->getPosition();
 
-
-                //terrain sur lequel l'object est situé
-                state::Terrain *object_terrain = state.getMap().get()->getTerrain(position_ennemy.getX(),
-                                                                                  position_ennemy.getY()).get();
+                //rajout : pour utiliser les nouvelles commandes
+                state.setSelPosition(position_ennemy);
+                state.setSelTarget(ennemy_unit);
 
                 //execution de la commande damage
-                commande_damage.execute(state, unit_i, ennemy_unit, *object_terrain);
+                commande_damage.execute(state);
             }
         }
     }

@@ -494,7 +494,7 @@ bool test_engine()
 
     Unit * test_unit = (Unit*) test_state.get()->getCurrentPlayer().get()->getPlayerUnitList()[0].get();
 
-    test_movement.execute(*test_unit, * test_state.get(), 8,2);
+    test_movement.execute( * test_state.get());
 
 
 

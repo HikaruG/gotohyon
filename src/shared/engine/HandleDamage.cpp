@@ -11,11 +11,16 @@ CommandTypeId HandleDamage::getTypeId() const {
     return CommandTypeId::HANDLE_DAMAGE;
 }
 
-bool HandleDamage::execute(state::State& state, state::GameObject* object, state::GameObject* ennemy_object, state::Terrain &terrain) {
-    cout << "player n" << object->getPlayerId() << " s " << object->getProperty()->getStringType() << " attacks ! " <<endl;
-    ennemy_object->getProperty()->takeDamage(object->getProperty()->getAttack());
+bool HandleDamage::execute(state::State& state ) {
 
-    cout << "player n" << ennemy_object->getPlayerId() << " s " << ennemy_object->getProperty()->getStringType() << " got hit for " << object->getProperty()->getAttack() <<"hp \n" <<endl;
+    state::GameObject * ennemy_object = state.getSelTarget().get();
+    state::Position ennemy_position = ennemy_object->getPosition();
+    state::Terrain * terrain = state.getMap().get()->getTerrain(ennemy_position.getX(), ennemy_position.getY()).get();
+
+    cout << "player n" << state.getSelUnit().getPlayerId() << " s " << state.getSelUnit().getProperty()->getStringType() << " attacks ! " <<endl;
+    ennemy_object->getProperty()->takeDamage(state.getSelUnit().getProperty()->getAttack());
+
+    cout << "player n" << ennemy_object->getPlayerId() << " s " << ennemy_object->getProperty()->getStringType() << " got hit for " << state.getSelUnit().getProperty()->getAttack() <<"hp \n" <<endl;
     if(!ennemy_object->getProperty()->isAlive()){
         //commande delete
         if(ennemy_object->getProperty()->isStatic()){
@@ -34,11 +39,7 @@ bool HandleDamage::execute(state::State& state, state::GameObject* object, state
 
         }
     }
-    object->getProperty()->setAvailability(false);
-    return true;
-}
-
-bool HandleDamage::execute(state::State &state) {
+    state.getSelUnit().getProperty()->setAvailability(false);
     return true;
 }
 

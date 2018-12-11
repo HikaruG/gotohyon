@@ -74,7 +74,7 @@ bool RandomAI::run(engine::Engine &engine, state::State& state) {
 
         std::uniform_int_distribution<int> dis_y(-distance_y,distance_y);
         new_y = old_y + dis_y(randgen);
-        commande_movement.execute(*unit_i, state, new_x, new_y);
+        // GOTO : commande_movement.execute(*unit_i, state, new_x, new_y);
         /***  fin de l'implémentation des déplacements  ***/
 
         /***  début de l'implémentation des attaques et créations de batiments pour les farmer  ***/
@@ -93,7 +93,7 @@ bool RandomAI::run(engine::Engine &engine, state::State& state) {
 
             //terrain sur lequel l'object est situé
             state::Terrain * object_terrain = state.getMap().get()->getTerrain(position_ennemy.getX(),position_ennemy.getY()).get();
-            commande_damage.execute(state,unit_i, ennemy_objects[i_object].get(),* object_terrain);
+            //GOTO commande_damage.execute(state,unit_i, ennemy_objects[i_object].get(),* object_terrain);
         }
 
         //si le farmeur n'a pas attaqué, il peut créer un batiment
