@@ -13,6 +13,14 @@ CommandTypeId HandleCanAttack::getTypeId() const{
     return CommandTypeId::HANDLE_ATTACK;
 }
 
+
+/*ce que je compte faire : pour Ben
+    Mettre en place un moyen de déterminer la liste des unités ennemies à mettre en surbrillance
+
+    1ere méthode: créer une liste de vector<shared_ptr<GameObject>> en tant qu'attributs de InputManager et le remplir à l'aide d'un setter
+    2ème méthode: utilisation d'un notify observer pour chaque objet considéré, pour le rendre surbrillant
+
+    */
 bool HandleCanAttack::execute(state::Unit& current_unit, state::State& state, vector<shared_ptr<GameObject>>& list_in_range ) {
 
     //current_x et current_y sont les coordonnées de l'unité considéré

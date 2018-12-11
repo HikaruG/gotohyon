@@ -15,6 +15,8 @@ CommandTypeId HandleMovement::getTypeId() const {
 }
 
 bool HandleMovement::execute(state::Unit &unit, state::State& state, unsigned int new_x, unsigned int new_y) {
+
+    
     //récupération de la taille de la carte
     int max_x, max_y;
     state.getMap().get()->getSize(max_x,max_y);
