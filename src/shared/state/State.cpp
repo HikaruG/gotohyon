@@ -185,27 +185,38 @@ bool State::setDay() {
 }
 
 Unit& State::getSelUnit() {
+    return * this->selected_unit.get();
 }
 
-Building& State::getSelBuilding() {}
+Building& State::getSelBuilding() {
+    return * this->selected_building.get();
+}
 
-Position& State::getSelPosition() {}
+Position& State::getSelPosition() {
+    return this->selected_position;
+}
 
-shared_ptr<GameObject> State::getSelTarget() {}
+shared_ptr<GameObject> State::getSelTarget() {
+    return this->selected_target;
+}
 
 bool State::setSelTarget(std::shared_ptr<state::GameObject> selected_target) {
+    this->selected_target = move(selected_target);
     return true;
 }
 
 bool State::setSelPosition(state::Position selected_position) {
+    this->selected_position = move(selected_position);
     return true;
 }
 
 bool State::setSelUnit(std::shared_ptr<state::Unit> selected_unit) {
+    this->selected_unit = selected_unit;
     return true;
 }
 
 bool State::setSelBuilding(std::shared_ptr<state::Building> selected_building) {
+    this->selected_building = selected_building;
     return true;
 }
 

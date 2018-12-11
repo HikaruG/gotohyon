@@ -115,7 +115,7 @@ bool test_input(){
     size_t x_window = 1024;
     size_t y_window = 1024;
 
-    sf::Time delayTime = sf::milliseconds(1000);
+    //sf::Time delayTime = sf::milliseconds(1000);
     // create the window
     shared_ptr<sf::RenderWindow> window (new sf::RenderWindow(sf::VideoMode(static_cast<unsigned int>(x_window), static_cast<unsigned int>(y_window)),
                                                               "test engine"));
@@ -490,9 +490,6 @@ bool test_engine()
     //end 2nd npc's first turn
     cout << "npc2 : end 1st turn"<<endl;
     test_turn.execute(*test_state.get());
-
-
-    Unit * test_unit = (Unit*) test_state.get()->getCurrentPlayer().get()->getPlayerUnitList()[0].get();
 
     test_movement.execute( * test_state.get());
 

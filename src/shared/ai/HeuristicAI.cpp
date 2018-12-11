@@ -64,7 +64,7 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
 
     //récupération des données nécéssaires pour les différents types de batiments
     int count_barrack =0, count_turret = 0, count_mine =0, count_farm = 0;
-    for(int i = 0; i < my_list_building.size(); i++){
+    for(int i = 0; i < (int)my_list_building.size(); i++){
         if(my_list_building[i].get()->getBuildingType() == turret)
             count_turret ++;
         if(my_list_building[i].get()->getBuildingType() == barrack)
@@ -468,7 +468,7 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
     int my_army_size = my_list_unit.size();
 
     int count_farmers = 0;
-    for(int i = 0; i < my_list_unit.size(); i++){
+    for(int i = 0; i < (int)my_list_unit.size(); i++){
         if(my_list_unit[i].get()->getUnitType() == farmer)
             count_farmers ++;
     }
