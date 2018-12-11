@@ -201,12 +201,12 @@ shared_ptr<GameObject> State::getSelTarget() {
 }
 
 bool State::setSelTarget(std::shared_ptr<state::GameObject> selected_target) {
-    this->selected_target = move(selected_target);
+    this->selected_target = selected_target;
     return true;
 }
 
 bool State::setSelPosition(state::Position selected_position) {
-    this->selected_position = move(selected_position);
+    this->selected_position = selected_position;
     return true;
 }
 

@@ -20,10 +20,10 @@ RandomAI::~RandomAI() = default;
 
 bool RandomAI::run(engine::Engine &engine, state::State& state) {
 
-    engine::HandleGrowth commande_growth = engine::HandleGrowth();
+    shared_ptr<engine::HandleGrowth> commande_growth (new engine::HandleGrowth());
     //rajout des ressources
-    commande_growth.execute(state);
-
+    engine.addCommands(commande_growth);
+    //goto :  commande_growth.execute(state);
 
     //récupération de la liste des bâtiments du pc
     vector<shared_ptr<Building>> list_building = state.getCurrentPlayer()->getPlayerBuildingList();
@@ -36,10 +36,10 @@ bool RandomAI::run(engine::Engine &engine, state::State& state) {
     //variables pour déterminer la nouvelle position de l'unité
     int old_x, old_y, new_x = 0, new_y = 0, distance_x, distance_y;
 
-    engine::HandleMovement commande_movement = engine::HandleMovement();
+    shared_ptr<engine::HandleMovement> commande_movement (new engine::HandleMovement());
     engine::HandleCanAttack commande_canattack = engine::HandleCanAttack();
-    engine::HandleDamage commande_damage = engine::HandleDamage();
-    engine::HandleTurn commande_turn = engine::HandleTurn();
+    shared_ptr<engine::HandleDamage> commande_damage (new engine::HandleDamage());
+    shared_ptr<engine::HandleTurn> commande_turn (new engine::HandleTurn());
     engine::HandleCreation commande_create = engine::HandleCreation();
 
     //liste de game_object ennemie
@@ -58,6 +58,10 @@ bool RandomAI::run(engine::Engine &engine, state::State& state) {
     for(int i= 0; i < (int)list_unit.size(); i++)
     {
         Unit * unit_i = list_unit[i].get();
+
+        //rajout : pour les nouvelles commandes
+        state.setSelUnit(list_unit[i]);
+
         /***  implémentation des constructions de batiments aléatoires ***/
         if(unit_i->getUnitType()==farmer){}
 
@@ -68,19 +72,24 @@ bool RandomAI::run(engine::Engine &engine, state::State& state) {
         distance_x = unit_i->getMovementRange();
         std::uniform_int_distribution<int> dis_x(-distance_x,distance_x);
         new_x = old_x + dis_x(randgen);
-
         distance_y = distance_x - abs(old_x - new_x);
-
-
         std::uniform_int_distribution<int> dis_y(-distance_y,distance_y);
         new_y = old_y + dis_y(randgen);
-        // GOTO : commande_movement.execute(*unit_i, state, new_x, new_y);
+
+        //rajout pour les nouvelles commandes
+        position_unit.setPosition(new_x, new_y);
+        state.setSelPosition(position_unit);
+
+        engine.addCommands(commande_movement);
+        //goto : commande_movement.execute(state);
+
         /***  fin de l'implémentation des déplacements  ***/
 
         /***  début de l'implémentation des attaques et créations de batiments pour les farmer  ***/
 
         //si l'unité peut attaquer, il attaque
 
+        /* goto :
         if(commande_canattack.execute(* unit_i, state, ennemy_objects)){
 
             int size_ennemy_list = ennemy_objects.size();
@@ -89,13 +98,14 @@ bool RandomAI::run(engine::Engine &engine, state::State& state) {
 
             //identification de la position de l'objet choisi aléatoirement
             state::Position position_ennemy = ennemy_objects[i_object]->getPosition();
+            state.setSelPosition(position_ennemy);
+            state.setSelTarget(ennemy_objects[i_object]);
 
-
-            //terrain sur lequel l'object est situé
-            state::Terrain * object_terrain = state.getMap().get()->getTerrain(position_ennemy.getX(),position_ennemy.getY()).get();
-            //GOTO commande_damage.execute(state,unit_i, ennemy_objects[i_object].get(),* object_terrain);
+            commande_damage.execute(state);
         }
+         goto : */
 
+        /* goto :
         //si le farmeur n'a pas attaqué, il peut créer un batiment
         if(unit_i->getUnitType()==farmer){
             if(execute) {//une chance sur deux de créer un batiment (si il possède les ressources nécéssaire)
@@ -113,11 +123,12 @@ bool RandomAI::run(engine::Engine &engine, state::State& state) {
 
             }
         }
+        goto : */
     }
 
     /***  implémentation des créations d'unités   ***/
 
-
+    /* goto :
     //randgen pour les différentes unités offensives: -1 signifie l'unité vide
     std::uniform_int_distribution<int> dis_units(infantry,maxUnit -1);
     int unit_type = -1;
@@ -140,16 +151,15 @@ bool RandomAI::run(engine::Engine &engine, state::State& state) {
         }
 
     }
+    goto : */
 
 
 
 
 
     //commande de fin de tour; préparation pour le joueur suivant
-    commande_turn.execute(state);
-
-
-
+    engine.addCommands(commande_turn);
+    // goto : commande_turn.execute(state);
 
 
     return true;

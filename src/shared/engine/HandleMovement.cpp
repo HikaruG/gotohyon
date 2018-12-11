@@ -16,7 +16,6 @@ CommandTypeId HandleMovement::getTypeId() const {
 
 bool HandleMovement::execute(state::State& state) {
 
-    state::Unit selected_unit = state.getSelUnit();
     state::Position selected_position = state.getSelPosition();
     unsigned int new_x = selected_position.getX();
     unsigned int new_y = selected_position.getY();
@@ -26,7 +25,7 @@ bool HandleMovement::execute(state::State& state) {
     state.getMap().get()->getSize(max_x,max_y);
 
     //si le mouvement demandé respect la distance de déplacement autorisé à l'unité
-    if( (int)(selected_unit.getPosition().getX()  + selected_unit.getPosition().getY() - abs(((int)new_x + (int)new_y)) ) <= selected_unit.getMovementRange() ){
+    if( (int)(state.getSelUnit().getPosition().getX()  + state.getSelUnit().getPosition().getY() - abs(((int)new_x + (int)new_y)) ) <= state.getSelUnit().getMovementRange() ){
 
         //si l'objet ne sort pas de la carte
         if((int) new_x >= 0 && (int) new_x < max_x && (int)new_y >= 0 && (int)new_y < max_y ) {
@@ -82,7 +81,7 @@ bool HandleMovement::execute(state::State& state) {
                 return false;
             }
 
-            if (state.getMap().get()->moveGameObject(selected_unit.getGame_object_id(), position)) {
+            if (state.getMap().get()->moveGameObject(state.getSelUnit().getGame_object_id(), position)) {
                 //std::cout << "successfully moved" << std::endl;
             }
         }

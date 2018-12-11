@@ -364,6 +364,7 @@ bool test_randomAI() {
 
 
     while(!test_state.get()->is_game_finished) {
+        test_engine.execute(* test_state.get());
         if(test_state.get()->getCurrentPlayer().get()->getIsNpc()) {
             test_randomAI.run(test_engine, *test_state.get());
             testdraw.forceRefresh(test_state);
