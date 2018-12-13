@@ -261,7 +261,7 @@ bool test_heuristicAI(){
 
 bool test_randomAI() {
 
-    shared_ptr<State> test_state (new State(2,2));
+    shared_ptr<State> test_state (new State(2,1));
 
     static int const terrain_int [] = {
             0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -369,6 +369,9 @@ bool test_randomAI() {
             test_randomAI.run(test_engine, *test_state.get());
             testdraw.forceRefresh(test_state);
             sf::sleep(delayTime);
+        }
+        else{
+            testdraw.user_interact.userTurn(test_engine,*test_state.get());
         }
 
     }
