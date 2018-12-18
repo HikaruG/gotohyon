@@ -1,6 +1,7 @@
 #include "PlayerAction.h"
 #include <iostream>
 #include "engine.h"
+#include "DrawElement.h"
 
 using namespace render;
 
@@ -20,8 +21,8 @@ void PlayerAction::userTurn (engine::Engine& engine, state::State& state){
 
     int x_cart = 0, y_cart = 0;
     int x_iso = 0, y_iso = 0;
-    float t_map_x = 64;
-    float t_map_y = 32;
+    float t_map_x = DrawElement::sprite_x;
+    float t_map_y = DrawElement::sprite_y;
 
     while(!endturn) {
         sf::Event event;
