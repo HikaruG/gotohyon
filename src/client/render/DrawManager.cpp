@@ -24,6 +24,7 @@ unit_layer(OnMapLayer("res/tileset_unit.png")),user_interact(PlayerAction(window
 
     terrain_layer.setNext(&building_layer);
     building_layer.setNext(&unit_layer);
+    user_interact.addObserver(this);
 
 }
 
@@ -61,8 +62,8 @@ bool DrawManager::setTerrain ()
     std::vector<DrawElement> elem;
     for(unsigned int x = 0; x < this->map_size_x;x ++) {
         for (unsigned int y = 0; y < this->map_size_y; y++) {
-            shared_ptr<state::Terrain> local_terrain = current_map.get()->getTerrain(x, y);
-            elem.push_back(DrawElement(state::Position(x, y), local_terrain.get()->getTerrainType()));
+            state::Terrain * local_terrain = current_map.get()->getTerrain(x, y).get();
+            elem.push_back(DrawElement(state::Position(x, y), local_terrain->getTerrainType()));
         }
     }
 
@@ -129,7 +130,7 @@ bool DrawManager::stateChanged(const state::Event &event) {
     switch(this_event) {
         case 0 : break;
         case 1 : break;
-        case 2 : setTerrain();
+        case 2 : forceRefresh(current_state);//only happens at the beginning or when map is moved, refresh everything
             break;
         case 3 :setBuilding();
             break;

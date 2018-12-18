@@ -17,9 +17,9 @@ unsigned int OnMapLayer::scalar_top_right_y;
 
 OnMapLayer::OnMapLayer(std::string sprite_path):DrawLayer(sprite_path)
 {
-    this->zoom_level = 1;
-    this->scalar_top_right_x = 0;
-    this->scalar_top_right_y = 0;
+    this->zoom_level = 0;
+    this->scalar_top_right_x = 480;
+    this->scalar_top_right_y = 100;
     quads.setPrimitiveType(sf::Quads);
     nextLayer = nullptr;
     loadTexture(sprite_path);
@@ -44,10 +44,9 @@ void OnMapLayer::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
     states.texture = &texture_to_apply;
     target.draw(quads,states.texture);
-
-    if(this->nextLayer)
+    if(this->nextLayer) {
         this->nextLayer->draw(target, states);
-
+    }
 }
 
 
@@ -89,20 +88,25 @@ bool OnMapLayer::initQuads(int count) {
 bool OnMapLayer::setSpriteLocation() {
     sf::Vertex* quad = &quads[vertex_count*4];
     DrawElement * tile = &draw_array[vertex_count];
-    int offset = 480; // taille map * taille texture longueur, pour eviter d'arriver dans les negatifs
-    int t_map_x = tile->sprite_x;
-    int t_map_y = tile->sprite_y;
-    int x = tile->pos_x;
-    int y = tile->pos_y;
+    // taille map * taille texture longueur, pour eviter d'arriver dans les negatifs
+    if(tile) {
+        int t_map_x = tile->sprite_x+4*tile->sprite_x/tile->sprite_y*zoom_level;//to keep 2/1 ratio
+        int t_map_y = tile->sprite_y+4*zoom_level;
+        int x = tile->pos_x;
+        int y = tile->pos_y;
 
-    int cc = -(y * t_map_x);
-    int k = (x * t_map_x)/2 + cc/2 + t_map_x/2 + offset;
-    int l = ((x + y) * t_map_y) / 2;
-    //std::cout<<"Debug : adding sprite nbr "<<count<<" in "<<x<<" "<<y<<" : "<<k<<" "<<l<<std::endl;
-    quad[0].position = sf::Vector2f(k, l);
-    quad[1].position = sf::Vector2f(k + t_map_x/2, l + t_map_y/2);
-    quad[3].position = sf::Vector2f(k - t_map_x/2, l + t_map_y /2);
-    quad[2].position = sf::Vector2f(k , l + t_map_y);
+        int cc = -(y * t_map_x);
+        int k = (x * t_map_x) / 2 + cc / 2 + t_map_x / 2 + scalar_top_right_x;
+        int l = ((x + y) * t_map_y) / 2 + scalar_top_right_y;
+        //std::cout<<"Debug : adding sprite nbr "<<count<<" in "<<x<<" "<<y<<" : "<<k<<" "<<l<<std::endl;
+        quad[0].position = sf::Vector2f(k, l);
+        quad[1].position = sf::Vector2f(k + t_map_x / 2, l + t_map_y / 2);
+        quad[3].position = sf::Vector2f(k - t_map_x / 2, l + t_map_y / 2);
+        quad[2].position = sf::Vector2f(k, l + t_map_y);
+    }
+    else{
+        std::cout<<"no tile"<<std::endl;
+    }
     return true;
 }
 
