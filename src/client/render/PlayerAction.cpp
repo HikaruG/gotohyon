@@ -96,20 +96,20 @@ void PlayerAction::userTurn (engine::Engine& engine, state::State& state){
                 }
                 else if(event.key.code == sf::Keyboard::Up)
                 {
-                    y_move = -1;
+                    y_move = 1;
 
                 }
                 else if(event.key.code == sf::Keyboard::Down)
                 {
-                    y_move = 1;
+                    y_move = -1;
                 }
                 else if(event.key.code == sf::Keyboard::Right)
                 {
-                    x_move = 1;
+                    x_move = -1;
                 }
                 else if(event.key.code == sf::Keyboard::Left)
                 {
-                    x_move = -1;
+                    x_move = 1;
                 }
             }
             if(event.type == sf::Event::KeyReleased)

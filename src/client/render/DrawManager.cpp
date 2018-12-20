@@ -19,8 +19,11 @@ unit_layer(OnMapLayer("res/tileset_unit.png")),user_interact(PlayerAction(window
     int tmp_x = 0;
     int tmp_y = 0;
     current_state.get()->getMap().get()->getSize(tmp_x,tmp_y);
+
     this->map_size_x = (unsigned int) tmp_x;
     this->map_size_y = (unsigned int) tmp_y;
+
+    this->buttons.emplace_back(GuiButton(0,0,50,20,"res/button_test.png",""));
 
     terrain_layer.setNext(&building_layer);
     building_layer.setNext(&unit_layer);
@@ -63,7 +66,7 @@ bool DrawManager::setTerrain ()
     for(unsigned int x = 0; x < this->map_size_x;x ++) {
         for (unsigned int y = 0; y < this->map_size_y; y++) {
             state::Terrain * local_terrain = current_map.get()->getTerrain(x, y).get();
-            elem.push_back(DrawElement(state::Position(x, y), local_terrain->getTerrainType()));
+            elem.emplace_back(DrawElement(state::Position(x, y), local_terrain->getTerrainType()));
         }
     }
 
@@ -85,7 +88,7 @@ bool DrawManager::setUnit ()
         {
             //cast en pointeur le unique pointeur => on peut utiliser les méthodes de la classe
             state::Unit * units_go = (state::Unit *) current_map->getListGameObject()[i].get();
-            elem.push_back(DrawElement(units_go->getPosition(),units_go->getUnitType()));
+            elem.emplace_back(DrawElement(units_go->getPosition(),units_go->getUnitType()));
         }
     }
 

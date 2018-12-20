@@ -113,12 +113,12 @@ bool test_input(){
 
     //init windows
     size_t x_window = 1024;
-    size_t y_window = 1024;
+    size_t y_window = 512;
 
     //sf::Time delayTime = sf::milliseconds(1000);
     // create the window
     shared_ptr<sf::RenderWindow> window (new sf::RenderWindow(sf::VideoMode(static_cast<unsigned int>(x_window), static_cast<unsigned int>(y_window)),
-                                                              "test engine"));
+                                                              "test engine",sf::Style::Close));
 
 
 
@@ -179,12 +179,12 @@ bool test_heuristicAI(){
 
     //init windows
     size_t x_window = 1024;
-    size_t y_window = 1024;
+    size_t y_window = 512;
 
     sf::Time delayTime = sf::milliseconds(1000);
     // create the window
     shared_ptr<sf::RenderWindow> window (new sf::RenderWindow(sf::VideoMode(static_cast<unsigned int>(x_window), static_cast<unsigned int>(y_window)),
-                                                              "test engine"));
+                                                              "test engine",sf::Style::Close));
 
 
 
@@ -290,12 +290,12 @@ bool test_randomAI() {
 
     //init windows
     size_t x_window = 1024;
-    size_t y_window = 1024;
+    size_t y_window = 512;
 
     sf::Time delayTime = sf::milliseconds(1000);
     // create the window
     shared_ptr<sf::RenderWindow> window (new sf::RenderWindow(sf::VideoMode(static_cast<unsigned int>(x_window), static_cast<unsigned int>(y_window)),
-                            "test engine"));
+                            "test engine",sf::Style::Close));
 
 
 
