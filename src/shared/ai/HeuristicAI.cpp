@@ -12,18 +12,14 @@ using namespace ai;
 using namespace state;
 using namespace std;
 
-int movement_finder(int orig_pos, int dest_pos, int mvt_range){
+int direction(int orig_pos, int dest_pos){
     int dist = dest_pos - orig_pos;
-    cout << "distance " << dist << endl;
-        if(abs(dist) > mvt_range) {
-            if(dist < 0)
-                return -mvt_range;
-            else
-                return mvt_range;
-        }
-        else {
-            return dist;
-        }
+        if(dist == 0)
+            return 0;
+        else if(dist < 0)
+            return -1;
+        else
+            return 1;
 }
 
 int distance_pos(int x1, int x2, int y1, int y2){
@@ -39,6 +35,7 @@ bool number_advantage(int my_list, int ennemy_list){
 }
 
 
+
 HeuristicAI::HeuristicAI(int random_seed) {
     std::mt19937 randgen(random_seed);
 }
@@ -51,8 +48,8 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
     Player * current_player = state.getCurrentPlayer().get();
 
     //mise à jour de l'économie
-    engine::HandleGrowth commande_growth = engine::HandleGrowth();
-    commande_growth.execute(state);
+    shared_ptr<engine::HandleGrowth> growth_check (new engine::HandleGrowth());
+    engine.addCommands(growth_check);
     unsigned int food, gold;
     current_player->getRessource(food, gold);
     cout << "player"<< current_player->getPlayerId() << "'s current gold is " << gold << endl;
@@ -112,7 +109,7 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
         }
     }
 
-    int town_distance = 400;
+    int town_distance = 4000;
     //récupération de la ville ennemie la plus proche
     for(Building * closest_town : towns){
         int ennemy_x = closest_town->getPosition().getX();
@@ -124,18 +121,11 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
             town_distance = distance_pos(ennemy_x, my_x, ennemy_y, my_y);
         }
     }
+    if(town_distance == 4000)
+        cout << "error, no ennemy town found !" << endl;
 
     cout << "ennemy player id is : " << town_playerid << endl;
     Player * ennemy = state.getListPlayer()[town_playerid].get();
-
-
-    engine::HandleMovement commande_movement = engine::HandleMovement();
-    engine::HandleCanAttack commande_canattack = engine::HandleCanAttack();
-    engine::HandleDamage commande_damage = engine::HandleDamage();
-    engine::HandleTurn commande_turn = engine::HandleTurn();
-    engine::HandleCreation commande_create = engine::HandleCreation();
-
-    int building_type = -1;
 
 
     //variables pour déterminer la nouvelle position de l'unité
@@ -146,20 +136,17 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
     for(int i= 0; i < (int)my_list_unit.size(); i++) {
 
         Unit *unit_i = my_list_unit[i].get();
-        //rajout : pour utiliser les nouvelles commandes
-        state.setSelUnit(my_list_unit[i]);
 
         //liste de game_object ennemie
         vector<shared_ptr<GameObject>> ennemy_objects{}; //instancie au vecteur nul
 
-        /*** cas d'un farmeur : il n'attaque pas, ne peut que construire***/
 
+        /*** cas d'un farmeur : il n'attaque pas, ne peut que construire***/
         if (unit_i->getUnitType() == farmer) {
-            //ses positions
+            //phase de déplacement:
+            //son déplacement est pour le moment aléatoire, l'important étant sa phase de construction
             int pos_x = unit_i->getPosition().getX();
             int pos_y = unit_i->getPosition().getY();
-
-            //son déplacement est pour le moment aléatoire, l'important étant sa phase de construction
             int distance_x, distance_y;
             state::Position position_unit = unit_i->getPosition();
             old_y = (int)position_unit.getY();
@@ -170,111 +157,91 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
             distance_y = distance_x - abs(old_x - new_x);
             std::uniform_int_distribution<int> dis_y(-distance_y,distance_y);
             new_y = old_y + dis_y(randgen);
-            position_unit.setPosition(new_x,new_y);
+            shared_ptr<engine::HandleMovement> movement_farmer (new engine::HandleMovement(new_x, new_y, unit_i));
+            engine.addCommands(movement_farmer);
 
-            //rajout : pour utiliser les nouvelles commandes
-            state.setSelPosition(position_unit);
-            commande_movement.execute(state);
-
-
+            //phase de construction:
+            //construit une mine puis un moulin si il n'en possède aucun
+            int building_type = -1;
             if(count_mine == 0)
-                commande_create.execute(state, pos_x, pos_y, mine, true);
-            if(count_farm == 0)
-                commande_create.execute(state, pos_x, pos_y, farm, true);
-
-
-            //randgen pour les différents batiments:
-            std::uniform_int_distribution<int> dis_buildings(0, 9);
-            int build_i = dis_buildings(randgen);
-
-            //si déficite en nourriture
-            if (food < 400) {
-                if (build_i < 3)
-                    building_type = farm;
-                else if (build_i < 4)
-                    building_type = mine;
-                else
-                    building_type = -1;
-            }
-
-            //si déficite en argent
-            if (mine < 400) {
-                if (build_i < 3)
-                    building_type = mine;
-                else if (build_i < 4)
-                    building_type = farm;
-                else
-                    building_type = -1;
-            }
-
-            //si argent / food pas abondants
-            if (food < 800 || gold < 800) {
+                building_type = mine;
+            else if(count_farm == 0)
+                building_type = farm;
+            //sinon, construit en fonction de son économie
+            else {
+                std::uniform_int_distribution<int> dis_buildings(0, 9);
                 int build_i = dis_buildings(randgen);
-                if (build_i == 0)
+                //si déficite en nourriture
+                if (food < 400) {
                     building_type = farm;
-                else if (build_i == 1)
+                }
+                //si déficite en argent
+                if (mine < 400) {
                     building_type = mine;
-                else if (build_i == 2)
-                    building_type = barrack;
-                else if(build_i == 3)
-                    building_type = turret;
-                else
+                }
+                //si argent / food pas abondants
+                if (food < 800 || gold < 800) {
+                    if (build_i == 0)
+                        building_type = farm;
+                    else if (build_i == 1)
+                        building_type = mine;
+                    else if (build_i == 2)
+                        building_type = barrack;
+                    else if (build_i == 3)
+                        building_type = turret;
+                    else
+                        building_type = -1;
+                }
+                //si argent / food abondants
+                if (food > 2000 || gold > 2000) {
+                    if (build_i == 0)
+                        building_type = farm;
+                    else if (build_i == 1)
+                        building_type = mine;
+                    else if (build_i < 4)
+                        building_type = barrack;
+                    else if (build_i < 6)
+                        building_type = turret;
+                    else
+                        building_type = -1;
+                }
+                //si argent / food abondants +
+                if (food > 4000 || gold < 4000) {
+                    if (build_i < 6)
+                        building_type = barrack;
+                    else
+                        building_type = turret;
+                }
+                //si le nombre max par type a été construit on ne construit rien
+                if (count_barrack >= 2 && building_type == barrack)
+                    building_type = -1;
+                if (count_turret >= 1 && building_type == turret)
+                    building_type = -1;
+                if (count_mine >= 1 && building_type == mine)
+                    building_type = -1;
+                if (count_farm >= 1 && building_type == farm)
                     building_type = -1;
             }
-
-            //si argent food abondants
-
-            //si argent / food abondants
-            if (food > 2000 || gold < 2000) {
-                int build_i = dis_buildings(randgen);
-                if (build_i == 0)
-                    building_type = farm;
-                else if (build_i == 1)
-                    building_type = mine;
-                else if (build_i < 4)
-                    building_type = barrack;
-                else if (build_i < 6)
-                    building_type = turret;
-                else
-                    building_type = -1;
-            }
-
-            //si argent / food abondants +
-            if (food > 4000 || gold < 4000) {
-                int build_i = dis_buildings(randgen);
-                if (build_i < 6)
-                    building_type = barrack;
-                else
-                    building_type = turret;
-            }
-
-            if(count_barrack >= 2 && building_type == barrack)
-                building_type = -1;
-            if(count_turret >= 1 && building_type == turret)
-                building_type = -1;
-
             for (shared_ptr<GameObject> obstacle: my_list_building) {
                 if (obstacle.get()->getPosition() == unit_i->getPosition()) {
                     //cout<< "cannot build here, already a constructed building present!" <<endl;
                 } else {
-                    commande_create.execute(state, pos_x, pos_y, building_type, true);
-                    current_player->getRessource(food, gold);
-                    cout << "player" << current_player->getPlayerId() << "'s current gold is " << gold << endl;
-                    cout << "player" << current_player->getPlayerId() << "'s current food is " << food << endl;
+                    shared_ptr<engine::HandleCreation> create_building (new engine::HandleCreation(new_x, new_y,building_type,true));
+                    engine.addCommands(create_building);
                 }
-
             }
             unit_i->getProperty()->setAvailability(false); //rend inaccessible le villageois après la création du batiment
         }
 
+
         /*** cas d'un archer: il attaque à distance, sinon il se déplace et attaque***/
-
         if (unit_i->getUnitType() == archer) {
-            if (commande_canattack.execute(*unit_i, state, ennemy_objects)) {
+            shared_ptr<engine::HandleCanAttack> canattack_archers (new engine::HandleCanAttack(unit_i,ennemy_objects));
+            engine.addCommands(canattack_archers);
 
+            if (ennemy_objects.size() != 0) {
                 shared_ptr<GameObject>ennemy_unit = ennemy_objects[0];
                 int hp = ennemy_unit.get()->getProperty()->getHealth();
-
                 for (shared_ptr<GameObject> weakest_ennemy : ennemy_objects) {
                     if (hp > weakest_ennemy.get()->getProperty()->getHealth()) {
                         ennemy_unit = weakest_ennemy;
@@ -282,25 +249,16 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
                 }
                 cout << "the chosen ennemy unit is : " << ennemy_unit->getPlayerId()
                      << ennemy_unit->getProperty()->getStringType() << endl;
-
-                //identification de la position de l'objet choisi aléatoirement
-                state::Position position_ennemy = ennemy_unit->getPosition();
-
-                //rajout : pour utiliser les nouvelles commandes
-                state.setSelTarget(ennemy_unit);
-                state.setSelPosition(position_ennemy);
-
-                //execution de la commande damage
-                commande_damage.execute(state);
+                shared_ptr<engine::HandleDamage> damage_archer (new engine::HandleDamage(unit_i, ennemy_unit.get()));
+                engine.addCommands(damage_archer);
             }
         }
 
+
         /*** cas général : Infantry || Archer qui n'a pas attaqué ***/
         if (unit_i->getProperty()->getAvailability()) {
-            ennemy_objects = {}; //ré-initialise la liste des cibles disponibles
-
-
-            /***  début de l'implémentation des déplacements  ***/
+            ennemy_objects = {}; //remet à zéro la liste des ennemies dispo
+            //phase de déplacement:
             state::Position position_unit = unit_i->getPosition();
             old_y = (int) position_unit.getY();
             old_x = (int) position_unit.getX();
@@ -309,137 +267,77 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
             cout << " player" << unit_i->getPlayerId() << unit_i->getProperty()->getStringType()
                  << "'s current position y : " << old_y << endl;
             distance = unit_i->getMovementRange();
-            //cout << "mouvements restants possible:  "<< distance << endl;
-
-
-
-            //tant que l'unité peut se déplacer || tant qu'il n'a pas atteint la ville
+            //tant que l'unité peut se déplacer il se dirige vers le centre-ville ennemi
             while (distance > 0) {
                 /* les cas particuliers */
-
                 //si l'objet se trouve à la bonne position en x et en y
                 if (town_x == old_x && town_y == old_y - 1) {
-                    distance = 0;
+                    break;
+                } else if (town_x == old_x && town_y == old_y + 1) {
+                    break;
+                } else if (town_x == old_x - 1 && town_y == old_y) {
+                    break;
+                } else if (town_x + 1 == old_x && town_y == old_y) {
                     break;
                 }
-                if (town_x == old_x && town_y == old_y + 1) {
-                    distance = 0;
-                    break;
-                }
-
-
-                if (town_x == old_x - 1 && town_y == old_y) {
-                    distance = 0;
-                    break;
-                }
-
-                if (town_x + 1 == old_x && town_y == old_y) {
-                    distance = 0;
-                    break;
-                }
-
-                //si l'objet se trouve déjà à la bonne position en x
-                if (town_x == old_x) {
-                    movement_y = movement_finder(old_y, town_y, distance);
-                    if (movement_y == 0) {
-                        distance = 0;
-                        break;
+                    //si l'objet se trouve déjà en pos.x ou pos.y bon
+                else {
+                    //si l'objet se trouve déjà à la bonne position en x
+                    if (town_x == old_x) {
+                        movement_y = direction(old_y, town_y);
+                        if (movement_y == 0) {
+                            break;
+                        }
+                        new_x = old_x;
+                        new_y = old_y + movement_y - 1;
+                        distance -= abs(movement_y);
                     }
-                    new_x = old_x;
-                    new_y = old_y + movement_y -
-                            1; //L'unité peut cheater => il pourra bouger d'une case en plus si l'unité atteint la ville
-                    //cout <<" player no" << unit_i->getPlayerId() << unit_i->getProperty()->getStringType() << "'s new position y : "<< new_y << endl;
-                    distance -= abs(movement_y);
-                    //cout << "mouvements restants possible:  "<< distance << endl;
-                    break;
-                }
-
-                //si l'objet se trouve déjà à la bonne position en y
-                if (town_y == old_y) {
-                    movement_x = movement_finder(old_x, town_x, distance);
-                    if (movement_x == 0) {
-                        distance = 0;
-                        break;
+                        //si l'objet se trouve déjà à la bonne position en y
+                    else if (town_y == old_y) {
+                        movement_x = direction(old_x, town_x);
+                        if (movement_x == 0) {
+                            break;
+                        }
+                        new_y = old_y;
+                        new_x = old_x + movement_x - 1;
+                        distance -= abs(movement_x);
                     }
-                    new_y = old_y;
-                    new_x = old_x + movement_x -
-                            1; //L'unité peut cheater => il pourra bouger d'une case en plus si l'unité atteint la ville
-                    //cout <<" player no" << unit_i->getPlayerId() << unit_i->getProperty()->getStringType() << "'s new position x : "<< new_x << endl;
-                    distance -= abs(movement_x);
-                    //cout << "mouvements restants possible:  "<< distance << endl;
-                    break;
-                }
-
-                /* cas général */
-
-                //si l'objet est autant éloigné en x qu'en y
-                if (abs(town_x - old_x) == abs(town_y - old_y)) {
-                    movement_x = movement_finder(old_x, town_x, distance);
-                    if (movement_x == 0) {
-                        distance = 0;
-                        break;
+                        //si ni l'une ni l'autre position est la bonne
+                    else {
+                        //si l'objet est autant éloigné en x qu'en y
+                        if (abs(town_x - old_x) == abs(town_y - old_y)) {
+                            movement_x = direction(old_x, town_x);
+                            new_y = old_y;
+                            new_x = old_x + movement_x;
+                            distance -= abs(movement_x);
+                        }
+                            //si l'objet est plus éloigné en x qu'en y
+                        else if (abs(town_x - old_x) > abs(town_y - old_y)) {
+                            movement_x = direction(old_x, town_x);
+                            new_y = old_y;
+                            new_x = old_x + movement_x;
+                            distance -= abs(movement_x);
+                        }
+                            //si l'objet est plus éloigné en y qu'en x
+                        else if (abs(town_x - old_x) < abs(town_y - old_y)) {
+                            movement_y = direction(old_y, town_y);
+                            new_x = old_x;
+                            new_y = old_y + movement_y;
+                            distance -= abs(movement_y);
+                        }
                     }
-                    new_y = old_y;
-                    new_x = old_x + movement_x;
-                    distance -= abs(movement_x);
-                    //cout << "mouvements restants possible:  "<< distance << endl;
-                    break;
                 }
-
-                //si l'objet est plus éloigné en x qu'en y
-                if (abs(town_x - old_x) > abs(town_y - old_y)) {
-                    movement_x = movement_finder(old_x, town_x, distance);
-                    if (movement_x == 0) {
-                        distance = 0;
-                        break;
-                    }
-                    new_y = old_y;
-                    new_x = old_x + movement_x;
-                    distance -= abs(movement_x);
-                    //cout << "mouvements restants possible:  "<< distance << endl;
-                    break;
-                }
-
-                //si l'objet est plus éloigné en y qu'en x
-                if (abs(town_x - old_x) < abs(town_y - old_y)) {
-                    movement_y = movement_finder(old_y, town_y, distance);
-                    if (movement_y == 0) {
-                        distance = 0;
-                        break;
-                    }
-                    new_x = old_x;
-                    new_y = old_y + movement_y;
-                    //cout <<" player no" << unit_i->getPlayerId() << unit_i->getProperty()->getStringType() << "'s new position y : "<< new_y << endl;
-                    distance -= abs(movement_y);
-                    //cout << "mouvements restants possible:  "<< distance << endl;
-                    break;
-                }
-
-
+                shared_ptr<engine::HandleMovement> movement_unit (new engine::HandleMovement(new_x, new_y, unit_i));
+                engine.addCommands(movement_unit);
             }
 
+            /***  début de l'implémentation des attaques pour les unités en général  ***/
 
-            cout << " player" << unit_i->getPlayerId() << unit_i->getProperty()->getStringType()
-                 << "'s new position x : " << new_x << endl;
-            cout << " player" << unit_i->getPlayerId() << unit_i->getProperty()->getStringType()
-                 << "'s new position x : " << new_y << endl;
-
-            position_unit.setPosition(new_x,new_y);
-            //rajout : pour utiliser les nouvelles commandes
-            state.setSelPosition(position_unit);
-
-            commande_movement.execute(state);
-            /***  fin de l'implémentation des déplacements  ***/
-
-            /***  début de l'implémentation des attaques et créations de batiments pour les farmer  ***/
-
-            //si l'unité peut attaquer, il attaque
-
-            if (commande_canattack.execute(*unit_i, state, ennemy_objects)) {
-
+            shared_ptr<engine::HandleCanAttack> canattack_unit (new engine::HandleCanAttack(unit_i,ennemy_objects));
+            engine.addCommands(canattack_unit);
+            if (ennemy_objects.size() != 0) {
                 shared_ptr<GameObject>ennemy_unit = ennemy_objects[0];
                 int hp = ennemy_unit.get()->getProperty()->getHealth();
-
                 for (shared_ptr<GameObject> weakest_ennemy : ennemy_objects) {
                     if (hp > weakest_ennemy.get()->getProperty()->getHealth()) {
                         ennemy_unit = weakest_ennemy;
@@ -447,86 +345,79 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
                 }
                 cout << "the chosen ennemy unit is : " << ennemy_unit->getPlayerId()
                      << ennemy_unit->getProperty()->getStringType() << endl;
-
-                //identification de la position de l'objet le plus faible
-                state::Position position_ennemy = ennemy_unit->getPosition();
-
-                //rajout : pour utiliser les nouvelles commandes
-                state.setSelPosition(position_ennemy);
-                state.setSelTarget(ennemy_unit);
-
-                //execution de la commande damage
-                commande_damage.execute(state);
+                shared_ptr<engine::HandleDamage> damage_unit (new engine::HandleDamage(unit_i, ennemy_unit.get()));
+                engine.addCommands(damage_unit);
             }
         }
     }
 
     /***  implémentation des créations d'unités  ***/
-
     /*** AI pour les batiments ***/
     int ennemy_army_size = ennemy->getPlayerUnitList().size();
     int my_army_size = my_list_unit.size();
-
     int count_farmers = 0;
     for(int i = 0; i < (int)my_list_unit.size(); i++){
         if(my_list_unit[i].get()->getUnitType() == farmer)
             count_farmers ++;
     }
-
-
     //randgen pour les différentes unités offensives: -1 signifie l'unité vide
     std::uniform_int_distribution<int> dis_farmers(1, 9);
     std::uniform_int_distribution<int> dis_units(infantry, maxUnit -1);
-    int ai_farmers = dis_farmers(randgen);
     int unit_type = -1;
-
     for (shared_ptr<Building> b : my_list_building) {
-
+        int ai_farmers = dis_farmers(randgen);
+        //centre-ville : création de villageois
         if (b.get()->getBuildingType() == state::town) {
-            if(count_farmers < 3) {
-                int pos_x = b.get()->getPosition().getX();
-                int pos_y = b.get()->getPosition().getY();
-                //si il est en manque de ressource, il aura plus de chances de créer des villageois
-
-                if (food < 100 || gold < 100) {
-                    if (ai_farmers < 8)
-                        commande_create.execute(state, pos_x, pos_y, farmer, false);
-                }
-                //si il possède moyennement de l'argent, il a 2/9 de chances de créer un villageois
-                if (food < 1500 || gold < 1500) {
-                    if (ai_farmers < 2)
-                        commande_create.execute(state, pos_x, pos_y, farmer, false);
-                }
+            int pos_x = b.get()->getPosition().getX();
+            int pos_y = b.get()->getPosition().getY();
+            //si il est en manque de ressource, il aura plus de chances de créer des villageois
+            if(count_farmers != 0)
+                ai_farmers/=count_farmers;
+            if (food < 100 || gold < 100) {
+                if (ai_farmers > 4)
+                    unit_type = farmer;
+            }
+            //si il possède moyennement de l'argent, il a 2/9 de chances de créer un villageois
+            else if (food < 1500 || gold < 1500) {
+                if (ai_farmers >= 8)
+                    unit_type = farmer;
             }
 
-        } else if (b.get()->getBuildingType() == state::barrack) {
+
+            shared_ptr<engine::HandleCreation> create_unit (new engine::HandleCreation(new_x, new_y,unit_type,false));
+            engine.addCommands(create_unit);
+        }
+        //barrack : création d'unités offensives
+        else if (b.get()->getBuildingType() == state::barrack) {
             int pos_x = b.get()->getPosition().getX();
             int pos_y = b.get()->getPosition().getY();
             unit_type = dis_units(randgen);
+            shared_ptr<engine::HandleCreation> create_unit (new engine::HandleCreation(new_x, new_y,unit_type,false));
+            if(ennemy_army_size > my_army_size)
+                ai_farmers*=0.75;
             //si il est en manque de ressource, il aura quasiment pas de chances de créer une unité offensive
             if (food < 200 || gold < 200) {
-                if (ai_farmers > 8)
-                    commande_create.execute(state, pos_x, pos_y, unit_type, false);
+                if (ai_farmers <= 2)
+                    engine.addCommands(create_unit);
             }
             //si il possède moyennement de l'argent, il a 1/3 de chances de créer un villageois
             if (food < 1500 || gold < 1500) {
-                if (ai_farmers < 4)
-                    commande_create.execute(state, pos_x, pos_y, unit_type, false);
+                if (ai_farmers <= 4)
+                    engine.addCommands(create_unit);
             } else {
-                if (ai_farmers > 2)
-                    commande_create.execute(state, pos_x, pos_y, unit_type, false);
+                if (ai_farmers <= 5)
+                    engine.addCommands(create_unit);
             }
         }
     }
-
     current_player->getRessource(food, gold);
     cout << "player"<< current_player->getPlayerId() << "'s current gold is " << gold << endl;
     cout << "player"<< current_player->getPlayerId() << "'s current food is " << food << endl;
-
-
     //commande de fin de tour; préparation pour le joueur suivant
-    commande_turn.execute(state);
+
+    shared_ptr<engine::HandleTurn> end_turn (new engine::HandleTurn());
+    engine.addCommands(end_turn);
+
     return true;
 }
-
 

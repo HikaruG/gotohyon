@@ -16,7 +16,7 @@ CommandTypeId HandleEndGame::getTypeId() const {
 }
 
 bool HandleEndGame::execute(state::State &state) {
-    if(state.is_game_finished)
+    if(state.isGameFinished())
         return true;
     return false;
 }

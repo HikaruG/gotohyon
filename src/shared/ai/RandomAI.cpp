@@ -35,13 +35,13 @@ bool RandomAI::run(engine::Engine &engine, state::State& state) {
 
     //variables pour déterminer la nouvelle position de l'unité
     int old_x, old_y, new_x = 0, new_y = 0, distance_x, distance_y;
-
+/*
     shared_ptr<engine::HandleMovement> commande_movement (new engine::HandleMovement());
     engine::HandleCanAttack commande_canattack = engine::HandleCanAttack();
     shared_ptr<engine::HandleDamage> commande_damage (new engine::HandleDamage());
     shared_ptr<engine::HandleTurn> commande_turn (new engine::HandleTurn());
     engine::HandleCreation commande_create = engine::HandleCreation();
-
+*/
     //liste de game_object ennemie
     vector<shared_ptr<GameObject>> ennemy_objects;
     //indice de l'ennemi choisi comme cible lors de l'attaque
@@ -60,7 +60,7 @@ bool RandomAI::run(engine::Engine &engine, state::State& state) {
         Unit * unit_i = list_unit[i].get();
 
         //rajout : pour les nouvelles commandes
-        state.setSelUnit(list_unit[i]);
+        //state.setSelUnit(list_unit[i]);
 
         /***  implémentation des constructions de batiments aléatoires ***/
         if(unit_i->getUnitType()==farmer){}
@@ -77,10 +77,10 @@ bool RandomAI::run(engine::Engine &engine, state::State& state) {
         new_y = old_y + dis_y(randgen);
 
         //rajout pour les nouvelles commandes
-        position_unit.setPosition(new_x, new_y);
-        state.setSelPosition(position_unit);
+        //position_unit.setPosition(new_x, new_y);
+        //state.setSelPosition(position_unit);
 
-        engine.addCommands(commande_movement);
+        //engine.addCommands(commande_movement);
         //goto : commande_movement.execute(state);
 
         /***  fin de l'implémentation des déplacements  ***/
@@ -158,7 +158,7 @@ bool RandomAI::run(engine::Engine &engine, state::State& state) {
 
 
     //commande de fin de tour; préparation pour le joueur suivant
-    engine.addCommands(commande_turn);
+    //engine.addCommands(commande_turn);
     // goto : commande_turn.execute(state);
 
 
