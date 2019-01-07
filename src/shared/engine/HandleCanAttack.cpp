@@ -12,9 +12,8 @@ using namespace state;
 
 HandleCanAttack::HandleCanAttack() = default;
 
-HandleCanAttack::HandleCanAttack(state::Unit *selected_unit, std::vector<shared_ptr<state::GameObject>>& in_range_list) {
+HandleCanAttack::HandleCanAttack(shared_ptr<state::Unit> selected_unit) {
     this->selected_unit = selected_unit;
-    this->in_range_list = &in_range_list;
 }
 
 
@@ -23,21 +22,11 @@ HandleCanAttack::~HandleCanAttack() = default;
 
 
 CommandTypeId HandleCanAttack::getTypeId() const{
-    return CommandTypeId::HANDLE_ATTACK;
+    return CommandTypeId::HANDLE_CANATTACK;
 }
 
 
-
-
-/*ce que je compte faire : pour Ben
-    Mettre en place un moyen de déterminer la liste des unités ennemies à mettre en surbrillance
-
-    1ere méthode: créer une liste de vector<shared_ptr<GameObject>> en tant qu'attributs de InputManager et le remplir à l'aide d'un setter
-    2ème méthode: utilisation d'un notify observer pour chaque objet considéré, pour le rendre surbrillant
-
-    */
 bool HandleCanAttack::execute(state::State& state ) {
-
 
     //current_x et current_y sont les coordonnées de l'unité considéré
     int current_x, current_y;
@@ -50,6 +39,8 @@ bool HandleCanAttack::execute(state::State& state ) {
     bool canattack = false;
 
     vector<shared_ptr<GameObject>> list_ennemies_object;
+    vector<shared_ptr<GameObject>> in_range_list;
+
     // liste des unités/bâtiments des ennemis
     for(int i =0;i < (int)state.getMap().get()->getListGameObject().size(); i++){
 
@@ -75,7 +66,7 @@ bool HandleCanAttack::execute(state::State& state ) {
             others_y = s->getPosition().getY();
             if (std::abs(current_x + current_y - (others_x + others_y)) < distance) {
                 canattack = true; //si une unité ennemie se trouve dans un rayon de "distance" ou moins, l'archer peut attaquer
-                this->in_range_list->push_back(s);
+                in_range_list.push_back(s);
             }
         }
     }
@@ -88,16 +79,17 @@ bool HandleCanAttack::execute(state::State& state ) {
             if (others_y == current_y - 1 || others_y == current_y + 1) {//cible ennemie en haut ou en bas de l'unité considéré
                 if (others_x == current_x) {
                     canattack = true;
-                    this->in_range_list->push_back(s);
+                    in_range_list.push_back(s);
                 }
             } else if (others_x == current_x - 1 || others_x == current_x + 1) {//cible ennemie à gauche u à droite de l'unité considéré
                 if (others_y == current_y) {
                     canattack = true;
-                    this->in_range_list->push_back(s);
+                    in_range_list.push_back(s);
                 }
             }
         }
     }
+    state.setInRange(in_range_list);
     if(canattack){
         return true;
     }
