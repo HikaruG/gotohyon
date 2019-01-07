@@ -18,14 +18,11 @@ void pop_front(vector<shared_ptr<Command>> & v)
     v.erase(v.begin());
 }
 
-
 Engine::Engine() {
 }
 
 Engine::~Engine() {
-
 }
-
 
 bool Engine::execute(state::State & state) {
     int list_size = list_commands.size();
@@ -61,7 +58,6 @@ bool Engine::execute(state::State & state) {
             case HANDLE_TURN:
                 if(!list_commands.front().get()->execute(state))
                     return true;
-
                 break;
             case HANDLE_ENDGAME:
                 list_commands.front().get()->execute(state);

@@ -28,12 +28,12 @@ bool HandleTurn::execute(state::State &state) {
     //vérifie les conditions de fin de game
     //test seulement si le jour 0 est passé (jour d'initialisation)
     if((int)state.getDay() > 0) {
-        for (int i = 0; i < state.getListPlayer().size(); i++) {
+        for (int i = 0; i < (int)state.getListPlayer().size(); i++) {
             if (state.getListPlayer()[i].get()->getIsDead()) {
                 state.getListPlayer().erase(state.getListPlayer().begin() + i - 1);
             }
         }
-        if (!state.getListPlayer().size() == state.getRemainingPlayers()) {
+        if ((int)state.getListPlayer().size() != state.getRemainingPlayers()) {
             throw invalid_argument("error deleting a player ");
         }
         else {

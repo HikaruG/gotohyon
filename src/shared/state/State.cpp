@@ -224,7 +224,7 @@ bool State::setPlayerNumber(unsigned int player_nbr) {
 }
 
 bool State::setInRange(std::vector<std::shared_ptr<state::GameObject>> inrange_ennemies) {
-    for (int i = 0; i < inrange_ennemies.size(); i++){
+    for (int i = 0; i < (int)inrange_ennemies.size(); i++){
         this->inrange_ennemies.push_back(inrange_ennemies[i]);
     }
     return true;
