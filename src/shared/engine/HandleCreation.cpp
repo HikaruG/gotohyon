@@ -9,6 +9,23 @@ using namespace engine;
 using namespace std;
 using namespace state;
 
+
+HandleCreation::HandleCreation() = default;
+
+HandleCreation::HandleCreation(unsigned int new_x, unsigned int new_y, int object_type, bool is_static) {
+    this->new_x = new_x;
+    this->new_y = new_y;
+    this->object_type = object_type;
+    this->is_static = is_static;
+}
+
+HandleCreation::~HandleCreation () = default;
+
+CommandTypeId HandleCreation::getTypeId() const {
+    return CommandTypeId::HANDLE_CREATION;
+}
+
+
 bool collisionHandler(State &state, unsigned int pos_x, unsigned int pos_y, bool is_static){
     Position position = Position(pos_x,pos_y);
     //début gestion de la collision d'objets
@@ -70,30 +87,26 @@ bool collisionHandler(State &state, unsigned int pos_x, unsigned int pos_y, bool
 }
 
 
-CommandTypeId HandleCreation::getTypeId() const {
-    return CommandTypeId::HANDLE_CREATION;
-}
-
-
     /*ce que je compte faire : pour Ben
     Mettre en place un moyen de déterminer le type et le is_static lors du gestionnaire du clic.
 
  rajouter un attribut type dans un render pour enlever tous les paramètres des commandes pour laisser le state seulement.
- Lors du premier clic, si l'on choisit un batiment, le deuxieme clic nous donne le choix entre les différents unités que l'on peut créer (avec
+ Lors du premier clic, si l'on choisit un batiment, le deuxieme clic nous donne le choix entre les différentes unités que l'on peut créer (avec
  un affichage des choix, si possible) is_static = false à coup sûr
 
  Lors du premier clic, si l'on choisit un villageois, le deuxième clic est un mouvement; le 3ème sera alors le gestionnaire de création de batiments,
  avec les différents choix de batiments à construire, avec un affichage des choix si possible is_static = true à coup sur
     */
 
-bool HandleCreation::execute(state::State &state, unsigned int pos_x, unsigned int pos_y, int type, bool is_static) {
+    //, unsigned int pos_x, unsigned int pos_y, int type, bool is_static
+bool HandleCreation::execute(state::State &state) {
     //vérifie si ce n'est pas une demmande de construction vide (pour les AI)
-    if(type == -1)
+    if(this->object_type == -1)
         return false;
 
     Property farmer = Property("farmer",10,10,80,false,false,1);
     Property infantry = Property("infantry",10,20,120,false,false,1);
-    Property archer = Property("archer",10,1,100,false,false,3);
+    Property archer = Property("archer",10,1,100,false,false,2);
 
     Property mine = Property("mine",10,10,50,true,false,0);
     Property farm = Property("farm",10,10,50,true,false,0);
@@ -113,29 +126,29 @@ bool HandleCreation::execute(state::State &state, unsigned int pos_x, unsigned i
     //all_objects_count = 0;
 
     string debug_info = "none";
-    state::Position position(pos_x, pos_y);
+    state::Position position(this->new_x, this->new_y);
 
     state::Map * map = state.getMap().get();
-    state::Terrain * terrain = map->getTerrain(pos_x,pos_y).get();
+    state::Terrain * terrain = map->getTerrain(this->new_x,this->new_y).get();
 
     if(terrain->getTerrainType() == state::water || terrain->getTerrainType() == mountain){
-        cout << "Building cannot be created" << endl;
+        cout << "Building cannot be created here, it's the " << terrain->getTerrainType() << endl;
         return false;
     }
 
-    if(is_static){
-        if(type > 5) //il n' y a que 5 batiments
+    if(this->is_static) {
+        if (this->object_type > 5) //il n' y a que 5 batiments
         {
-            cout<< " can't find the building ! " << endl;
+            cout << " can't find the building ! " << endl;
             return false;
         }
-        if(state.getCurrentPlayer().get()->getPlayerBuildingList().size() > buildings_limit){
+        if (state.getCurrentPlayer().get()->getPlayerBuildingList().size() > buildings_limit) {
             //cout << " can't build more buildings !" <<endl;
             return false;
         }
 
         //selon le type de construction, les ressources nécéssaires varient
-        switch(type){
+        switch (this->object_type) {
             case state::town:
                 req_gold = 600;
                 req_food = 600;
@@ -162,41 +175,52 @@ bool HandleCreation::execute(state::State &state, unsigned int pos_x, unsigned i
                 debug_info = "turret";
                 break;
             default:
-                cout << "wow wow, unknown building type" <<endl;
+                cout << "unknown building type" << endl;
                 return false;
         }
-        if(my_food > req_food && my_gold > req_food) {
+        if (my_food > req_food && my_gold > req_food) {
             //vérifie si la case est disponible pour la création
-            if(collisionHandler(state, pos_x,pos_y,is_static)) {
+            if (collisionHandler(state, this->new_x, this->new_y, this->is_static)) {
                 //Building::Building (unsigned int gameobject_id, unsigned int player_id, state::Position pos, state::Property prop, state::BuildingType build_type)
                 shared_ptr<state::Building> new_building(
                         new Building((unsigned int) state.getMap().get()->getListGameObject().size(),
                                      current_player_id,
                                      position,
-                                     buildings[type],
-                                     (state::BuildingType) type));
+                                     buildings[this->object_type],
+                                     (state::BuildingType) this->object_type));
                 state.addBuilding(move(new_building));
                 state.getCurrentPlayer().get()->setRessource(-req_gold, -req_food);
                 cout << "created new building : " << debug_info << endl;
-            }
-            else {
+
+                return true;
+            } else {
                 cout << "couldn't build here" << endl;
                 return false;
             }
         }
-
+            //si il le joueur ne possède pas assez de ressources
+        else {
+            if (my_food > req_food) {
+                cout << "you lack " << req_gold - my_gold << " gold" << endl;
+                return false;
+            } else {
+                cout << "you lack " << req_food - my_food << " food" << endl;
+                return false;
+            }
+        }
     }
-    else{
-        if(type > 3)
+        else{
+        if(this->object_type > 3)
         {
             cout << "can't find the unit !" << endl;
             return false;
         }
         if(state.getCurrentPlayer().get()->getPlayerUnitList().size() > units_limit){
            // cout << "can't create more units; go fight someone already !" << endl;
+           return false;
         }
 
-        switch(type){
+        switch(this->object_type){
             case state::farmer:
                 mvt_range = 1;
                 req_gold = 75;
@@ -204,7 +228,7 @@ bool HandleCreation::execute(state::State &state, unsigned int pos_x, unsigned i
                 debug_info = "farmer";
                 break;
             case state::archer:
-                mvt_range = 3;
+                mvt_range = 2;
                 req_gold = 100;
                 req_food = 140;
                 debug_info = "archer";
@@ -216,38 +240,42 @@ bool HandleCreation::execute(state::State &state, unsigned int pos_x, unsigned i
                 debug_info = "infantry";
                 break;
             default:
-                cout << "wow wow, unknown unit type" <<endl;
+                cout << "unknown unit type" <<endl;
                 return false;
         }
         if(my_food > req_food && my_gold > req_food) {
             //vérifie si la case est disponible pour la création
-            if(collisionHandler(state, pos_x,pos_y, is_static)) {
+            if(collisionHandler(state, this->new_x,this->new_y, this->is_static)) {
                 //Unit::Unit (unsigned int movement_range, unsigned int gameobject_id, unsigned int player_id, state::Position pos, state::Property property, UnitType unit_type)
                 shared_ptr<state::Unit> new_unit(new Unit(mvt_range,
                                                           (unsigned int) state.getMap().get()->getListGameObject().size(),
                                                           current_player_id, position,
-                                                          units[type],
-                                                          (state::UnitType) type));
+                                                          units[this->object_type],
+                                                          (state::UnitType) this->object_type));
                 state.addUnit(move(new_unit));
                 cout << "created new unit : " << debug_info << endl;
                 state.getCurrentPlayer().get()->setRessource(-req_gold, -req_food);
+                return true;
             }
             else {
                 cout << "couldn't build here" << endl;
                 return false;
             }
         }
+        //si il le joueur ne possède pas assez de ressources
+        else {
+            if (my_food > req_food) {
+                cout << "you lack " << req_gold - my_gold << " gold" << endl;
+                return false;
+            } else {
+                cout << "you lack " << req_food - my_food << " food" << endl;
+                return false;
+            }
+        }
     }
+    cout << "this text should never appear" << endl;
     return true;
 }
-
-
-bool HandleCreation::execute (state::State& state){
-    return true;
-}
-HandleCreation::HandleCreation() = default;
-
-HandleCreation::~HandleCreation () = default;
 
 
 

@@ -7,42 +7,49 @@
 
 using namespace engine;
 using namespace std;
+
+
+HandleDamage::HandleDamage() = default;
+
+HandleDamage::HandleDamage(state::Unit *selected_unit, state::GameObject *selected_target) {
+    this->selected_unit = selected_unit;
+    this->selected_target = selected_target;
+}
+
+HandleDamage::~HandleDamage() = default;
+
+
 CommandTypeId HandleDamage::getTypeId() const {
     return CommandTypeId::HANDLE_DAMAGE;
 }
 
-bool HandleDamage::execute(state::State& state ) {
-
-    state::GameObject * ennemy_object = state.getSelTarget().get();
-    state::Position ennemy_position = ennemy_object->getPosition();
+bool HandleDamage::execute(state::State& state) {
+    
+    state::Position ennemy_position = this->selected_target->getPosition();
     state::Terrain * terrain = state.getMap().get()->getTerrain(ennemy_position.getX(), ennemy_position.getY()).get();
 
-    cout << "player n" << state.getSelUnit().getPlayerId() << " s " << state.getSelUnit().getProperty()->getStringType() << " attacks ! " <<endl;
-    ennemy_object->getProperty()->takeDamage(state.getSelUnit().getProperty()->getAttack());
+    cout << "player n" << this->selected_unit->getPlayerId() << " s " << this->selected_unit->getProperty()->getStringType() << " attacks ! " <<endl;
+    this->selected_target->getProperty()->takeDamage(this->selected_unit->getProperty()->getAttack());
 
-    cout << "player n" << ennemy_object->getPlayerId() << " s " << ennemy_object->getProperty()->getStringType() << " got hit for " << state.getSelUnit().getProperty()->getAttack() <<"hp \n" <<endl;
-    if(!ennemy_object->getProperty()->isAlive()){
+    cout << "player n" << this->selected_target->getPlayerId() << " s " << this->selected_target->getProperty()->getStringType() << " got hit for " << this->selected_unit->getProperty()->getAttack() <<"hp \n" <<endl;
+    if(!this->selected_target->getProperty()->isAlive()){
         //commande delete
-        if(ennemy_object->getProperty()->isStatic()){
+        if(this->selected_target->getProperty()->isStatic()){
             //tue le player si sa centre ville est détruite
-            if(ennemy_object->getProperty()->getStringType() == "town")
+            if(this->selected_target->getProperty()->getStringType() == "town")
                 state.setPlayerDead();
             //ensuite, détruit le batiment
-            state::Building * ptr_destroyed_building = (state::Building * )ennemy_object;
+            state::Building * ptr_destroyed_building = (state::Building * )this->selected_target;
             if(state.deleteBuilding(ptr_destroyed_building))
-                cout << "player n" << ennemy_object->getPlayerId() << " s " << ennemy_object->getProperty()->getStringType() <<" got destroyed" << endl;
+                cout << "player n" << this->selected_target->getPlayerId() << " s " << this->selected_target->getProperty()->getStringType() <<" got destroyed" << endl;
         }
         else{
-            state::Unit * ptr_destroyed_unit = (state::Unit *)ennemy_object;
+            state::Unit * ptr_destroyed_unit = (state::Unit *)this->selected_target;
             if(state.deleteUnit(ptr_destroyed_unit))
-                cout << "player n" << ennemy_object->getPlayerId() << " s " << ennemy_object->getProperty()->getStringType() <<" got destroyed" << endl;
+                cout << "player n" << this->selected_target->getPlayerId() << " s " << this->selected_target->getProperty()->getStringType() <<" got destroyed" << endl;
 
         }
     }
-    state.getSelUnit().getProperty()->setAvailability(false);
+    this->selected_unit->getProperty()->setAvailability(false);
     return true;
 }
-
-HandleDamage::HandleDamage() = default;
-
-HandleDamage::~HandleDamage() = default;

@@ -11,7 +11,7 @@
 using namespace engine;
 using namespace std;
 
-
+//fonction permettant de supprimer le premier élément de la liste
 void pop_front(vector<shared_ptr<Command>> & v)
 {
     assert(!v.empty());
@@ -29,6 +29,7 @@ Engine::~Engine() {
 
 bool Engine::execute(state::State & state) {
     int list_size = list_commands.size();
+    unsigned int food, gold;
     if (list_size == 0)
         return true;
 
@@ -36,6 +37,9 @@ bool Engine::execute(state::State & state) {
         switch (list_commands.front().get()->getTypeId()) {
             case HANDLE_GROWTH:
                 list_commands.front().get()->execute(state);
+                state.getCurrentPlayer().get()->getRessource(food, gold);
+                cout << "player" << state.getCurrentPlayer().get()->getPlayerId() << "'s current gold is " << gold << endl;
+                cout << "player" << state.getCurrentPlayer().get()->getPlayerId() << "'s current food is " << food << endl;
                 break;
             case HANDLE_MOVEMENT:
                 list_commands.front().get()->execute(state);
@@ -48,6 +52,9 @@ bool Engine::execute(state::State & state) {
                 break;
             case HANDLE_CREATION:
                 list_commands.front().get()->execute(state);
+                state.getCurrentPlayer().get()->getRessource(food, gold);
+                cout << "player" << state.getCurrentPlayer().get()->getPlayerId() << "'s current gold is " << gold << endl;
+                cout << "player" << state.getCurrentPlayer().get()->getPlayerId() << "'s current food is " << food << endl;
                 break;
             case HANDLE_TURN:
                 list_commands.front().get()->execute(state);

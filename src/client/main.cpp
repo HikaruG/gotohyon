@@ -139,7 +139,7 @@ bool test_input(){
     cout << "test : updates... " << endl;
     testdraw.forceRefresh(test_state);
 
-    while(!test_state.get()->is_game_finished)
+    while(!test_state.get()->isGameFinished())
     {
 
     }
@@ -149,33 +149,15 @@ bool test_input(){
 
 bool test_heuristicAI(){
 
-    shared_ptr<State> test_state (new State(2,2));
 
-    static int const terrain_int [] = {
-            0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-            0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0,
-            1, 1, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3,
-            0, 1, 0, 0, 2, 0, 3, 3, 3, 0, 1, 1, 1, 0, 0, 0,
-            0, 1, 1, 0, 3, 3, 2, 0, 0, 0, 1, 1, 1, 2, 0, 0,
-            0, 0, 1, 0, 3, 0, 3, 3, 0, 0, 1, 1, 1, 1, 2, 0,
-            2, 0, 1, 0, 3, 0, 2, 3, 3, 0, 1, 1, 1, 1, 1, 1,
-            0, 0, 1, 0, 3, 3, 3, 3, 0, 0, 0, 0, 1, 1, 1, 1,
-            0, 0, 1, 0, 3, 2, 3, 3, 0, 0, 0, 0, 1, 1, 1, 1,
-            2, 0, 1, 0, 3, 0, 3, 3, 3, 0, 1, 1, 1, 1, 1, 1,
-            0, 0, 1, 0, 3, 0, 2, 3, 0, 0, 1, 1, 1, 1, 2, 0,
-            0, 1, 1, 0, 3, 3, 3, 0, 0, 0, 1, 1, 1, 2, 0, 0,
-            0, 1, 0, 0, 2, 0, 3, 3, 3, 0, 1, 1, 1, 0, 0, 0,
-            1, 1, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3,
-            0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    };
-    vector<int> test_terrain;//to do mettre la taille
-    for (int i = 0; i < 256; i++) {
-        test_terrain.push_back(terrain_int[i]);
-    }
-    //init map terrain
-    test_state->initializeMap(16, 16, test_terrain);
-
+    shared_ptr<state::State> test_state (new state::State(2,2));
+    cout << "test : new state instance" << endl;
+    Engine test_engine = Engine();
+    cout << "test : new engine instance" << endl;
+    HandleStartGame new_game = HandleStartGame();
+    new_game.execute(*test_state.get(),test_engine);
+    test_engine.execute(* test_state.get());
+    cout << "test : 2 npc gamemode created " << endl;
 
     //init windows
     size_t x_window = 1024;
@@ -186,14 +168,8 @@ bool test_heuristicAI(){
     shared_ptr<sf::RenderWindow> window (new sf::RenderWindow(sf::VideoMode(static_cast<unsigned int>(x_window), static_cast<unsigned int>(y_window)),
                                                               "test engine"));
 
-
-
-    cout << "test : new engine instance" << endl;
-    Engine test_engine = Engine();
-
-
-    cout << "test : new drawmanager instance" << endl;
     render::DrawManager testdraw = render::DrawManager(test_state, window);
+    cout << "test : new drawmanager instance" << endl;
     test_state.get()->addObserver(&testdraw);
     test_state.get()->getMap().get()->addObserver(&testdraw);
 
@@ -202,50 +178,11 @@ bool test_heuristicAI(){
     ai::HeuristicAI test_heuristicAI = ai::HeuristicAI(0);
 
 
-
-    cout << "test : updates... " << endl;
+    //cout << "test : updates... " << endl;
     testdraw.forceRefresh(test_state);
 
-
-
-    HandleCreation test_creation = HandleCreation();
-    HandleTurn test_turn = HandleTurn();
-
-
-
-    cout << "test : create units and building for the 1st npc" << endl;
-    //create the first units for the 1st npc
-    test_creation.execute(* test_state.get(), 7, 5, farmer,false);
-    //testdraw.forceRefresh(test_state);
-
-    test_creation.execute(* test_state.get(), 8, 5, infantry, false);
-
-    test_creation.execute(* test_state.get(), 6, 5, archer, false);
-
-    test_creation.execute(* test_state.get(),7,4,town,true);
-
-
-    //end 1st npc's first turn
-    cout << "npc1 : end 1st turn"<<endl;
-    test_turn.execute(*test_state.get());
-
-    //create the first units for the 2nd npc
-
-    cout << "test : create units and building for the 2nd npc" << endl;
-    test_creation.execute(* test_state.get(), 7, 9, farmer,false);
-
-    test_creation.execute(* test_state.get(), 8, 9, infantry, false);
-
-    test_creation.execute(* test_state.get(), 6,9, archer, false);
-
-    test_creation.execute(* test_state.get(),7,10,town,true);
-
-    //end 2nd npc's first turn
-    cout << "npc 2: end 1st turn"<<endl;
-    test_turn.execute(*test_state.get());
-
-
-    while(!test_state.get()->is_game_finished) {
+    while(!test_state.get()->isGameFinished()) {
+        test_engine.execute(* test_state.get());
         if(test_state.get()->getCurrentPlayer().get()->getIsNpc()) {
             test_heuristicAI.run(test_engine, *test_state.get());
             testdraw.forceRefresh(test_state);
@@ -260,7 +197,7 @@ bool test_heuristicAI(){
 
 
 bool test_randomAI() {
-
+/*
     shared_ptr<State> test_state (new State(2,1));
 
     static int const terrain_int [] = {
@@ -363,7 +300,7 @@ bool test_randomAI() {
     test_turn.execute(*test_state.get());
 
 
-    while(!test_state.get()->is_game_finished) {
+    while(!test_state.get()->isGameFinished()) {
         test_engine.execute(* test_state.get());
         if(test_state.get()->getCurrentPlayer().get()->getIsNpc()) {
             test_randomAI.run(test_engine, *test_state.get());
@@ -375,13 +312,13 @@ bool test_randomAI() {
         }
 
     }
-
+*/
     return true;
 }
 
 
 bool test_engine()
-{
+{/*
     shared_ptr<State> test_state (new State(2,2));
 
     static int const terrain_int [] = {
@@ -514,7 +451,7 @@ bool test_engine()
         }
 
     }
-
+*/
     return true;
 }
 

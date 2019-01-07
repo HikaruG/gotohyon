@@ -8,6 +8,7 @@
 using namespace state;
 using namespace std;
 
+State::State() {}
 
 //constructeur de l'état qui prend en entrée le nombre de joueurs
 State::State(unsigned int player_number,unsigned int npc_number)
@@ -16,10 +17,10 @@ State::State(unsigned int player_number,unsigned int npc_number)
 {
     this->player_nbr = player_number;
     this->remaining_players = player_number;
-    day = 0;
-    cout << " construit " << this << endl;
-    is_game_finished = false;
+    this->day = 0;
+    this->is_game_finished = false;
     initializePlayer(player_number, npc_number);
+    cout << " construit " << this << endl;
 }
 
 
@@ -115,6 +116,12 @@ bool State::resetAvailability(){
     return true;
 }
 
+bool State::isGameFinished(){
+    if(this->is_game_finished)
+        return true;
+    return false;
+}
+
 //obtient la référence de la carte initialisé au dessus
 shared_ptr<Map> State::getMap (){
     return game_map;
@@ -184,27 +191,11 @@ bool State::setDay() {
     return true;
 }
 
-Unit& State::getSelUnit() {
-    return * this->selected_unit.get();
+bool State::setPlayerNumber(unsigned int player_nbr) {
+    this->player_nbr = player_nbr;
 }
 
-Building& State::getSelBuilding() {
-    return * this->selected_building.get();
-}
-
-Position& State::getSelPosition() {
-    return this->selected_position;
-}
-
-shared_ptr<GameObject> State::getSelTarget() {
-    return this->selected_target;
-}
-
-bool State::setSelTarget(std::shared_ptr<state::GameObject> selected_target) {
-    this->selected_target = selected_target;
-    return true;
-}
-
+/*
 bool State::setSelPosition(state::Position selected_position) {
     this->selected_position = selected_position;
     return true;
@@ -219,7 +210,7 @@ bool State::setSelBuilding(std::shared_ptr<state::Building> selected_building) {
     this->selected_building = selected_building;
     return true;
 }
-
+*/
 
 State::~State(){
     cout << " détruit " << this << endl;
