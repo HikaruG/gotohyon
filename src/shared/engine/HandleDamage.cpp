@@ -33,21 +33,23 @@ bool HandleDamage::execute(state::State& state) {
 
     cout << "player n" << this->selected_target->getPlayerId() << " s " << this->selected_target->getProperty()->getStringType() << " got hit for " << this->selected_unit->getProperty()->getAttack() <<"hp \n" <<endl;
     if(!this->selected_target->getProperty()->isAlive()){
+        cout << "player n" << this->selected_target->getPlayerId() << " s " << this->selected_target->getProperty()->getStringType() <<"'s HP down to 0" << endl;
+
         //commande delete
         if(this->selected_target->getProperty()->isStatic()){
             //tue le player si sa centre ville est détruite
-            if(this->selected_target->getProperty()->getStringType() == "town")
-                state.setPlayerDead();
+            if(this->selected_target->getProperty()->getStringType() == "town") {
+                state.setPlayerDead(selected_target->getPlayerId());
+            }
             //ensuite, détruit le batiment
             state::Building * ptr_destroyed_building = (state::Building * )this->selected_target;
             if(state.deleteBuilding(ptr_destroyed_building))
-                cout << "player n" << this->selected_target->getPlayerId() << " s " << this->selected_target->getProperty()->getStringType() <<" got destroyed" << endl;
+                cout << "building succesfully destroyed" << endl;
         }
         else{
             state::Unit * ptr_destroyed_unit = (state::Unit *)this->selected_target;
             if(state.deleteUnit(ptr_destroyed_unit))
-                cout << "player n" << this->selected_target->getPlayerId() << " s " << this->selected_target->getProperty()->getStringType() <<" got destroyed" << endl;
-
+                cout << "unit succesfully destroyed" << endl;
         }
     }
     this->selected_unit->getProperty()->setAvailability(false);

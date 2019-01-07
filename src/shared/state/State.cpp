@@ -179,11 +179,13 @@ vector<shared_ptr<GameObject>>& State::getInRange() {
     return this->inrange_ennemies;
 }
 
-bool State::setPlayerDead(){
-    this->current_player.get()->setIsDead();
+bool State::setPlayerDead(unsigned int player_id){
+    for(shared_ptr<Player> killed_p : this->list_player){
+        if(player_id == killed_p.get()->getPlayerId())
+            killed_p.get()->setIsDead();
+    }
     this->remaining_players--;
-    if(remaining_players == 1)
-        this->is_game_finished =true;
+    this->current_player_id --;
     return true;
 }
 
@@ -222,7 +224,7 @@ bool State::setPlayerNumber(unsigned int player_nbr) {
 
 bool State::setInRange(std::vector<std::shared_ptr<state::GameObject>> inrange_ennemies) {
     for (int i = 0; i < inrange_ennemies.size(); i++){
-        this->inrange_ennemies[i] = inrange_ennemies[i];
+        this->inrange_ennemies.push_back(inrange_ennemies[i]);
     }
 }
 /*
