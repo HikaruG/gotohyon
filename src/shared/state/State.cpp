@@ -126,6 +126,11 @@ bool State::resetAvailability(){
     return true;
 }
 
+bool State::resetInRange() {
+    inrange_ennemies.clear();
+}
+
+
 bool State::isGameFinished(){
     if(this->is_game_finished)
         return true;
@@ -170,6 +175,10 @@ int State::getRemainingPlayers() {
     return this->remaining_players;
 }
 
+vector<shared_ptr<GameObject>>& State::getInRange() {
+    return this->inrange_ennemies;
+}
+
 bool State::setPlayerDead(){
     this->current_player.get()->setIsDead();
     this->remaining_players--;
@@ -211,6 +220,11 @@ bool State::setPlayerNumber(unsigned int player_nbr) {
     this->player_nbr = player_nbr;
 }
 
+bool State::setInRange(std::vector<std::shared_ptr<state::GameObject>> inrange_ennemies) {
+    for (int i = 0; i < inrange_ennemies.size(); i++){
+        this->inrange_ennemies[i] = inrange_ennemies[i];
+    }
+}
 /*
 bool State::setSelPosition(state::Position selected_position) {
     this->selected_position = selected_position;
