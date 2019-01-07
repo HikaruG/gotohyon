@@ -56,6 +56,8 @@ bool State::addUnit(shared_ptr<Unit> unit) {
     //instanciation d'un pointeur pour pouvoir cast en shared ptr de building ou de unit
     shared_ptr<Unit> ptr_player_unit (unit);
     getCurrentPlayer().get()->addPlayerUnit(ptr_player_unit);
+    Event event = Event(EventTypeId::UNIT_CHANGED);
+    notifyObservers(event);
     return true;
 }
 
@@ -67,6 +69,8 @@ bool State::addBuilding(shared_ptr<Building> building) {
 
     shared_ptr<Building> ptr_player_building = (building);
     getCurrentPlayer().get()->addPlayerBuilding(ptr_player_building);
+    Event event = Event(EventTypeId::BUILDING_CHANGED);
+    notifyObservers(event);
     return true;
 }
 
@@ -85,6 +89,8 @@ bool State::deleteUnit(state::Unit* deleting_unit) {
     if(success) success = game_map.get()->deleteGameObject(deleting_unit);
     //retourne true si la suppression * de l'unité dans la liste de map a été effectuée
     cout << success << endl;
+    Event event = Event(EventTypeId::UNIT_CHANGED);
+    notifyObservers(event);
     return success;
 }
 
@@ -100,6 +106,8 @@ bool State::deleteBuilding(state::Building* deleting_building) {
         }
     }
     if(success) success = game_map.get()->deleteGameObject(deleting_building);
+    Event event = Event(EventTypeId::BUILDING_CHANGED);
+    notifyObservers(event);
     return success;
 }
 
@@ -113,6 +121,8 @@ bool State::resetAvailability(){
     for(int i =0; i < (int)this->current_player.get()->getPlayerUnitList().size(); i++){
         this->current_player.get()->getPlayerUnitList()[i].get()->getProperty()->setAvailability(true);
     }
+    Event event = Event(EventTypeId::UNIT_CHANGED);
+    notifyObservers(event);
     return true;
 }
 
@@ -175,12 +185,16 @@ bool State::setCurrentPlayerId() {
         return true;
     }
     this->current_player_id ++;
+    Event event = Event(EventTypeId::UNIT_CHANGED);
+    notifyObservers(event);
     return true;
 }
 
 //met à jour le joueur courant : toujours executer après le setCurrentPlayerId
 bool State::setCurrentPlayer() {
     this->current_player = list_player[this->current_player_id];
+    Event event = Event(EventTypeId::UNIT_CHANGED);
+    notifyObservers(event);
     return true;
 }
 
@@ -188,6 +202,8 @@ bool State::setCurrentPlayer() {
 //met à jour le nombre de "tour"
 bool State::setDay() {
     if(this->current_player_id == 0) this->day ++;
+    Event event = Event(EventTypeId::UNIT_CHANGED);
+    notifyObservers(event);
     return true;
 }
 
