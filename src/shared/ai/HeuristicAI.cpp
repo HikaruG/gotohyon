@@ -137,10 +137,6 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
 
         Unit *unit_i = my_list_unit[i].get();
 
-        //liste de game_object ennemie
-        vector<shared_ptr<GameObject>> ennemy_objects{}; //instancie au vecteur nul
-
-
         /*** cas d'un farmeur : il n'attaque pas, ne peut que construire***/
         if (unit_i->getUnitType() == farmer) {
             //phase de déplacement:
@@ -176,7 +172,7 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
                     building_type = farm;
                 }
                 //si déficite en argent
-                if (mine < 400) {
+                if (gold < 400) {
                     building_type = mine;
                 }
                 //si argent / food pas abondants
@@ -236,13 +232,14 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
 
         /*** cas d'un archer: il attaque à distance, sinon il se déplace et attaque***/
         if (unit_i->getUnitType() == archer) {
-            shared_ptr<engine::HandleCanAttack> canattack_archers (new engine::HandleCanAttack(unit_i,ennemy_objects));
+            state.resetInRange(); //s'assure de pas avoir une liste d'unités pré-remplie
+            shared_ptr<engine::HandleCanAttack> canattack_archers (new engine::HandleCanAttack(my_list_unit[i]));
             engine.addCommands(canattack_archers);
 
-            if (ennemy_objects.size() != 0) {
-                shared_ptr<GameObject>ennemy_unit = ennemy_objects[0];
+            if (state.getInRange().size() != 0) {
+                shared_ptr<GameObject>ennemy_unit = state.getInRange()[0];
                 int hp = ennemy_unit.get()->getProperty()->getHealth();
-                for (shared_ptr<GameObject> weakest_ennemy : ennemy_objects) {
+                for (shared_ptr<GameObject> weakest_ennemy : state.getInRange()) {
                     if (hp > weakest_ennemy.get()->getProperty()->getHealth()) {
                         ennemy_unit = weakest_ennemy;
                     }
@@ -257,7 +254,6 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
 
         /*** cas général : Infantry || Archer qui n'a pas attaqué ***/
         if (unit_i->getProperty()->getAvailability()) {
-            ennemy_objects = {}; //remet à zéro la liste des ennemies dispo
             //phase de déplacement:
             state::Position position_unit = unit_i->getPosition();
             old_y = (int) position_unit.getY();
@@ -332,13 +328,13 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
             }
 
             /***  début de l'implémentation des attaques pour les unités en général  ***/
-
-            shared_ptr<engine::HandleCanAttack> canattack_unit (new engine::HandleCanAttack(unit_i,ennemy_objects));
+            state.resetInRange();
+            shared_ptr<engine::HandleCanAttack> canattack_unit (new engine::HandleCanAttack(my_list_unit[i]));
             engine.addCommands(canattack_unit);
-            if (ennemy_objects.size() != 0) {
-                shared_ptr<GameObject>ennemy_unit = ennemy_objects[0];
+            if (state.getInRange().size() != 0) {
+                shared_ptr<GameObject>ennemy_unit = state.getInRange()[0];
                 int hp = ennemy_unit.get()->getProperty()->getHealth();
-                for (shared_ptr<GameObject> weakest_ennemy : ennemy_objects) {
+                for (shared_ptr<GameObject> weakest_ennemy : state.getInRange()) {
                     if (hp > weakest_ennemy.get()->getProperty()->getHealth()) {
                         ennemy_unit = weakest_ennemy;
                     }

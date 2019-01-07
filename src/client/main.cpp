@@ -174,7 +174,7 @@ bool test_heuristicAI(){
     test_state.get()->getMap().get()->addObserver(&testdraw);
 
 
-    cout << "test : new randomAI instance" << endl;
+    cout << "test : new HeuristicAI instance" << endl;
     ai::HeuristicAI test_heuristicAI = ai::HeuristicAI(0);
 
 

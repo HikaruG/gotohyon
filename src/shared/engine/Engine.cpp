@@ -35,6 +35,8 @@ bool Engine::execute(state::State & state) {
 
     while (list_commands.size() != 0) {
         switch (list_commands.front().get()->getTypeId()) {
+            case HANDLE_STARTGAME:
+                list_commands.front().get()->execute(state);
             case HANDLE_GROWTH:
                 list_commands.front().get()->execute(state);
                 state.getCurrentPlayer().get()->getRessource(food, gold);
@@ -44,7 +46,7 @@ bool Engine::execute(state::State & state) {
             case HANDLE_MOVEMENT:
                 list_commands.front().get()->execute(state);
                 break;
-            case HANDLE_ATTACK:
+            case HANDLE_CANATTACK:
                 list_commands.front().get()->execute(state);
                 break;
             case HANDLE_DAMAGE:
@@ -61,7 +63,8 @@ bool Engine::execute(state::State & state) {
                 break;
             case HANDLE_ENDGAME:
                 list_commands.front().get()->execute(state);
-                break;
+                list_commands.clear();
+                return true;
             default:
                 return false;
         }
