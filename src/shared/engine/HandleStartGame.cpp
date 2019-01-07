@@ -19,11 +19,11 @@ CommandTypeId HandleStartGame::getTypeId() const {
     return CommandTypeId::HANDLE_STARTGAME;
 }
 
-bool HandleStartGame::execute(state::State &state) {}
+bool HandleStartGame::execute(state::State &state) {
+    return true;
+}
 
 bool HandleStartGame::execute(state::State &state, engine::Engine &engine) {
-    unsigned int nbr_player = 2, nbr_npc = 2;
-
 
     static int const terrain_int [] = {
             0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,

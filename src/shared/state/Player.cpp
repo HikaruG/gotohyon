@@ -21,52 +21,11 @@ Player::Player() {
     this->player_id = 0;
     this->in_food = 600;
     this->in_gold = 600;
+    this->is_dead = false;
 }
 
 Player::~Player() {
     cout << " player détruit " << this << endl;
-}
-
-vector<shared_ptr<Building>>& Player::getPlayerBuildingList(){
-    return player_building_list;
-}
-
-std::vector<std::shared_ptr<Unit>>& Player::getPlayerUnitList (){
-    return player_unit_list;
-}
-
-bool Player::getAvailability(){
-    return this->objects_available;
-}
-
-
-bool Player::getIsNpc(){
-    return this->is_npc;
-}
-
-unsigned int Player::getPlayerId() {
-    return this->player_id;
-}
-
-bool Player::getRessource(unsigned int &in_food, unsigned int &in_gold) {
-    in_food = this->in_food;
-    in_gold = this->in_gold;
-    return true;
-}
-
-bool Player::setRessource(unsigned int add_gold, unsigned int add_food) {
-    in_gold += add_gold;
-    in_food += add_food;
-    return true;
-}
-
-bool Player::getIsDead() {
-    return this->is_dead;
-}
-
-bool Player::setIsDead() {
-    this->is_dead = true;
-    return true;
 }
 
 bool Player::addPlayerUnit(shared_ptr<Unit> unit) {
@@ -130,3 +89,45 @@ bool Player::checkAvailability(){
     this->objects_available = false;
     return false;
 }
+
+vector<shared_ptr<Building>>& Player::getPlayerBuildingList(){
+    return player_building_list;
+}
+
+std::vector<std::shared_ptr<Unit>>& Player::getPlayerUnitList (){
+    return player_unit_list;
+}
+
+bool Player::getAvailability(){
+    return this->objects_available;
+}
+
+bool Player::getIsNpc(){
+    return this->is_npc;
+}
+
+unsigned int Player::getPlayerId() {
+    return this->player_id;
+}
+
+bool Player::getRessource(unsigned int &in_food, unsigned int &in_gold) {
+    in_food = this->in_food;
+    in_gold = this->in_gold;
+    return true;
+}
+
+bool Player::setRessource(unsigned int add_gold, unsigned int add_food) {
+    in_gold += add_gold;
+    in_food += add_food;
+    return true;
+}
+
+bool Player::getIsDead() {
+    return this->is_dead;
+}
+
+bool Player::setIsDead() {
+    this->is_dead = true;
+    return true;
+}
+

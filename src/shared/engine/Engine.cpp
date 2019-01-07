@@ -59,7 +59,9 @@ bool Engine::execute(state::State & state) {
                 cout << "player" << state.getCurrentPlayer().get()->getPlayerId() << "'s current food is " << food << endl;
                 break;
             case HANDLE_TURN:
-                list_commands.front().get()->execute(state);
+                if(!list_commands.front().get()->execute(state))
+                    return true;
+
                 break;
             case HANDLE_ENDGAME:
                 list_commands.front().get()->execute(state);

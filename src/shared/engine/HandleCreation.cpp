@@ -106,7 +106,7 @@ bool HandleCreation::execute(state::State &state) {
 
     Property farmer = Property("farmer",10,10,80,false,false,1);
     Property infantry = Property("infantry",10,20,120,false,false,1);
-    Property archer = Property("archer",10,1,100,false,false,2);
+    Property archer = Property("archer",10,10,100,false,false,2);
 
     Property mine = Property("mine",10,10,50,true,false,0);
     Property farm = Property("farm",10,10,50,true,false,0);

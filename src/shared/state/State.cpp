@@ -18,7 +18,6 @@ State::State(unsigned int player_number,unsigned int npc_number)
     this->player_nbr = player_number;
     this->remaining_players = player_number;
     this->day = 0;
-    this->is_game_finished = false;
     initializePlayer(player_number, npc_number);
     cout << " construit " << this << endl;
 }
@@ -74,7 +73,6 @@ bool State::addBuilding(shared_ptr<Building> building) {
     return true;
 }
 
-
 bool State::deleteUnit(state::Unit* deleting_unit) {
     bool success = false;
     //recherche du play associé à l'unité détruite
@@ -128,11 +126,12 @@ bool State::resetAvailability(){
 
 bool State::resetInRange() {
     inrange_ennemies.clear();
+    return true;
 }
 
 
 bool State::isGameFinished(){
-    if(this->is_game_finished)
+    if(remaining_players < 2)
         return true;
     return false;
 }
@@ -185,7 +184,8 @@ bool State::setPlayerDead(unsigned int player_id){
             killed_p.get()->setIsDead();
     }
     this->remaining_players--;
-    this->current_player_id --;
+    if(!current_player_id == 0)
+        this->current_player_id --;
     return true;
 }
 
@@ -220,29 +220,15 @@ bool State::setDay() {
 
 bool State::setPlayerNumber(unsigned int player_nbr) {
     this->player_nbr = player_nbr;
+    return true;
 }
 
 bool State::setInRange(std::vector<std::shared_ptr<state::GameObject>> inrange_ennemies) {
     for (int i = 0; i < inrange_ennemies.size(); i++){
         this->inrange_ennemies.push_back(inrange_ennemies[i]);
     }
-}
-/*
-bool State::setSelPosition(state::Position selected_position) {
-    this->selected_position = selected_position;
     return true;
 }
-
-bool State::setSelUnit(std::shared_ptr<state::Unit> selected_unit) {
-    this->selected_unit = selected_unit;
-    return true;
-}
-
-bool State::setSelBuilding(std::shared_ptr<state::Building> selected_building) {
-    this->selected_building = selected_building;
-    return true;
-}
-*/
 
 State::~State(){
     cout << " détruit " << this << endl;

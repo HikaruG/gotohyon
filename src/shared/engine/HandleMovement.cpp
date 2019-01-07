@@ -24,7 +24,7 @@ CommandTypeId HandleMovement::getTypeId() const {
 
 bool HandleMovement::execute(state::State& state) {
 
-    if(this->new_x == this->selected_unit->getPosition().getX() && this->new_y == this->selected_unit->getPosition().getY()) {
+    if(this->new_x == (int)this->selected_unit->getPosition().getX() && this->new_y == (int)this->selected_unit->getPosition().getY()) {
         cout << this->selected_unit->getProperty()->getStringType() << " didn't move" << endl;
         return true;
     }
@@ -35,7 +35,7 @@ bool HandleMovement::execute(state::State& state) {
     if( (int)(this->selected_unit->getPosition().getX()  + this->selected_unit->getPosition().getY() - abs(((int)this->new_x + (int)this->new_y)) ) <= this->selected_unit->getMovementRange() ){
 
         //si l'objet ne sort pas de la carte
-        if((int) this->new_x >= 0 && (int) this->new_x < max_x && (int)this->new_y >= 0 && (int)this->new_y < max_y ) {
+        if(this->new_x >= 0 &&  this->new_x < max_x && this->new_y >= 0 && this->new_y < max_y ) {
             //nouvelle position de l'objet
             state::Position position(this->new_x, this->new_y);
 
