@@ -9,7 +9,8 @@ DeepAI::DeepAI() = default;
 
 DeepAI::~DeepAI() = default;
 
-
+//notre deep AI = un bot ultra aggressif qui réduit le nombre d'unités au max:
+//les conditions de gain: plus les unités ont attaqués, plus le point de cet état futur est élevé; on mémorisera l'état avec le plus haut score
 int DeepAI::path_finder(state::State &state, state::Unit &unit) {
     int movement_range = unit.getMovementRange();
     std::vector<Unit*> list_units = {};
@@ -25,7 +26,6 @@ int DeepAI::path_finder(state::State &state, state::Unit &unit) {
     // s'éloigner le plus possible de ces unités, tout en gardant à l'esprit un spot stratégique pour les batiments:
     // les batiments d'économies = le plus loin du centre ville/unités ennemie
     // les batiments de combats: le plus proche/le plus protecteur par rapport au centre ville
-
 
     switch(unit.getUnitType()){
         case farmer:

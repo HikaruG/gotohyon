@@ -197,33 +197,14 @@ bool test_heuristicAI(){
 
 
 bool test_randomAI() {
-/*
-    shared_ptr<State> test_state (new State(2,1));
-
-    static int const terrain_int [] = {
-            0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-            0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0,
-            1, 1, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3,
-            0, 1, 0, 0, 2, 0, 3, 3, 3, 0, 1, 1, 1, 0, 0, 0,
-            0, 1, 1, 0, 3, 3, 2, 0, 0, 0, 1, 1, 1, 2, 0, 0,
-            0, 0, 1, 0, 3, 0, 3, 3, 0, 0, 1, 1, 1, 1, 2, 0,
-            2, 0, 1, 0, 3, 0, 2, 3, 3, 0, 1, 1, 1, 1, 1, 1,
-            0, 0, 1, 0, 3, 3, 3, 3, 0, 0, 0, 0, 1, 1, 1, 1,
-            0, 0, 1, 0, 3, 2, 3, 3, 0, 0, 0, 0, 1, 1, 1, 1,
-            2, 0, 1, 0, 3, 0, 3, 3, 3, 0, 1, 1, 1, 1, 1, 1,
-            0, 0, 1, 0, 3, 0, 2, 3, 0, 0, 1, 1, 1, 1, 2, 0,
-            0, 1, 1, 0, 3, 3, 3, 0, 0, 0, 1, 1, 1, 2, 0, 0,
-            0, 1, 0, 0, 2, 0, 3, 3, 3, 0, 1, 1, 1, 0, 0, 0,
-            1, 1, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3,
-            0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    };
-    vector<int> test_terrain;//to do mettre la taille
-    for (int i = 0; i < 256; i++) {
-        test_terrain.push_back(terrain_int[i]);
-    }
-    //init map terrain
-    test_state->initializeMap(16, 16, test_terrain);
+    shared_ptr<state::State> test_state (new state::State(2,1));
+    cout << "test : new state instance" << endl;
+    Engine test_engine = Engine();
+    cout << "test : new engine instance" << endl;
+    HandleStartGame new_game = HandleStartGame();
+    new_game.execute(*test_state.get(),test_engine);
+    test_engine.execute(* test_state.get());
+    cout << "test : 1  player vs 1 npc gamemode created " << endl;
 
     //init windows
     size_t x_window = 1024;
@@ -232,16 +213,10 @@ bool test_randomAI() {
     sf::Time delayTime = sf::milliseconds(1000);
     // create the window
     shared_ptr<sf::RenderWindow> window (new sf::RenderWindow(sf::VideoMode(static_cast<unsigned int>(x_window), static_cast<unsigned int>(y_window)),
-                            "test engine",sf::Style::Close));
+                                                              "test engine",sf::Style::Close));
 
-
-
-    cout << "test : new engine instance" << endl;
-    Engine test_engine = Engine();
-
-
-    cout << "test : new drawmanager instance" << endl;
     render::DrawManager testdraw = render::DrawManager(test_state, window);
+    cout << "test : new drawmanager instance" << endl;
     test_state.get()->addObserver(&testdraw);
     test_state.get()->getMap().get()->addObserver(&testdraw);
 
@@ -249,55 +224,6 @@ bool test_randomAI() {
     cout << "test : new randomAI instance" << endl;
     ai::RandomAI test_randomAI = ai::RandomAI(0);
 
-
-
-    cout << "test : updates... " << endl;
-    testdraw.forceRefresh(test_state);
-
-
-
-    HandleCreation test_creation = HandleCreation();
-    HandleTurn test_turn = HandleTurn();
-
-
-
-    cout << "test : create units and building for the 1st npc" << endl;
-    //create the first units for the 1st npc
-    test_creation.execute(* test_state.get(), 7, 5, farmer,false);
-    cout << "test : create farmer in 7,5" << endl;
-    //testdraw.forceRefresh(test_state);
-
-    test_creation.execute(* test_state.get(), 8, 5, infantry, false);
-    cout << "test : create infantry in 8,5," << endl;
-
-    test_creation.execute(* test_state.get(), 6, 5, archer, false);
-    cout << "test : create archer in 6,5" << endl;
-
-    test_creation.execute(* test_state.get(),7,5,town,true);
-    cout << "test : create town in 7,5"<<endl;
-
-    //end 1st npc's first turn
-    cout << "npc1 : end 1st turn"<<endl;
-    test_turn.execute(*test_state.get());
-
-    //create the first units for the 2nd npc
-
-    cout << "test : create units and building for the 2nd npc" << endl;
-    test_creation.execute(* test_state.get(), 7, 9, farmer,false);
-    cout << "test : create farmer in 7,9" << endl;
-
-    test_creation.execute(* test_state.get(), 8, 9, infantry, false);
-    cout << "test : create infantry in 8,9," << endl;
-
-    test_creation.execute(* test_state.get(), 6,9, archer, false);
-    cout << "test : create archer in 6,9" << endl;
-
-    test_creation.execute(* test_state.get(),7,9,town,true);
-    cout << "test : create town in 7,9"<<endl;
-
-    //end 2nd npc's first turn
-    cout << "npc 2: end 1st turn"<<endl;
-    test_turn.execute(*test_state.get());
 
 
     while(!test_state.get()->isGameFinished()) {
@@ -312,7 +238,7 @@ bool test_randomAI() {
         }
 
     }
-*/
+
     return true;
 }
 
