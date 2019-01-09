@@ -33,4 +33,5 @@ GuiBox::GuiBox (std::string text, int pos_x, int pos_y, int size)
     this->size=size;
     this->pos_y=pos_y;
     this->pos_x = pos_x;
+
 }

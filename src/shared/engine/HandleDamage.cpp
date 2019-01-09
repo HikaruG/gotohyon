@@ -55,3 +55,7 @@ bool HandleDamage::execute(state::State& state) {
     this->selected_unit->getProperty()->setAvailability(false);
     return true;
 }
+
+void HandleDamage::serialize (Json::Value& out) const{
+
+}

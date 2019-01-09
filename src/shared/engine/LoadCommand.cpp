@@ -16,3 +16,7 @@ bool LoadCommand::execute(state::State &state) {
 LoadCommand::LoadCommand() = default;
 
 LoadCommand::~LoadCommand() = default;
+
+void LoadCommand::serialize (Json::Value& out) const{
+
+}

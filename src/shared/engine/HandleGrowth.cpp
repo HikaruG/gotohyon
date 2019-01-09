@@ -28,5 +28,9 @@ bool HandleGrowth::execute(state::State &state) {
     return true;
 }
 
+void HandleGrowth::serialize (Json::Value& out) const{
+
+}
+
 HandleGrowth::HandleGrowth() = default;
 HandleGrowth::~HandleGrowth() = default;

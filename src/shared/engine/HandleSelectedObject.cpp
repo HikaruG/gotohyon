@@ -21,3 +21,7 @@ bool HandleSelectedObject::execute(state::State& state) {
 
     return true;
 }
+
+void HandleSelectedObject::serialize (Json::Value& out) const{
+
+}

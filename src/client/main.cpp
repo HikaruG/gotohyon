@@ -226,7 +226,6 @@ bool test_randomAI() {
     cout << "test : new randomAI instance" << endl;
     ai::RandomAI test_randomAI = ai::RandomAI(0);
 
-
     testdraw.forceRefresh(test_state);
 
     while(!test_state.get()->isGameFinished()) {

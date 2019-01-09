@@ -281,7 +281,9 @@ bool HandleCreation::execute(state::State &state) {
 }
 
 
+void HandleCreation::serialize (Json::Value& out) const{
 
+}
 
 
 

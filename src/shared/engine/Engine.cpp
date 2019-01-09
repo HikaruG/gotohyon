@@ -18,7 +18,7 @@ void pop_front(vector<shared_ptr<Command>> & v)
     v.erase(v.begin());
 }
 
-Engine::Engine() {
+Engine::Engine():record(Json::Value(Json::nullValue)) {
 }
 
 Engine::~Engine() {

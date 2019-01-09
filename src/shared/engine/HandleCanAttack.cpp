@@ -98,3 +98,7 @@ bool HandleCanAttack::execute(state::State& state ) {
         this->selected_unit->getProperty()->setAvailability(false);
     return false;
 }
+
+void HandleCanAttack::serialize (Json::Value& out) const{
+
+}

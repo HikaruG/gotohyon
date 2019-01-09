@@ -111,3 +111,6 @@ HandleMovement::~HandleMovement() {
 
 }
 
+void HandleMovement::serialize (Json::Value& out) const{
+
+}

@@ -476,7 +476,7 @@ gen_class (umlclassnode *node)
             umlclassnode *ref;
             if (assoc->name[0] != '\0')
             {
-                add_setter_getter(node,assoc->key->name,assoc->name);
+                //add_setter_getter(node,assoc->key->name,assoc->name); to remove the setters and getters as we do it manually
             }
             assoc = assoc->next;
         }
@@ -786,8 +786,9 @@ void print_include_stdlib(struct stdlib_includes* si,char* name) {
        if (!si->sfmlGraphics 
        && (strstr(name,"sf::RenderWindow")
        ||  strstr(name,"sf::VertexArray")
-       ||  strstr(name,"sf::Texture"))) {
-           print ("#include <SFML/Graphics.hpp>\n");
+       ||  strstr(name,"sf::Texture")
+       ||  strstr(name,"sf::Text"))) {
+           print ("#include <SFML/Graphics.hpp>\n#include <SFML/Graphics/Text.hpp>\n");
            si->sfmlGraphics = 1;
        }       
        if (!si->jsoncpp

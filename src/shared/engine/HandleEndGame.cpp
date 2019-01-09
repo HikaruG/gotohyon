@@ -20,3 +20,7 @@ bool HandleEndGame::execute(state::State &state) {
         return true;
     return false;
 }
+
+void HandleEndGame::serialize (Json::Value& out) const{
+
+}

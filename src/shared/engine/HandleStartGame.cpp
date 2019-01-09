@@ -79,4 +79,6 @@ bool HandleStartGame::execute(state::State &state, engine::Engine &engine) {
     return true;
 }
 
+void HandleStartGame::serialize (Json::Value& out) const{
 
+}

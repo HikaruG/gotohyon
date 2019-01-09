@@ -56,3 +56,6 @@ bool HandleTurn::execute(state::State &state) {
     return true;
 }
 
+void HandleTurn::serialize (Json::Value& out) const{
+
+}
