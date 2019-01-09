@@ -64,8 +64,8 @@ bool RandomAI::run(engine::Engine &engine, state::State& state) {
         distance_y = distance_x - abs(old_x - new_x);
         std::uniform_int_distribution<int> dis_y(-distance_y,distance_y);
         new_y = old_y + dis_y(randgen);
-        shared_ptr<engine::HandleMovement> movement_farmer (new engine::HandleMovement(new_x, new_y, unit_i));
-        engine.addCommands(movement_farmer);
+        shared_ptr<engine::HandleMovement> movement_units (new engine::HandleMovement(new_x, new_y, unit_i));
+        engine.addCommands(movement_units);
         /***  fin de l'implémentation des déplacements  ***/
 
         /***  début de l'implémentation des attaques et créations de batiments pour les farmer  ***/

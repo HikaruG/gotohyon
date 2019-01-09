@@ -264,7 +264,6 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
                     engine.addCommands(create_building);
                 }
             }
-            unit_i->getProperty()->setAvailability(false); //rend inaccessible le villageois après la création du batiment
         }
 
 

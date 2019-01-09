@@ -191,6 +191,9 @@ bool HandleCreation::execute(state::State &state) {
                 state.addBuilding(move(new_building));
                 state.getCurrentPlayer().get()->setRessource(-req_gold, -req_food);
                 cout << "created new building : " << debug_info << endl;
+                for(shared_ptr<GameObject> objects : state.getMap().get()->getGameObject(new_x,new_y)){
+                    objects.get()->getProperty()->setAvailability(false); //rend inaccessible le villageois et le batiment après la création du batiment
+                }
 
                 return true;
             } else {
