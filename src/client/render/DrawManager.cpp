@@ -25,6 +25,12 @@ unit_layer(OnMapLayer("res/tileset_unit.png")),user_interact(PlayerAction(window
 
     this->buttons.emplace_back(GuiButton(0,0,50,20,"res/button_test.png",""));
 
+    if (!font.loadFromFile("res/lato.ttf"))
+    {
+        cout<<"no font found"<<endl;
+    }
+
+
     terrain_layer.setNext(&building_layer);
     building_layer.setNext(&unit_layer);
     user_interact.addObserver(this);
@@ -113,10 +119,26 @@ bool DrawManager::setBuilding ()
     return true;
 }
 
+/*
+bool DrawManager::setDebugText ()
+{
+    for(unsigned int i = 0; i < debugText.size();i++){
+        window->draw(debugText[i]);
+    }
+}
+bool DrawManager::setText ()
+{
+    for(unsigned int i = 0; i < text.size(); i++)
+    {
+
+    }
+}
+*/
+
 bool DrawManager::stateChanged(const state::Event &event) {
 
     state::EventTypeId this_event = event.getEventType();
-    std::cout << "event : "<< this_event<<std::endl;
+    //std::cout << "event : "<< this_event<<std::endl;
 
     /*
      * events:

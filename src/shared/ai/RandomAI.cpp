@@ -39,6 +39,8 @@ bool RandomAI::run(engine::Engine &engine, state::State& state) {
 
 
     //variables pour déterminer la nouvelle position de l'unité
+
+
     int old_x, old_y, new_x = 0, new_y = 0;
 
     //randgen de 1/2
@@ -133,6 +135,7 @@ bool RandomAI::run(engine::Engine &engine, state::State& state) {
     //commande de fin de tour; préparation pour le joueur suivant
     shared_ptr<engine::HandleTurn> end_turn (new engine::HandleTurn());
     engine.addCommands(end_turn);
+
     return true;
 }
 

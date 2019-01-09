@@ -197,6 +197,7 @@ bool test_heuristicAI(){
 
 
 bool test_randomAI() {
+
     shared_ptr<state::State> test_state (new state::State(2,1));
     cout << "test : new state instance" << endl;
     Engine test_engine = Engine();
@@ -205,6 +206,7 @@ bool test_randomAI() {
     new_game.execute(*test_state.get(),test_engine);
     test_engine.execute(* test_state.get());
     cout << "test : 1  player vs 1 npc gamemode created " << endl;
+
 
     //init windows
     size_t x_window = 1024;
@@ -225,6 +227,7 @@ bool test_randomAI() {
     ai::RandomAI test_randomAI = ai::RandomAI(0);
 
 
+    testdraw.forceRefresh(test_state);
 
     while(!test_state.get()->isGameFinished()) {
         test_engine.execute(* test_state.get());

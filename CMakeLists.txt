@@ -36,12 +36,12 @@ file(GLOB_RECURSE client_sources src/client/*.cpp)
 file(GLOB_RECURSE shared_sources src/shared/*.cpp)
 
 #jsoncpp
-#include_directories ("${PROJECT_SOURCE_DIR}/extern/jsoncpp-1.8.0")
-#file(GLOB_RECURSE jsoncpp_sources extern/jsoncpp-1.8.0/*.cpp)
+include_directories ("${PROJECT_SOURCE_DIR}/extern/jsoncpp-1.8.0")
+file(GLOB_RECURSE jsoncpp_sources extern/jsoncpp-1.8.0/*.cpp)
 
 
 # Executables
-add_executable(client ${client_sources} ${shared_sources} src/client/render/GuiButton.cpp src/client/render/GUIbar.cpp)
+add_executable(client ${client_sources} ${shared_sources} src/client/render/GuiButton.cpp src/client/render/GuiLayer.cpp src/shared/engine/HandleSelectedObject.cpp src/client/render/GuiBox.cpp)
 #add_executable(server ${server_sources} ${shared_sources} ${jsoncpp_sources})
 
 # SFML

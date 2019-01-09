@@ -2,21 +2,17 @@
 // Created by ben on 07/01/19.
 //
 
-#include "GUIbar.h"
+#include "GuiLayer.h"
 
 using namespace render;
 
-GUIbar::GUIbar (int pos_x, int pos_y, int size_x, int size_y, std::string texture_path):DrawLayer(texture_path)
+GuiLayer::GuiLayer (std::string texture_path):DrawLayer(texture_path)
 {
-    this->pos_x = pos_x;
-    this->pos_y = pos_y;
-    this->size_x = size_x;
-    this->size_y = size_y;
     this->nextLayer = nullptr;
 
 }
 
-void GUIbar::draw(sf::RenderTarget& target, sf::RenderStates states) const
+void GuiLayer::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
     states.texture = &texture_to_apply;
     target.draw(quads,states.texture);
@@ -25,13 +21,13 @@ void GUIbar::draw(sf::RenderTarget& target, sf::RenderStates states) const
     }
 }
 
-bool GUIbar::loadTexture(const std::string& terrain_file) {
+bool GuiLayer::loadTexture(const std::string& terrain_file) {
     // load the tileset texture
 
     return(texture_to_apply.loadFromFile(terrain_file));
 }
 
-bool GUIbar::initQuads(int count) {
+bool GuiLayer::initQuads(int count) {
     //definit le type de vertex: quads
     quads.setPrimitiveType(sf::Quads);
     //count represente le nombre de la tuile
@@ -39,12 +35,12 @@ bool GUIbar::initQuads(int count) {
     return true;
 }
 
-bool GUIbar::setSpriteLocation() {
+bool GuiLayer::setSpriteLocation() {
     sf::Vertex* quad = &quads[vertex_count*4];
     return true;
 }
 
-bool GUIbar::setSpriteTexture() {
+bool GuiLayer::setSpriteTexture() {
     sf::Vertex* quad = &quads[vertex_count*4];
 
     quad[0].texCoords = sf::Vector2f(0, 0);

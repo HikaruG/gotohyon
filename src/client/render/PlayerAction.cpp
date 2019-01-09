@@ -57,7 +57,7 @@ void PlayerAction::userTurn (engine::Engine& engine, state::State& state){
                     std::cout <<" mouse x iso: " << x_on_map << std::endl; // valeur de x en cartésien
                     std::cout <<" mouse y iso: " << y_on_map << std::endl; // valeur de y en cartésien
 
-                    for(int i = 0; i < objs.size();i++)//form 0 -> nothing to 2 -> unit + building
+                    for(unsigned int i = 0; i < objs.size();i++)//form 0 -> nothing to 2 -> unit + building
                     {
                         std::cout<<"on this location there is "<<objs.at(i).get()->getProperty()->getStringType()<<std::endl;
                     }
