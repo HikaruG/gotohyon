@@ -54,16 +54,16 @@ bool collision_object_DeepAI(int pos_x, int pos_y, Unit* unit, State& state){
             vector<shared_ptr<state::Building>> ennemy_buildings = list_player[i].get()->getPlayerBuildingList();
 
             //vérifie si il y a pas une unité ennemie déja présente à cette position
-            for(int i = 0; i < (int)ennemy_buildings.size(); i++){
+            for(int j = 0; j < (int)ennemy_buildings.size(); j++){
                 // si une unité est déjà présente, le déplacement devient impossible
-                if(ennemy_buildings[i].get()->getPosition() == position){
+                if(ennemy_buildings[j].get()->getPosition() == position){
                     return true;
                 }
             };
             //vérifie si il n'y a pas un batiment ennemi déjà présent à cette position
-            for(int i = 0; i < (int)ennemy_units.size(); i++){
+            for(int j = 0; j < (int)ennemy_units.size(); j++){
                 //si un batiment est déjà présent, le déplacement devient impossible
-                if(ennemy_units[i].get()->getPosition() == position){
+                if(ennemy_units[j].get()->getPosition() == position){
                     return true;
                 }
             };
@@ -71,8 +71,8 @@ bool collision_object_DeepAI(int pos_x, int pos_y, Unit* unit, State& state){
             //si le joueur dans la liste list_player est le joueur actuel
         else{
             vector<shared_ptr<state::Unit>>ally_units = list_player[i].get()->getPlayerUnitList();
-            for(int i =0; i < (int)ally_units.size(); i++){
-                if(ally_units[i].get()->getPosition() == position){
+            for(int j =0; j < (int)ally_units.size(); j++){
+                if(ally_units[j].get()->getPosition() == position){
                     return true;
                 }
             }
@@ -85,45 +85,47 @@ bool collision_object_DeepAI(int pos_x, int pos_y, Unit* unit, State& state){
 
 
 vector<int> disadvantage(State& state){
-    int ennemy_archers, ennemy_infantries;
-    int my_archers = 0, my_infantries = 0;
+    int my_archers = 0, my_infantries = 0, my_farmers = 0;
     int ennemy_id = 0;
-    vector<int> number_advantage = {};
-    for( shared_ptr<Player> players : state.getListPlayer()) {
-        ennemy_archers = 0, ennemy_infantries = 0;
-        if (players.get()->getPlayerId() != state.getCurrentPlayer().get()->getPlayerId()) {
-            for(shared_ptr<Unit> units : players.get()->getPlayerUnitList()){
-                if(units.get()->getUnitType() == archer)
-                    ennemy_archers ++;
-                else if(units.get()->getUnitType() == infantry)
-                    ennemy_infantries ++;
-            }
-            if (state.getCurrentPlayer().get()->getPlayerUnitList().size() < players.get()->getPlayerUnitList().size())
-                number_advantage[ennemy_id] --;
+    vector<int> number_advantage(state.getPlayerNbr()-1,0);
+
+    for(int i_unit = 0; i_unit < state.getCurrentPlayer().get()->getPlayerUnitList().size(); i_unit ++){
+        if(state.getCurrentPlayer().get()->getPlayerUnitList()[i_unit].get()->getUnitType() == archer)
+            my_archers ++;
+        else if(state.getCurrentPlayer().get()->getPlayerUnitList()[i_unit].get()->getUnitType() == infantry)
+            my_infantries ++;
+        else
+            my_farmers ++;
+    }
+
+    for( shared_ptr<Player> players : state.getListPlayer() ){
+        if(players.get()->getPlayerId() == state.getCurrentPlayer().get()->getPlayerId())
+            continue;
+        int ennemy_archers = 0, ennemy_infantries = 0, ennemy_farmers = 0;
+        for (shared_ptr<Unit> units : players.get()->getPlayerUnitList()) {
+            if (units.get()->getUnitType() == archer)
+                ennemy_archers++;
+            else if (units.get()->getUnitType() == infantry)
+                ennemy_infantries++;
             else
-                number_advantage[ennemy_id] ++;
-        } else{
-            for(shared_ptr<Unit> units : players.get()->getPlayerUnitList()){
-                if(units.get()->getUnitType() == archer)
-                    my_archers ++;
-                else if(units.get()->getUnitType() == infantry)
-                    my_infantries ++;
-            }
+                ennemy_farmers++;
         }
-        if(my_archers < ennemy_archers && my_infantries < ennemy_infantries)
-            number_advantage[ennemy_id] -= 2;
-        else if(my_archers < ennemy_archers || my_infantries < ennemy_infantries)
+        if (state.getCurrentPlayer().get()->getPlayerUnitList().size() <= players.get()->getPlayerUnitList().size())
             number_advantage[ennemy_id] --;
         else
-            number_advantage[ennemy_id] += 2;
-        ennemy_id ++;
+            number_advantage[ennemy_id] ++;
+        if(my_archers <= ennemy_archers && my_infantries <= ennemy_infantries && my_farmers <= ennemy_farmers)
+            number_advantage[ennemy_id] -= 3;
+        else if(my_archers <= ennemy_archers || my_infantries <= ennemy_infantries)
+            number_advantage[ennemy_id] --;
+        else
+            number_advantage[ennemy_id] += 3;
     }
 
-    for(int i : number_advantage){ // fait en sorte de seulement garder les valeurs négatives
-        if(i > 0)
-            i =0;
+    for(int i =0; i < number_advantage.size(); i++){ // fait en sorte de seulement garder les valeurs négatives
+        if(number_advantage[i] > 0)
+            number_advantage[i] =0;
     }
-
     return number_advantage;
 }
 
@@ -311,6 +313,7 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                                 new engine::HandleCreation(new_x, new_y, building_type, true));
                         engine.addCommands(create_building);
                         current_commands.push_back(create_building);
+                        unit_i->getProperty()->setAvailability(false);
                     }
                 }
             }
@@ -397,6 +400,8 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                         movement_point[update_count]++;
                     else
                         movement_point[update_count]--;
+
+                    range--;
                 }
 
                 /***  début de l'implémentation des attaques pour les unités en général  ***/
@@ -513,8 +518,16 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
         int accumulated_point = army_advantage[update_count] + attack_point[update_count]
                                 + creation_point[update_count] + movement_point[update_count];
 
+        cout << "accumulated point = " << accumulated_point << endl;
 
         if(accumulated_point > total_point){
+            total_point = accumulated_point;
+            true_commands.clear();
+            for(int j = 1; j <= current_commands.size(); j++){
+                true_commands.push_back(current_commands[current_commands.size() - j]);
+            }
+        }
+        else if(update_count == 0){
             true_commands.clear();
             for(int j = 1; j <= current_commands.size(); j++){
                 true_commands.push_back(current_commands[current_commands.size() - j]);
