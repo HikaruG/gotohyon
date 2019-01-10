@@ -233,3 +233,7 @@ bool State::setInRange(std::vector<std::shared_ptr<state::GameObject>> inrange_e
 State::~State(){
     cout << " détruit " << this << endl;
 }
+
+std::shared_ptr<GameObject> State::getGameObject(unsigned int game_object_id) {
+    return this->game_map.get()->getGameObject(game_object_id);
+}
