@@ -14,9 +14,10 @@ PlayerAction::PlayerAction (std::shared_ptr<sf::RenderWindow> window){
 
 void PlayerAction::userTurn (engine::Engine& engine, state::State& state){
 
+    unsigned int food, gold;
     std::cout<<"new player started a turn"<<std::endl;//aucune action ne doit etre fait sur le state sans passer par le moteur
 
-    std::shared_ptr<engine::HandleGrowth> commande_growth (new engine::HandleGrowth());
+    std::shared_ptr<engine::HandleGrowth> commande_growth (new engine::HandleGrowth(food, gold));
     //rajout des ressources
     engine.addCommands(commande_growth);
 

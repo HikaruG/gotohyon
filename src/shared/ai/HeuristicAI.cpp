@@ -87,13 +87,16 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
     //récupération du joueur courant
     Player * current_player = state.getCurrentPlayer().get();
 
-    //mise à jour de l'économie
-    shared_ptr<engine::HandleGrowth> growth_check (new engine::HandleGrowth());
-    engine.addCommands(growth_check);
+    //récupération de l'avantage actuel du joueur :
     unsigned int food, gold;
-    current_player->getRessource(food, gold);
-    cout << "player"<< current_player->getPlayerId() << "'s current gold is " << gold << endl;
-    cout << "player"<< current_player->getPlayerId() << "'s current food is " << food << endl;
+    state.getCurrentPlayer().get()->getRessource(food, gold);
+    //mise à jour de l'économie
+    shared_ptr<engine::HandleGrowth> growth_check(new engine::HandleGrowth(food, gold));
+    engine.addCommands(growth_check);
+    unsigned int new_food, new_gold;
+    current_player->getRessource(new_food, new_gold);
+    cout << "player"<< current_player->getPlayerId() << "'s current gold is " << new_gold << endl;
+    cout << "player"<< current_player->getPlayerId() << "'s current food is " << new_food << endl;
 
 
     //récupération de la liste des bâtiments du joueur courant

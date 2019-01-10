@@ -7,14 +7,18 @@ using namespace engine;
 using namespace state;
 using namespace std;
 
+
+HandleGrowth::HandleGrowth(unsigned int current_food, unsigned int current_gold){
+    this->current_food = current_food;
+    this->current_gold = current_gold;
+}
+
 CommandTypeId HandleGrowth::getTypeId() const {
     return CommandTypeId::HANDLE_GROWTH;
 }
 
 bool HandleGrowth::execute(state::State &state) {
-
     unsigned int count_farm = 0, count_mine = 0;
-
     for(int i = 0; i < (int)state.getCurrentPlayer()->getPlayerBuildingList().size(); i ++){
         state::Building * building_i = state.getCurrentPlayer()->getPlayerBuildingList()[i].get();
         if(building_i->getBuildingType() == state::farm){
@@ -30,6 +34,7 @@ bool HandleGrowth::execute(state::State &state) {
 
 
 bool HandleGrowth::undo(state::State &state) {
+    state.getCurrentPlayer().get()->setRessource(current_food, current_gold);
     return true;
 }
 
@@ -42,5 +47,4 @@ HandleGrowth* HandleGrowth::deserialize (Json::Value& out){
     return this;
 }
 
-HandleGrowth::HandleGrowth() = default;
 HandleGrowth::~HandleGrowth() = default;

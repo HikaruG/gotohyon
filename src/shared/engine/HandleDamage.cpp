@@ -13,7 +13,9 @@ HandleDamage::HandleDamage() = default;
 
 HandleDamage::HandleDamage(state::Unit *selected_unit, state::GameObject *selected_target) {
     this->selected_unit = selected_unit;
+    this->selected_unit_id = selected_unit->getGame_object_id();
     this->selected_target = selected_target;
+    this->selected_target_id = selected_target->getGame_object_id();
 }
 
 HandleDamage::~HandleDamage() = default;
@@ -64,6 +66,7 @@ void HandleDamage::serialize (Json::Value& out) const{
 
 
 bool HandleDamage::undo(state::State &state) {
+
     return true;
 }
 

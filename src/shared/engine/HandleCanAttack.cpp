@@ -101,6 +101,7 @@ bool HandleCanAttack::execute(state::State& state ) {
 
 
 bool HandleCanAttack::undo(state::State &state) {
+
     return true;
 }
 
