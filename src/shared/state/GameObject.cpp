@@ -40,6 +40,10 @@ unsigned int GameObject::getPlayerId() {
     return &this->game_object_property;
 }
 
+void GameObject::setGame_object_id(unsigned int game_object_id) {
+    this->game_object_id = game_object_id;
+}
+
 GameObject::GameObject(){
 
 }
