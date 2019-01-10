@@ -60,7 +60,7 @@ bool HandleTurn::execute(state::State &state) {
 bool HandleTurn::undo(state::State &state) {
     state.setCurrentPlayerId(false);
     state.setCurrentPlayer();
-
+    state.setDay(false);
     return true;
 }
 

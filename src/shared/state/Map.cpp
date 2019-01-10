@@ -40,6 +40,10 @@ bool Map::deleteGameObject(state::GameObject* deleting_game_object, bool keep_tr
     for(int i = 0; i < (int)list_game_object.size(); i++){
         if(deleting_game_object->getGame_object_id() == list_game_object[i].get()->getGame_object_id()) {
             //détruit l'objet situé à la position i
+            if(keep_track)
+            {
+                list_dead_game_object.push_back(this->list_game_object.at(i));
+            }
             list_game_object.erase(list_game_object.begin() + i);
             break;
         }
