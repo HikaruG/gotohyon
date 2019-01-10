@@ -59,3 +59,7 @@ bool HandleDamage::execute(state::State& state) {
 void HandleDamage::serialize (Json::Value& out) const{
 
 }
+
+HandleDamage* HandleDamage::deserialize (Json::Value& out){
+
+}

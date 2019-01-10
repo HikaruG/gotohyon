@@ -102,3 +102,7 @@ bool HandleCanAttack::execute(state::State& state ) {
 void HandleCanAttack::serialize (Json::Value& out) const{
 
 }
+
+HandleCanAttack* HandleCanAttack::deserialize (Json::Value& out){
+
+}

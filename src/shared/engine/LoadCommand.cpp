@@ -20,3 +20,7 @@ LoadCommand::~LoadCommand() = default;
 void LoadCommand::serialize (Json::Value& out) const{
 
 }
+
+LoadCommand* LoadCommand::deserialize (Json::Value& out){
+
+}

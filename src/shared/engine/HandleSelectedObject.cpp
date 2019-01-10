@@ -25,3 +25,7 @@ bool HandleSelectedObject::execute(state::State& state) {
 void HandleSelectedObject::serialize (Json::Value& out) const{
 
 }
+
+HandleSelectedObject* HandleSelectedObject::deserialize (Json::Value& out){
+
+}

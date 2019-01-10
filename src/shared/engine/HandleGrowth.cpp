@@ -32,5 +32,9 @@ void HandleGrowth::serialize (Json::Value& out) const{
 
 }
 
+HandleGrowth* HandleGrowth::deserialize (Json::Value& out){
+
+}
+
 HandleGrowth::HandleGrowth() = default;
 HandleGrowth::~HandleGrowth() = default;

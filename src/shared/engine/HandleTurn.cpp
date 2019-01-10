@@ -59,3 +59,7 @@ bool HandleTurn::execute(state::State &state) {
 void HandleTurn::serialize (Json::Value& out) const{
 
 }
+
+HandleTurn* HandleTurn::deserialize (Json::Value& out){
+
+}

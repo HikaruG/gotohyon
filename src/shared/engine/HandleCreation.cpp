@@ -282,10 +282,25 @@ bool HandleCreation::execute(state::State &state) {
 
 
 void HandleCreation::serialize (Json::Value& out) const{
+    out["CommandId"]=7;
+    out["new_x"]=this->new_x;
+    out["new_y"]=this->new_y;
+    out["object_type"]=this->object_type;
+    out["is_static"]=this->is_static;
 
 }
 
+HandleCreation* HandleCreation::deserialize (Json::Value& out){
+    if(out["CommandId"]==7)
+    {
+        this->new_x=out.get("new_x",0).asInt();
+        this->new_y=out.get("new_y",0).asInt();
+        this->object_type=out.get("object_type",0).asInt();
+        this->is_static=out.get("is_static",false).asBool();
+        return this;
+    }
 
+}
 
 
 

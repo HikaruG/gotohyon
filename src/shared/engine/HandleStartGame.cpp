@@ -80,5 +80,13 @@ bool HandleStartGame::execute(state::State &state, engine::Engine &engine) {
 }
 
 void HandleStartGame::serialize (Json::Value& out) const{
+    out["CommandId"]=1;
+}
 
+HandleStartGame* HandleStartGame::deserialize (Json::Value& out){
+    if(out["CommandId"]==1)
+    {
+        auto ptr = new HandleStartGame();//don't forget to destroy it !!!
+        return ptr;
+    }
 }

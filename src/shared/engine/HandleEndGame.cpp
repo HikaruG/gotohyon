@@ -24,3 +24,7 @@ bool HandleEndGame::execute(state::State &state) {
 void HandleEndGame::serialize (Json::Value& out) const{
 
 }
+
+HandleEndGame* HandleEndGame::deserialize (Json::Value& out){
+
+}
