@@ -28,6 +28,12 @@ bool HandleGrowth::execute(state::State &state) {
     return true;
 }
 
+
+bool HandleGrowth::undo(state::State &state) {
+    return true;
+}
+
+
 void HandleGrowth::serialize (Json::Value& out) const{
     out["CommandId"]=3;
 }

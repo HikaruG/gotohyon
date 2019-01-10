@@ -13,6 +13,12 @@ bool LoadCommand::execute(state::State &state) {
     return true;
 }
 
+
+bool LoadCommand::undo(state::State &state) {
+    return true;
+}
+
+
 LoadCommand::LoadCommand() = default;
 
 LoadCommand::~LoadCommand() = default;

@@ -22,6 +22,12 @@ bool HandleSelectedObject::execute(state::State& state) {
     return true;
 }
 
+
+bool HandleSelectedObject::undo(state::State &state) {
+    return true;
+}
+
+
 void HandleSelectedObject::serialize (Json::Value& out) const{
     out["CommandId"]=8;
 }
@@ -29,3 +35,5 @@ void HandleSelectedObject::serialize (Json::Value& out) const{
 HandleSelectedObject* HandleSelectedObject::deserialize (Json::Value& out){
     return this;
 }
+
+HandleSelectedObject::~HandleSelectedObject() = default;

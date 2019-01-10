@@ -56,6 +56,12 @@ bool HandleTurn::execute(state::State &state) {
     return true;
 }
 
+
+bool HandleTurn::undo(state::State &state) {
+    return true;
+}
+
+
 void HandleTurn::serialize (Json::Value& out) const{
     out["CommandId"]=9;
 }

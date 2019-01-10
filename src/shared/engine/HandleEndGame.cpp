@@ -21,6 +21,12 @@ bool HandleEndGame::execute(state::State &state) {
     return false;
 }
 
+
+bool HandleEndGame::undo(state::State &state) {
+    return true;
+}
+
+
 void HandleEndGame::serialize (Json::Value& out) const{
     out["CommandId"]=10;
 }

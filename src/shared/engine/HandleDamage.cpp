@@ -62,6 +62,12 @@ void HandleDamage::serialize (Json::Value& out) const{
     out["selected_target_id"] = this->selected_target->getGame_object_id();
 }
 
+
+bool HandleDamage::undo(state::State &state) {
+    return true;
+}
+
+
 HandleDamage* HandleDamage::deserialize (Json::Value& out){
     this->selected_target = nullptr;
     this->selected_unit = nullptr;

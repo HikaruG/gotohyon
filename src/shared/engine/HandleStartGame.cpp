@@ -79,6 +79,12 @@ bool HandleStartGame::execute(state::State &state, engine::Engine &engine) {
     return true;
 }
 
+
+bool HandleStartGame::undo(state::State &state) {
+    return true;
+}
+
+
 void HandleStartGame::serialize (Json::Value& out) const{
     out["CommandId"]=1;
 }

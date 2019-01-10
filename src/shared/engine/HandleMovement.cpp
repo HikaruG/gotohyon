@@ -108,9 +108,8 @@ bool HandleMovement::execute(state::State& state) {
     return true;
 }
 
-
-HandleMovement::~HandleMovement() {
-
+bool HandleMovement::undo(state::State &state) {
+    return true;
 }
 
 void HandleMovement::serialize (Json::Value& out) const{
@@ -125,4 +124,8 @@ HandleMovement* HandleMovement::deserialize (Json::Value& out){
     this->new_x=out.get("new_x",0).asInt();
     this->new_y=out.get("new_y",0).asInt();
     //this->selected_unit_id=out.get("selected_unit_id",O).asUInt();
+}
+
+
+HandleMovement::~HandleMovement() {
 }

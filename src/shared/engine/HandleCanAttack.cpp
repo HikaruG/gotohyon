@@ -99,6 +99,12 @@ bool HandleCanAttack::execute(state::State& state ) {
     return false;
 }
 
+
+bool HandleCanAttack::undo(state::State &state) {
+    return true;
+}
+
+
 void HandleCanAttack::serialize (Json::Value& out) const{
     out["CommandId"]=5;
     out["select_unit_id"]=this->selected_unit.get()->getGame_object_id();

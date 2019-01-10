@@ -86,18 +86,6 @@ bool collisionHandler(State &state, unsigned int pos_x, unsigned int pos_y, bool
 
 }
 
-
-    /*ce que je compte faire : pour Ben
-    Mettre en place un moyen de déterminer le type et le is_static lors du gestionnaire du clic.
-
- rajouter un attribut type dans un render pour enlever tous les paramètres des commandes pour laisser le state seulement.
- Lors du premier clic, si l'on choisit un batiment, le deuxieme clic nous donne le choix entre les différentes unités que l'on peut créer (avec
- un affichage des choix, si possible) is_static = false à coup sûr
-
- Lors du premier clic, si l'on choisit un villageois, le deuxième clic est un mouvement; le 3ème sera alors le gestionnaire de création de batiments,
- avec les différents choix de batiments à construire, avec un affichage des choix si possible is_static = true à coup sur
-    */
-
     //, unsigned int pos_x, unsigned int pos_y, int type, bool is_static
 bool HandleCreation::execute(state::State &state) {
     //vérifie si ce n'est pas une demmande de construction vide (pour les AI)
@@ -279,6 +267,12 @@ bool HandleCreation::execute(state::State &state) {
     cout << "this text should never appear" << endl;
     return true;
 }
+
+
+bool HandleCreation::undo(state::State &state) {
+    return true;
+}
+
 
 
 void HandleCreation::serialize (Json::Value& out) const{
