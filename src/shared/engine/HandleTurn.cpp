@@ -58,6 +58,9 @@ bool HandleTurn::execute(state::State &state) {
 
 
 bool HandleTurn::undo(state::State &state) {
+    state.setCurrentPlayerId(false);
+    state.setCurrentPlayer();
+
     return true;
 }
 

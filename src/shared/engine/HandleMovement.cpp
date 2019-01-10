@@ -110,7 +110,16 @@ bool HandleMovement::execute(state::State& state) {
 }
 
 bool HandleMovement::undo(state::State &state) {
-
+    if(!this->selected_unit)
+    {
+        this->selected_unit=(state::Unit*) state.getGameObject(this->selected_unit_id).get();
+        if(!this->selected_unit)
+        {
+            cout<<"Fatal Error : no object with game id\n"<<this->selected_unit_id<<endl;
+            exit(404);
+        }
+    }
+    state.getMap()->moveGameObject(this->selected_unit_id,state::Position(this->old_x,this->old_y));
     return true;
 }
 

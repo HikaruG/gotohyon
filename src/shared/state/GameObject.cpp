@@ -47,3 +47,7 @@ GameObject::GameObject(){
 GameObject::~GameObject(){
     std::cout << " objet détruit " << this << std::endl;
 }
+
+void GameObject::setGame_object_id(unsigned int game_object_id){
+    this->game_object_id = game_object_id;
+}

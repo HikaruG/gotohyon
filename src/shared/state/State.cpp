@@ -190,9 +190,25 @@ bool State::setPlayerDead(unsigned int player_id){
 }
 
 //met à jour l'id de joueur courant après un fin de tour
-bool State::setCurrentPlayerId() {
+bool State::setCurrentPlayerId(bool increment) {
+    if(!increment)//hacky stuff to decrement the player id when rolling back without modifying any existing code
+    {
+        if(this->current_player_id==0)
+        {
+            this->current_player_id=this->player_nbr-1;
+            Event event = Event(EventTypeId::UNIT_CHANGED);
+            notifyObservers(event);
+            return true;
+        }
+        this->current_player_id--;
+        Event event = Event(EventTypeId::UNIT_CHANGED);
+        notifyObservers(event);
+        return true;
+    }
     if(this->current_player_id == this->player_nbr - 1){ //le player_id commence à 0 tandis que le player_nbr commence à 1
         this->current_player_id = 0;
+        Event event = Event(EventTypeId::UNIT_CHANGED);
+        notifyObservers(event);
         return true;
     }
     this->current_player_id ++;
@@ -211,7 +227,14 @@ bool State::setCurrentPlayer() {
 
 
 //met à jour le nombre de "tour"
-bool State::setDay() {
+bool State::setDay(bool increment) {
+    if(!increment)
+    {
+        if(this->current_player_id==this->player_nbr-1) this->day --;
+        Event event = Event(EventTypeId::UNIT_CHANGED);
+        notifyObservers(event);
+        return true;
+    }
     if(this->current_player_id == 0) this->day ++;
     Event event = Event(EventTypeId::UNIT_CHANGED);
     notifyObservers(event);
