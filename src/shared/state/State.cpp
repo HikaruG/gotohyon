@@ -73,7 +73,7 @@ bool State::addBuilding(shared_ptr<Building> building) {
     return true;
 }
 
-bool State::deleteUnit(state::Unit* deleting_unit) {
+bool State::deleteUnit(state::Unit* deleting_unit, bool keep_track) {
     bool success = false;
     //recherche du play associé à l'unité détruite
     for(int i= 0; i < (int) player_nbr;i++){
@@ -93,7 +93,7 @@ bool State::deleteUnit(state::Unit* deleting_unit) {
 }
 
 
-bool State::deleteBuilding(state::Building* deleting_building) {
+bool State::deleteBuilding(state::Building* deleting_building, bool keep_track) {
     bool success = false;
     //recherche du player associé au batiment détruit
     for(int i= 0; i < (int) player_nbr;i++){
