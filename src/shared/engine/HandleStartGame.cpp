@@ -87,12 +87,10 @@ bool HandleStartGame::undo(state::State &state) {
 
 void HandleStartGame::serialize (Json::Value& out) const{
     out["CommandId"]=1;
+    out["Count"]=this->starters_count;
 }
 
 HandleStartGame* HandleStartGame::deserialize (Json::Value& out){
-    if(out["CommandId"]==1)
-    {
-        auto ptr = new HandleStartGame();//don't forget to destroy it !!!
-        return ptr;
-    }
+    this->starters_count=out.get("Count",0).asInt();
+    return this;
 }

@@ -64,8 +64,12 @@ bool HandleTurn::undo(state::State &state) {
 
 void HandleTurn::serialize (Json::Value& out) const{
     out["CommandId"]=9;
+    out["CurrentPlayerId"]=this->current_player_id;
+    out["CurrentDay"]=this->current_day;
 }
 
 HandleTurn* HandleTurn::deserialize (Json::Value& out){
+    this->current_player_id=out.get("CurrentPlayerId","error").asUInt();
+    this->current_day=out.get("CurrentDay","error").asUInt();
     return this;
 }

@@ -113,5 +113,5 @@ void HandleCanAttack::serialize (Json::Value& out) const{
 
 HandleCanAttack* HandleCanAttack::deserialize (Json::Value& out){
     this->selected_unit=nullptr;
-    //this->selected_unit_id = out.get("selected_unit_id",0).asUInt();
+    this->selected_unit_id = out.get("selected_unit_id",0).asUInt();
 }

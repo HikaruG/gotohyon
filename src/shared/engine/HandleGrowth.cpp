@@ -41,9 +41,13 @@ bool HandleGrowth::undo(state::State &state) {
 
 void HandleGrowth::serialize (Json::Value& out) const{
     out["CommandId"]=3;
+    out["Food"]=this->current_food;
+    out["Gold"]=this->current_gold;
 }
 
 HandleGrowth* HandleGrowth::deserialize (Json::Value& out){
+    this->current_food=out.get("Food",0).asUInt();
+    this->current_gold=out.get("Gold",0).asUInt();
     return this;
 }
 

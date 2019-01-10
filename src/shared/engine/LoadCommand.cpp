@@ -25,8 +25,10 @@ LoadCommand::~LoadCommand() = default;
 
 void LoadCommand::serialize (Json::Value& out) const{
     out["CommandId"]=2;
+    out["String"]=this->file_name;
 }
 
 LoadCommand* LoadCommand::deserialize (Json::Value& out){
+    this->file_name=out.get("String","error").asString();
     return this;
 }

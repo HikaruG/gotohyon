@@ -15,9 +15,10 @@ HandleMovement::HandleMovement(int new_x, int new_y,
                                state::Unit* selected_unit) {
     this->old_x = selected_unit->getPosition().getX();
     this->old_y = selected_unit->getPosition().getY();
-    this->new_x = new_x;
-    this->new_y = new_y;
+    this->new_x = (unsigned int) new_x;
+    this->new_y = (unsigned int) new_y;
     this->selected_unit = selected_unit;
+    this->selected_unit_id = selected_unit->getGame_object_id();
 }
 
 CommandTypeId HandleMovement::getTypeId() const {
@@ -52,21 +53,21 @@ bool HandleMovement::execute(state::State& state) {
                     vector<shared_ptr<state::Building>> ennemy_buildings = list_player[i].get()->getPlayerBuildingList();
 
                     //vérifie si il y a pas une unité ennemie déja présente à cette position
-                    for(int i = 0; i < (int)ennemy_buildings.size(); i++){
+                    for(int j = 0; j < (int)ennemy_buildings.size(); j++){
                         // si une unité est déjà présente, le déplacement devient impossible
-                        if(ennemy_buildings[i].get()->getPosition() == position){
+                        if(ennemy_buildings[j].get()->getPosition() == position){
                             cout << this->selected_unit->getProperty()->getStringType() <<" cannot move there" << endl;
-                            cout << "destroy " << ennemy_buildings[i].get()->getProperty()->getStringType() <<" first" << endl;
+                            cout << "destroy " << ennemy_buildings[j].get()->getProperty()->getStringType() <<" first" << endl;
                             return false;
                         }
                     };
 
                     //vérifie si il n'y a pas un batiment ennemi déjà présent à cette position
-                    for(int i = 0; i < (int)ennemy_units.size(); i++){
+                    for(int j = 0; j < (int)ennemy_units.size(); j++){
                         //si un batiment est déjà présent, le déplacement devient impossible
-                        if(ennemy_units[i].get()->getPosition() == position){
+                        if(ennemy_units[j].get()->getPosition() == position){
                             cout << this->selected_unit->getProperty()->getStringType() <<" cannot move there" << endl;
-                            cout << "destroy " << ennemy_units[i].get()->getProperty()->getStringType() <<" first" << endl;
+                            cout << "destroy " << ennemy_units[j].get()->getProperty()->getStringType() <<" first" << endl;
                             return false;
                         }
                     };
@@ -76,10 +77,10 @@ bool HandleMovement::execute(state::State& state) {
                 else{
                     vector<shared_ptr<state::Unit>>ally_units = list_player[i].get()->getPlayerUnitList();
 
-                    for(int i =0; i < (int)ally_units.size(); i++){
-                        if(ally_units[i].get()->getPosition() == position){
+                    for(int j =0; j < (int)ally_units.size(); j++){
+                        if(ally_units[j].get()->getPosition() == position){
                             cout << this->selected_unit->getProperty()->getStringType() <<" cannot move there" << endl;
-                            cout << "respect " << ally_units[i].get()->getProperty()->getStringType() << endl;
+                            cout << "respect " << ally_units[j].get()->getProperty()->getStringType() << endl;
                             return false;
                         }
                     }
@@ -117,14 +118,18 @@ void HandleMovement::serialize (Json::Value& out) const{
     out["CommandId"]=4;
     out["new_x"]=this->new_x;
     out["new_y"]=this->new_y;
+    out["old_x"]=this->old_x;
+    out["old_y"]=this->old_y;
     out["selected_unit_id"]=this->selected_unit->getGame_object_id();
 }
 
 HandleMovement* HandleMovement::deserialize (Json::Value& out){
     this->selected_unit= nullptr;
-    this->new_x=out.get("new_x",0).asInt();
-    this->new_y=out.get("new_y",0).asInt();
-    //this->selected_unit_id=out.get("selected_unit_id",O).asUInt();
+    this->new_x=out.get("new_x",0).asUInt();
+    this->new_y=out.get("new_y",0).asUInt();
+    this->old_x=out.get("old_x",0).asUInt();
+    this->old_y=out.get("old_y",0).asUInt();
+    this->selected_unit_id=out.get("selected_unit_id",0).asUInt();
 }
 
 

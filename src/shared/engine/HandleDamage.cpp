@@ -74,8 +74,8 @@ bool HandleDamage::undo(state::State &state) {
 HandleDamage* HandleDamage::deserialize (Json::Value& out){
     this->selected_target = nullptr;
     this->selected_unit = nullptr;
-    //this->selected_unit_id = out.get("selected_unit_id").asUInt();
-    //this->selected_target_id = out.get("selected_target_id").asUInt();
+    this->selected_unit_id = out.get("selected_unit_id",0).asUInt();
+    this->selected_target_id = out.get("selected_target_id",0).asUInt();
     return this;
 
 }
