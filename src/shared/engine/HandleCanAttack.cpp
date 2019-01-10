@@ -100,9 +100,11 @@ bool HandleCanAttack::execute(state::State& state ) {
 }
 
 void HandleCanAttack::serialize (Json::Value& out) const{
-
+    out["CommandId"]=5;
+    out["select_unit_id"]=this->selected_unit.get()->getGame_object_id();
 }
 
 HandleCanAttack* HandleCanAttack::deserialize (Json::Value& out){
-
+    this->selected_unit=nullptr;
+    //this->selected_unit_id = out.get("selected_unit_id",0).asUInt();
 }

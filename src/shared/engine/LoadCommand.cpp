@@ -18,9 +18,9 @@ LoadCommand::LoadCommand() = default;
 LoadCommand::~LoadCommand() = default;
 
 void LoadCommand::serialize (Json::Value& out) const{
-
+    out["CommandId"]=2;
 }
 
 LoadCommand* LoadCommand::deserialize (Json::Value& out){
-
+    return this;
 }

@@ -57,9 +57,9 @@ bool HandleTurn::execute(state::State &state) {
 }
 
 void HandleTurn::serialize (Json::Value& out) const{
-
+    out["CommandId"]=9;
 }
 
 HandleTurn* HandleTurn::deserialize (Json::Value& out){
-
+    return this;
 }

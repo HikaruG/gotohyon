@@ -29,11 +29,11 @@ bool HandleGrowth::execute(state::State &state) {
 }
 
 void HandleGrowth::serialize (Json::Value& out) const{
-
+    out["CommandId"]=3;
 }
 
 HandleGrowth* HandleGrowth::deserialize (Json::Value& out){
-
+    return this;
 }
 
 HandleGrowth::HandleGrowth() = default;

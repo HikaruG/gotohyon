@@ -23,9 +23,9 @@ bool HandleSelectedObject::execute(state::State& state) {
 }
 
 void HandleSelectedObject::serialize (Json::Value& out) const{
-
+    out["CommandId"]=8;
 }
 
 HandleSelectedObject* HandleSelectedObject::deserialize (Json::Value& out){
-
+    return this;
 }

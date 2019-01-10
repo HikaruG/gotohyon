@@ -22,9 +22,9 @@ bool HandleEndGame::execute(state::State &state) {
 }
 
 void HandleEndGame::serialize (Json::Value& out) const{
-
+    out["CommandId"]=10;
 }
 
 HandleEndGame* HandleEndGame::deserialize (Json::Value& out){
-
+    return this;
 }

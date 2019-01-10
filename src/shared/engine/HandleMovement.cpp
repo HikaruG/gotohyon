@@ -9,6 +9,8 @@ using namespace engine;
 using namespace std;
 
 
+HandleMovement::HandleMovement()=default;
+
 HandleMovement::HandleMovement(int new_x, int new_y,
                                state::Unit* selected_unit) {
     this->old_x = selected_unit->getPosition().getX();
@@ -112,9 +114,15 @@ HandleMovement::~HandleMovement() {
 }
 
 void HandleMovement::serialize (Json::Value& out) const{
-
+    out["CommandId"]=4;
+    out["new_x"]=this->new_x;
+    out["new_y"]=this->new_y;
+    out["selected_unit_id"]=this->selected_unit->getGame_object_id();
 }
 
 HandleMovement* HandleMovement::deserialize (Json::Value& out){
-
+    this->selected_unit= nullptr;
+    this->new_x=out.get("new_x",0).asInt();
+    this->new_y=out.get("new_y",0).asInt();
+    //this->selected_unit_id=out.get("selected_unit_id",O).asUInt();
 }

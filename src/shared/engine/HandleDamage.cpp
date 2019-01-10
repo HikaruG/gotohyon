@@ -26,7 +26,7 @@ CommandTypeId HandleDamage::getTypeId() const {
 bool HandleDamage::execute(state::State& state) {
     
     state::Position ennemy_position = this->selected_target->getPosition();
-    state::Terrain * terrain = state.getMap().get()->getTerrain(ennemy_position.getX(), ennemy_position.getY()).get();
+    //state::Terrain * terrain = state.getMap().get()->getTerrain(ennemy_position.getX(), ennemy_position.getY()).get();
 
     cout << "player n" << this->selected_unit->getPlayerId() << " s " << this->selected_unit->getProperty()->getStringType() << " attacks ! " <<endl;
     this->selected_target->getProperty()->takeDamage(this->selected_unit->getProperty()->getAttack());
@@ -57,9 +57,16 @@ bool HandleDamage::execute(state::State& state) {
 }
 
 void HandleDamage::serialize (Json::Value& out) const{
-
+    out["CommandId"] = 6;
+    out["selected_unit_id"] = this->selected_unit->getGame_object_id();
+    out["selected_target_id"] = this->selected_target->getGame_object_id();
 }
 
 HandleDamage* HandleDamage::deserialize (Json::Value& out){
+    this->selected_target = nullptr;
+    this->selected_unit = nullptr;
+    //this->selected_unit_id = out.get("selected_unit_id").asUInt();
+    //this->selected_target_id = out.get("selected_target_id").asUInt();
+    return this;
 
 }

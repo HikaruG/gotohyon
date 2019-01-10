@@ -291,12 +291,11 @@ void HandleCreation::serialize (Json::Value& out) const{
 }
 
 HandleCreation* HandleCreation::deserialize (Json::Value& out){
-    if(out["CommandId"]==7)
-    {
-        this->new_x=out.get("new_x",0).asInt();
-        this->new_y=out.get("new_y",0).asInt();
-        this->object_type=out.get("object_type",0).asInt();
-        this->is_static=out.get("is_static",false).asBool();
+    if(out["CommandId"]==7) {
+        this->new_x = out.get("new_x", 0).asUInt();
+        this->new_y = out.get("new_y", 0).asUInt();
+        this->object_type = out.get("object_type", 0).asInt();
+        this->is_static = out.get("is_static", false).asBool();
         return this;
     }
 
