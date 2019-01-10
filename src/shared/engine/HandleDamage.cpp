@@ -3,7 +3,9 @@
 //
 
 #include "HandleDamage.h"
+#include "HandleCreation.h"
 #include <iostream>
+
 
 using namespace engine;
 using namespace std;
@@ -16,10 +18,21 @@ HandleDamage::HandleDamage(state::Unit *selected_unit, state::GameObject *select
     this->selected_unit_id = selected_unit->getGame_object_id();
     this->selected_target = selected_target;
     this->selected_target_id = selected_target->getGame_object_id();
+    this->target_x = selected_target->getPosition().getX();
+    this->target_y = selected_target->getPosition().getY();
+    this->target_hp = selected_target->getProperty()->getHealth();
+    this->target_static = selected_target->getProperty()->isStatic();
+    if(target_static) {
+        state::Building *building_targeted = (state::Building *) selected_target;
+        this->target_type = building_targeted->getBuildingType();
+    }
+    else {
+        state::Unit *unit_targeted = (state::Unit *) selected_target;
+        this->target_type = unit_targeted->getUnitType();
+    }
 }
 
 HandleDamage::~HandleDamage() = default;
-
 
 CommandTypeId HandleDamage::getTypeId() const {
     return CommandTypeId::HANDLE_DAMAGE;
@@ -66,8 +79,16 @@ void HandleDamage::serialize (Json::Value& out) const{
 
 
 bool HandleDamage::undo(state::State &state) {
+    if (!this->selected_target) {
+        this->selected_target = state.getGameObject(selected_target_id).get();
 
-    return true;
+        if (this->selected_target) {
+            this->selected_target->getProperty()->takeDamage(-this->selected_unit->getProperty()->getAttack());
+            return true;
+        } else{
+        }
+    }
+
 }
 
 

@@ -81,6 +81,12 @@ bool HandleStartGame::execute(state::State &state, engine::Engine &engine) {
 
 
 bool HandleStartGame::undo(state::State &state) {
+    for(shared_ptr<GameObject> objects : state.getMap().get()->getListGameObject()){
+        if(objects.get()->getProperty()->isStatic())
+            state.deleteBuilding((Building *) objects.get());
+        else
+            state.deleteUnit((Unit *) objects.get());
+    }
     return true;
 }
 
