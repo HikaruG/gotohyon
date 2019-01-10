@@ -25,6 +25,7 @@ bool test_render();
 bool test_engine();
 bool test_randomAI();
 bool test_heuristicAI();
+bool test_deepAI();
 bool test_input();
 
 
@@ -66,6 +67,12 @@ int main(int argc,char* argv[])
             cout << "test heuristic ai sequence activated . . ." << endl;
             if (test_heuristicAI()) {
                 cout << "test heuristic_ai successful" << endl;
+            }
+        }
+        if( !strcmp(argv[1],"deep_ai") ) {
+            cout << "test deep_ai activated . . ." << endl;
+            if (test_deepAI()) {
+                cout << "test deep_ai successful" << endl;
             }
         }
         if( !strcmp(argv[1],"input") ) {
@@ -146,6 +153,53 @@ bool test_input(){
     return true;
 
 }
+
+bool test_deepAI(){
+
+    shared_ptr<state::State> test_state (new state::State(2,2));
+    cout << "test : new state instance" << endl;
+    Engine test_engine = Engine();
+    cout << "test : new engine instance" << endl;
+    HandleStartGame new_game = HandleStartGame();
+    new_game.execute(*test_state.get(),test_engine);
+    test_engine.execute(* test_state.get());
+    cout << "test : 2 npc gamemode created " << endl;
+
+    //init windows
+    size_t x_window = 1024;
+    size_t y_window = 512;
+
+    sf::Time delayTime = sf::milliseconds(1000);
+    // create the window
+    shared_ptr<sf::RenderWindow> window (new sf::RenderWindow(sf::VideoMode(static_cast<unsigned int>(x_window), static_cast<unsigned int>(y_window)),
+                                                              "test engine",sf::Style::Close));
+
+    render::DrawManager testdraw = render::DrawManager(test_state, window);
+    cout << "test : new drawmanager instance" << endl;
+    test_state.get()->addObserver(&testdraw);
+    test_state.get()->getMap().get()->addObserver(&testdraw);
+
+
+    cout << "test : new DeepAI instance" << endl;
+    ai::DeepAI test_deepAI = ai::DeepAI(0);
+
+
+    //cout << "test : updates... " << endl;
+    testdraw.forceRefresh(test_state);
+
+    while(!test_state.get()->isGameFinished()) {
+        test_engine.execute(* test_state.get());
+        if(test_state.get()->getCurrentPlayer().get()->getIsNpc()) {
+            test_deepAI.run(test_engine, *test_state.get());
+            testdraw.forceRefresh(test_state);
+            sf::sleep(delayTime);
+        }
+
+    }
+
+    return true;
+}
+
 
 bool test_heuristicAI(){
 

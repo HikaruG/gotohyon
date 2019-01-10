@@ -85,7 +85,7 @@ bool HandleDamage::undo(state::State &state) {
         if (this->selected_target) {
             this->selected_target->getProperty()->takeDamage(-this->selected_unit->getProperty()->getAttack());
             return true;
-        } else{
+        } else{// à finir, attendre le keeptrack
         }
     }
 

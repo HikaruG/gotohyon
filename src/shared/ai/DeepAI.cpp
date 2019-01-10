@@ -16,6 +16,7 @@ DeepAI::DeepAI(int random_seed){
     this->attack_point = vector<int>(depth,0);
     this->creation_point = vector<int>(depth,0);
     this->movement_point = vector<int>(depth,0);
+    this->total_point = -9999;
 }
 
 //notre deep AI = un bot ultra aggressif qui réduit le nombre d'unités au max:
@@ -132,6 +133,8 @@ bool update_points(State& state){
 
 bool DeepAI::run(engine::Engine &engine, state::State &state) {
     for(update_count; update_count < depth; update_count ++) {
+        vector<shared_ptr<Command>> current_commands;
+
         //récupération du joueur courant
         Player *current_player = state.getCurrentPlayer().get();
         //récupération de l'avantage actuel du joueur :
@@ -142,12 +145,12 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
         //mise à jour de l'économie
         shared_ptr<engine::HandleGrowth> growth_check(new engine::HandleGrowth(food, gold));
         engine.addCommands(growth_check);
+        current_commands.push_back(growth_check);
+
         unsigned int new_food, new_gold;
         current_player->getRessource(new_food, new_gold);
         cout << "player"<< current_player->getPlayerId() << "'s current gold is " << new_gold << endl;
         cout << "player"<< current_player->getPlayerId() << "'s current food is " << new_food << endl;
-
-
 
         /*** recherche du centre-ville ennemi ***/
         //récupération des villes ennemies
@@ -235,6 +238,9 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                 new_y = old_y + dis_y(randgen);
                 shared_ptr<engine::HandleMovement> movement_farmer(new engine::HandleMovement(new_x, new_y, unit_i));
                 engine.addCommands(movement_farmer);
+                current_commands.push_back(movement_farmer);
+
+
                 //phase de construction:
                 //construit une mine puis un moulin si il n'en possède aucun
                 int building_type = -1;
@@ -304,6 +310,7 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                         shared_ptr<engine::HandleCreation> create_building(
                                 new engine::HandleCreation(new_x, new_y, building_type, true));
                         engine.addCommands(create_building);
+                        current_commands.push_back(create_building);
                     }
                 }
             }
@@ -314,6 +321,7 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                 state.resetInRange(); //s'assure de pas avoir une liste d'unités pré-remplie
                 shared_ptr<engine::HandleCanAttack> canattack_archers(new engine::HandleCanAttack(my_list_unit[i]));
                 engine.addCommands(canattack_archers);
+                current_commands.push_back(canattack_archers);
                 engine.execute(state);
                 if (state.getInRange().size() != 0) {
                     shared_ptr<GameObject> ennemy_unit = state.getInRange()[0];
@@ -327,6 +335,7 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                          << ennemy_unit->getProperty()->getStringType() << endl;
                     shared_ptr<engine::HandleDamage> damage_archer(new engine::HandleDamage(unit_i, ennemy_unit.get()));
                     engine.addCommands(damage_archer);
+                    current_commands.push_back(damage_archer);
                     engine.execute(state); //mutex en multi
                     attack_point[update_count]++;
                 }
@@ -380,6 +389,7 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                     }
                     shared_ptr<engine::HandleMovement> movement_unit(new engine::HandleMovement(new_x, new_y, unit_i));
                     engine.addCommands(movement_unit);
+                    current_commands.push_back(movement_unit);
 
                     //prise en compte des états futurs : partie Deep
                     if (distance_position_DeepAI(new_x, town_x, new_y, town_y) <
@@ -393,6 +403,7 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                 state.resetInRange();
                 shared_ptr<engine::HandleCanAttack> canattack_unit(new engine::HandleCanAttack(my_list_unit[i]));
                 engine.addCommands(canattack_unit);
+                current_commands.push_back(canattack_unit);
                 engine.execute(state);
                 //prise en compte des états futurs : partie Deep
                 if (state.getInRange().size() == 0) {
@@ -417,6 +428,7 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                          << ennemy_unit->getProperty()->getStringType() << endl;
                     shared_ptr<engine::HandleDamage> damage_unit(new engine::HandleDamage(unit_i, ennemy_unit.get()));
                     engine.addCommands(damage_unit);
+                    current_commands.push_back(damage_unit);
                 }
             }
         }
@@ -426,8 +438,8 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
         int ennemy_army_size = ennemy->getPlayerUnitList().size();
         int my_army_size = my_list_unit.size();
         int count_farmers = 0;
-        for (int i = 0; i < (int) my_list_unit.size(); i++) {
-            if (my_list_unit[i].get()->getUnitType() == farmer)
+        for (int farmers = 0; farmers < (int) my_list_unit.size(); farmers++) {
+            if (my_list_unit[farmers].get()->getUnitType() == farmer)
                 count_farmers++;
         }
         //randgen pour les différentes unités offensives: -1 signifie l'unité vide
@@ -455,6 +467,7 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                 shared_ptr<engine::HandleCreation> create_unit(
                         new engine::HandleCreation(pos_x, pos_y, unit_type, false));
                 engine.addCommands(create_unit);
+                current_commands.push_back(create_unit);
             }
                 //barrack : création d'unités offensives
             else if (b.get()->getBuildingType() == state::barrack) {
@@ -467,16 +480,24 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                     ai_farmers *= 0.75;
                 //si il est en manque de ressource, il aura quasiment pas de chances de créer une unité offensive
                 if (food < 200 || gold < 200) {
-                    if (ai_farmers <= 2)
+                    if (ai_farmers <= 2) {
                         engine.addCommands(create_unit);
+                        current_commands.push_back(create_unit);
+                    }
+
                 }
                 //si il possède moyennement de l'argent, il a 1/3 de chances de créer un villageois
                 if (food < 1500 || gold < 1500) {
-                    if (ai_farmers <= 4)
+                    if (ai_farmers <= 4) {
                         engine.addCommands(create_unit);
+                        current_commands.push_back(create_unit);
+                    }
+
                 } else {
-                    if (ai_farmers <= 5)
+                    if (ai_farmers <= 5) {
                         engine.addCommands(create_unit);
+                        current_commands.push_back(create_unit);
+                    }
                 }
             }
         }
@@ -489,6 +510,22 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
         cout << "player" << current_player->getPlayerId() << "'s current food is " << food << endl;
 
         //récupération de la valeur finale du gain pour le deep, puis remet le state à l'état d'avant
+        int accumulated_point = army_advantage[update_count] + attack_point[update_count]
+                                + creation_point[update_count] + movement_point[update_count];
+
+
+        if(accumulated_point > total_point){
+            true_commands.clear();
+            for(int j = 1; j <= current_commands.size(); j++){
+                true_commands.push_back(current_commands[current_commands.size() - j]);
+            }
+        }
+        engine.execute(state); //mutex
+        engine.undo(state);
+    }
+
+    for(int i =0; true_commands.size(); i++){
+        engine.addCommands(true_commands[i]);
     }
 
 

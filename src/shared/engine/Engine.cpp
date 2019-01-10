@@ -89,47 +89,12 @@ bool Engine::undo(state::State& state) {
         return true;
 
     while (executed_commands.size() != 0) {
-    switch (executed_commands.front().get()->getTypeId()) {
-        case HANDLE_STARTGAME:
-            executed_commands.front().get()->undo(state);
-        case HANDLE_GROWTH:
-            executed_commands.front().get()->undo(state);
-            state.getCurrentPlayer().get()->getRessource(food, gold);
-            cout << "player" << state.getCurrentPlayer().get()->getPlayerId() << "'s current gold is " << gold << endl;
-            cout << "player" << state.getCurrentPlayer().get()->getPlayerId() << "'s current food is " << food << endl;
-            break;
-        case HANDLE_MOVEMENT:
-            executed_commands.front();
-            executed_commands.front().get()->undo(state);
-            break;
-        case HANDLE_CANATTACK:
-            executed_commands.front().get()->undo(state);
-            break;
-        case HANDLE_DAMAGE:
-            executed_commands.front().get()->undo(state);
-            break;
-        case HANDLE_CREATION:
-            executed_commands.front().get()->undo(state);
-            state.getCurrentPlayer().get()->getRessource(food, gold);
-            cout << "player" << state.getCurrentPlayer().get()->getPlayerId() << "'s current gold is " << gold << endl;
-            cout << "player" << state.getCurrentPlayer().get()->getPlayerId() << "'s current food is " << food << endl;
-            break;
-        case HANDLE_TURN:
-            if(!executed_commands.front().get()->undo(state))
-                return true;
-            break;
-        case HANDLE_ENDGAME:
-            executed_commands.front().get()->undo(state);
-            executed_commands.clear();
-            return true;
-        default:
-            return false;
-    }
+        executed_commands.front().get()->undo(state);
     pop_front(executed_commands);
     if (list_size != (int)executed_commands.size() + 1)
         return false;
     list_size = executed_commands.size();
-}
+    }
 }
 
 bool Engine::update() {
