@@ -260,3 +260,7 @@ State::~State(){
 std::shared_ptr<GameObject> State::getGameObject(unsigned int game_object_id) {
     return this->game_map.get()->getGameObject(game_object_id);
 }
+
+bool State::reviveGameObject(unsigned int game_object_id) {
+    return this->getMap()->revive(game_object_id);
+}

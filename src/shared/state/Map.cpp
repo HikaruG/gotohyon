@@ -133,3 +133,16 @@ std::shared_ptr<GameObject> Map::getGameObject (unsigned int game_object_id){
     }
     return nullptr;
 }
+
+bool Map::revive(unsigned int game_object_id) {
+    for(unsigned int i=0; i<this->list_dead_game_object.size();i++)
+    {
+        if(list_dead_game_object.at(i).get()->getGame_object_id()==game_object_id)
+        {
+            list_game_object.push_back(this->list_dead_game_object.at(i));
+            list_dead_game_object.erase(list_dead_game_object.begin() + i);
+            return true;
+        }
+    }
+    return false;
+}
