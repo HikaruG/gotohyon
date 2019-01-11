@@ -156,11 +156,11 @@ bool test_input(){
 
 bool test_deepAI(){
 
-    shared_ptr<state::State> test_state (new state::State(2,2));
+    shared_ptr<state::State> test_state (new state::State(3,2));
     cout << "test : new state instance" << endl;
     Engine test_engine = Engine();
     cout << "test : new engine instance" << endl;
-    HandleStartGame new_game = HandleStartGame();
+    HandleStartGame new_game = HandleStartGame(3);
     new_game.execute(*test_state.get(),test_engine);
     test_engine.execute(* test_state.get());
     cout << "test : 2 npc gamemode created " << endl;
@@ -187,14 +187,14 @@ bool test_deepAI(){
     //cout << "test : updates... " << endl;
     testdraw.forceRefresh(test_state);
 
-    while(!test_state.get()->isGameFinished()) {
+    while(window.get()->isOpen()) {
         test_engine.execute(* test_state.get());
         if(test_state.get()->getCurrentPlayer().get()->getIsNpc()) {
             test_deepAI.run(test_engine, *test_state.get());
             testdraw.forceRefresh(test_state);
             sf::sleep(delayTime);
-        }
-
+        } else
+            testdraw.user_interact.userTurn(test_engine,*test_state.get());
     }
 
     return true;
@@ -208,7 +208,7 @@ bool test_heuristicAI(){
     cout << "test : new state instance" << endl;
     Engine test_engine = Engine();
     cout << "test : new engine instance" << endl;
-    HandleStartGame new_game = HandleStartGame();
+    HandleStartGame new_game = HandleStartGame(2);
     new_game.execute(*test_state.get(),test_engine);
     test_engine.execute(* test_state.get());
     cout << "test : 2 npc gamemode created " << endl;
@@ -256,7 +256,7 @@ bool test_randomAI() {
     cout << "test : new state instance" << endl;
     Engine test_engine = Engine();
     cout << "test : new engine instance" << endl;
-    HandleStartGame new_game = HandleStartGame();
+    HandleStartGame new_game = HandleStartGame(2);
     new_game.execute(*test_state.get(),test_engine);
     test_engine.execute(* test_state.get());
     cout << "test : 1  player vs 1 npc gamemode created " << endl;

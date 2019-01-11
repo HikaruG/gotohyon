@@ -11,7 +11,10 @@ using namespace engine;
 using namespace std;
 using namespace state;
 
-HandleStartGame::HandleStartGame() = default;
+HandleStartGame::HandleStartGame(int player_count){
+    this->player_count = player_count;
+    this->starters_count = 3;
+}
 
 HandleStartGame::~HandleStartGame() = default;
 
@@ -49,33 +52,72 @@ bool HandleStartGame::execute(state::State &state, engine::Engine &engine) {
     }
     state.initializeMap(16,16,test_terrain);
 
+    switch(player_count) {
+        case 2: {
+            shared_ptr<engine::HandleCreation> create_starter1(new engine::HandleCreation(7, 5, farmer, false));
+            engine.addCommands(create_starter1);
+            shared_ptr<engine::HandleCreation> create_starter2(new engine::HandleCreation(8, 5, infantry, false));
+            engine.addCommands(create_starter2);
+            shared_ptr<engine::HandleCreation> create_starter3(new engine::HandleCreation(6, 5, archer, false));
+            engine.addCommands(create_starter3);
+            shared_ptr<engine::HandleCreation> create_town1(new engine::HandleCreation(7, 5, town, true));
+            engine.addCommands(create_town1);
+            cout << "test : created starters for the 1st npc" << endl;
 
-    shared_ptr<engine::HandleCreation> create_starter1 (new engine::HandleCreation(7,5,farmer,false));
-    engine.addCommands(create_starter1);
-    shared_ptr<engine::HandleCreation> create_starter2 (new engine::HandleCreation(8,5,infantry,false));
-    engine.addCommands(create_starter2);
-    shared_ptr<engine::HandleCreation> create_starter3 (new engine::HandleCreation(6,5,archer,false));
-    engine.addCommands(create_starter3);
-    shared_ptr<engine::HandleCreation> create_town1 (new engine::HandleCreation(7,5,town,true));
-    engine.addCommands(create_town1);
-    cout << "test : created starters for the 1st npc" << endl;
+            shared_ptr<engine::HandleTurn> end_turn1(new engine::HandleTurn());
+            engine.addCommands(end_turn1);
+            shared_ptr<engine::HandleCreation> create_starter4(new engine::HandleCreation(7, 9, farmer, false));
+            engine.addCommands(create_starter4);
+            shared_ptr<engine::HandleCreation> create_starter5(new engine::HandleCreation(8, 9, infantry, false));
+            engine.addCommands(create_starter5);
+            shared_ptr<engine::HandleCreation> create_starter6(new engine::HandleCreation(6, 9, archer, false));
+            engine.addCommands(create_starter6);
+            shared_ptr<engine::HandleCreation> create_town2(new engine::HandleCreation(7, 9, town, true));
+            engine.addCommands(create_town2);
+            cout << "test : created starters for the 2nd npc" << endl;
+            engine.addCommands(end_turn1);
+            break;
+        }
+        case 3: {
+            shared_ptr<engine::HandleCreation> create3_starter1(new engine::HandleCreation(7, 5, farmer, false));
+            engine.addCommands(create3_starter1);
+            shared_ptr<engine::HandleCreation> create3_starter2(new engine::HandleCreation(8, 5, infantry, false));
+            engine.addCommands(create3_starter2);
+            shared_ptr<engine::HandleCreation> create3_starter3(new engine::HandleCreation(6, 5, archer, false));
+            engine.addCommands(create3_starter3);
+            shared_ptr<engine::HandleCreation> create3_town1(new engine::HandleCreation(7, 5, town, true));
+            engine.addCommands(create3_town1);
+            cout << "test : created starters for the 1st player" << endl;
 
-    shared_ptr<engine::HandleTurn> end_turn1 (new engine::HandleTurn());
-    engine.addCommands(end_turn1);
+            shared_ptr<engine::HandleTurn> end3_turn1(new engine::HandleTurn());
+            engine.addCommands(end3_turn1);
 
+            shared_ptr<engine::HandleCreation> create3_starter4(new engine::HandleCreation(7, 9, farmer, false));
+            engine.addCommands(create3_starter4);
+            shared_ptr<engine::HandleCreation> create3_starter5(new engine::HandleCreation(8, 9, infantry, false));
+            engine.addCommands(create3_starter5);
+            shared_ptr<engine::HandleCreation> create3_starter6(new engine::HandleCreation(6, 9, archer, false));
+            engine.addCommands(create3_starter6);
+            shared_ptr<engine::HandleCreation> create3_town2(new engine::HandleCreation(7, 9, town, true));
+            engine.addCommands(create3_town2);
+            cout << "test : created starters for the 1st npc" << endl;
+            engine.addCommands(end3_turn1);
 
-    shared_ptr<engine::HandleCreation> create_starter4 (new engine::HandleCreation(7,9,farmer,false));
-    engine.addCommands(create_starter4);
-    shared_ptr<engine::HandleCreation> create_starter5 (new engine::HandleCreation(8,9,infantry,false));
-    engine.addCommands(create_starter5);
-    shared_ptr<engine::HandleCreation> create_starter6 (new engine::HandleCreation(6,9,archer,false));
-    engine.addCommands(create_starter6);
-    shared_ptr<engine::HandleCreation> create_town2 (new engine::HandleCreation(7,9,town,true));
-    engine.addCommands(create_town2);
-    cout << "test : created starters for the 2nd npc" << endl;
-
-    engine.addCommands(end_turn1);
-
+            shared_ptr<engine::HandleCreation> create3_starter7(new engine::HandleCreation(4, 7, farmer, false));
+            engine.addCommands(create3_starter7);
+            shared_ptr<engine::HandleCreation> create3_starter8(new engine::HandleCreation(4, 8, infantry, false));
+            engine.addCommands(create3_starter8);
+            shared_ptr<engine::HandleCreation> create3_starter9(new engine::HandleCreation(4, 6, archer, false));
+            engine.addCommands(create3_starter9);
+            shared_ptr<engine::HandleCreation> create3_town3(new engine::HandleCreation(4, 7, town, true));
+            engine.addCommands(create3_town3);
+            cout << "test : created starters for the 2nd npc" << endl;
+            engine.addCommands(end3_turn1);
+            break;
+        }
+        default:
+            return false;
+    }
     return true;
 }
 
