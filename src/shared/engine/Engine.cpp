@@ -18,7 +18,8 @@ void pop_front(vector<shared_ptr<Command>> & v)
     v.erase(v.begin());
 }
 
-Engine::Engine():record(Json::Value(Json::nullValue)) {
+Engine::Engine() {
+    record["commands"] = Json::arrayValue;
 }
 
 Engine::~Engine() {
@@ -81,6 +82,8 @@ bool Engine::execute(state::State & state) {
         if (list_size != (int)list_commands.size() + 1)
             return false;
         list_size = list_commands.size();
+        record["commands"].append(thisCmd);
+        //cout<<"###JSON###\n"<<record<<"\n###END JSON###"<<endl;
     }
 
     return true;

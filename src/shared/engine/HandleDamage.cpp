@@ -79,15 +79,21 @@ void HandleDamage::serialize (Json::Value& out) const{
 
 
 bool HandleDamage::undo(state::State &state) {
+    cout<<"AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH\n"
+          "####################################"<<endl;
     if (!this->selected_target) {
+        cout<<"selected traget is empty"<<endl;
         this->selected_target = state.getGameObject(selected_target_id).get();
     }
     if (this->selected_target) {
+        cout<<"selected target found"<<endl;
         this->selected_target->getProperty()->regenHealth(this->selected_unit->getProperty()->getAttack());
+        cout<<"regenerated : "<<this->selected_unit->getProperty()->getAttack()<<endl;
         return true;
-    } else{// l'unité avait été tué
+    } else{
         if(state.reviveGameObject(selected_unit_id))
         {
+            cout<<"recurence"<<endl;
             return this->undo(state);//cette fois il sera dans getGameObject
         }
         return false;

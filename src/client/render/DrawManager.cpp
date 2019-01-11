@@ -97,7 +97,6 @@ bool DrawManager::setUnit ()
             elem.emplace_back(DrawElement(units_go->getPosition(),units_go->getUnitType()));
         }
     }
-
     unit_layer.updateElements(elem);
     return true;
 }
@@ -151,6 +150,7 @@ bool DrawManager::stateChanged(const state::Event &event) {
     setBuilding();
     setUnit();
      */
+    cout<<"stateChanged, redrawing "<<this_event<<endl;
     updateState(current_state);
     switch(this_event) {
         case 0 : break;
