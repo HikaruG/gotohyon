@@ -533,11 +533,11 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                 true_commands.push_back(current_commands[current_commands.size() - j]);
             }
         }
-        engine.execute(state); //mutex
+        engine.execute(state); //mutexs
         engine.undo(state);
     }
 
-    for(int i =0; true_commands.size(); i++){
+    for(int i =0; i<true_commands.size(); i++){
         engine.addCommands(true_commands[i]);
     }
 

@@ -31,41 +31,51 @@ bool Engine::execute(state::State & state) {
         return true;
 
     while (list_commands.size() != 0) {
+        Json::Value thisCmd;
         switch (list_commands.front().get()->getTypeId()) {
             case HANDLE_STARTGAME:
+                list_commands.front().get()->serialize(thisCmd);
                 list_commands.front().get()->execute(state);
             case HANDLE_GROWTH:
+                list_commands.front().get()->serialize(thisCmd);
                 list_commands.front().get()->execute(state);
                 state.getCurrentPlayer().get()->getRessource(food, gold);
                 cout << "player" << state.getCurrentPlayer().get()->getPlayerId() << "'s current gold is " << gold << endl;
                 cout << "player" << state.getCurrentPlayer().get()->getPlayerId() << "'s current food is " << food << endl;
                 break;
             case HANDLE_MOVEMENT:
+                list_commands.front().get()->serialize(thisCmd);
                 list_commands.front().get()->execute(state);
                 break;
             case HANDLE_CANATTACK:
+                list_commands.front().get()->serialize(thisCmd);
                 list_commands.front().get()->execute(state);
                 break;
             case HANDLE_DAMAGE:
+                list_commands.front().get()->serialize(thisCmd);
                 list_commands.front().get()->execute(state);
                 break;
             case HANDLE_CREATION:
+                list_commands.front().get()->serialize(thisCmd);
                 list_commands.front().get()->execute(state);
                 state.getCurrentPlayer().get()->getRessource(food, gold);
                 cout << "player" << state.getCurrentPlayer().get()->getPlayerId() << "'s current gold is " << gold << endl;
                 cout << "player" << state.getCurrentPlayer().get()->getPlayerId() << "'s current food is " << food << endl;
                 break;
             case HANDLE_TURN:
+                list_commands.front().get()->serialize(thisCmd);
                 if(!list_commands.front().get()->execute(state))
                     return true;
                 break;
             case HANDLE_ENDGAME:
+                list_commands.front().get()->serialize(thisCmd);
                 list_commands.front().get()->execute(state);
                 list_commands.clear();
                 return true;
             default:
                 return false;
         }
+        //add serialised command to array
         executed_commands.push_back(list_commands.front());
         pop_front(list_commands);
         if (list_size != (int)list_commands.size() + 1)
