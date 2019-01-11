@@ -34,7 +34,7 @@ bool HandleGrowth::execute(state::State &state) {
 
 
 bool HandleGrowth::undo(state::State &state) {
-    state.getCurrentPlayer().get()->setRessource(current_food, current_gold);
+    state.getCurrentPlayer().get()->setRessourceNet(current_food, current_gold);
     return true;
 }
 

@@ -136,6 +136,8 @@ bool update_points(State& state){
 bool DeepAI::run(engine::Engine &engine, state::State &state) {
     for(update_count; update_count < depth; update_count ++) {
         engine.cleanExecuted();
+
+        cout << "deepAI thinking ... depth number : " << update_count << endl;
         vector<shared_ptr<Command>> current_commands;
 
         //récupération du joueur courant
@@ -558,6 +560,9 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
         }
         engine.execute(state); //mutexs
         engine.undo(state);
+
+        cout << "deepAI thinking ... depth number : " << update_count <<" finished" << endl;
+
     }
 
 

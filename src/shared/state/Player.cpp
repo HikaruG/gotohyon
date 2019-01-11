@@ -122,6 +122,11 @@ bool Player::setRessource(unsigned int add_gold, unsigned int add_food) {
     return true;
 }
 
+bool Player::setRessourceNet(unsigned int new_food_value, unsigned int new_gold_value) {
+    this->in_food = new_food_value;
+    this->in_gold = new_gold_value;
+}
+
 bool Player::getIsDead() {
     return this->is_dead;
 }
