@@ -30,10 +30,11 @@ bool HandleTurn::execute(state::State &state) {
     if((int)state.getDay() > 0) {
         for (int i = 0; i < (int)state.getListPlayer().size(); i++) {
             if (state.getListPlayer()[i].get()->getIsDead()) {
-                state.getListPlayer().erase(state.getListPlayer().begin() + i - 1);
+                state.killPlayer(state.getListPlayer()[i].get()->getPlayerId());
             }
         }
         if ((int)state.getListPlayer().size() != state.getRemainingPlayers()) {
+            cout << state.getListPlayer().size() << "different than the remaining "<< state.getRemainingPlayers() << endl;
             throw invalid_argument("error deleting a player ");
         }
         else {

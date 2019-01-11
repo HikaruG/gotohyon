@@ -86,19 +86,30 @@ bool HandleDamage::undo(state::State &state) {
         this->selected_target = state.getGameObject(selected_target_id).get();
     }
     if (this->selected_target) {
-        cout<<"selected target found"<<endl;
-        this->selected_target->getProperty()->regenHealth(this->selected_unit->getProperty()->getAttack());
-        cout<<"regenerated : "<<this->selected_unit->getProperty()->getAttack()<<endl;
+        cout<<"selected target found : hp left is "<< selected_target->getProperty()->getHealth() << endl;
+        if(this->selected_target->getProperty()->getHealth() <= 0) {
+            cout<<" reviving " << selected_target->getProperty()->getStringType() << endl;
+            state.reviveGameObject(selected_target_id, selected_target->getPlayerId(), selected_target->getProperty()->isStatic());
+
+            if(this->selected_target->getProperty()->getStringType() == "town"){
+                state.setPlayerAlive(selected_target_id);
+            }
+        }
+        state.getGameObject(selected_target_id)->getProperty()->regenHealth(this->selected_unit->getProperty()->getAttack());
+        cout<<"regenerated dead unit : "<<state.getGameObject(selected_target_id)->getProperty()->getAttack()<<endl;
         return true;
     } else{
-        if(state.reviveGameObject(selected_unit_id))
+        if(state.reviveGameObject(selected_target_id, selected_target->getPlayerId(), selected_target->getProperty()->isStatic()))
         {
-            cout<<"recurence"<<endl;
-            return this->undo(state);//cette fois il sera dans getGameObject
+            this->selected_target = state.getGameObject(selected_target_id).get();
+            state.getGameObject(selected_target_id)->getProperty()->regenHealth(this->selected_unit->getProperty()->getAttack());
+            cout<<"regenerated : "<<this->selected_target->getProperty()->getAttack()<<endl;
+            if(this->selected_target->getProperty()->getStringType() == "town"){
+                state.setPlayerAlive(selected_target_id);
+            }
         }
         return false;
     }
-
 }
 
 

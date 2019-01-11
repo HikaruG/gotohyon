@@ -152,11 +152,6 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
         engine.addCommands(growth_check);
         current_commands.push_back(growth_check);
 
-        unsigned int new_food, new_gold;
-        current_player->getRessource(new_food, new_gold);
-        cout << "player"<< current_player->getPlayerId() << "'s current gold is " << new_gold << endl;
-        cout << "player"<< current_player->getPlayerId() << "'s current food is " << new_food << endl;
-
         /*** recherche du centre-ville ennemi ***/
         //récupération des villes ennemies
         Building *ennemy_town(new Building());
@@ -534,11 +529,6 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
 
         vector<int> army_size = disadvantage(state);
         army_advantage[update_count] = accumulate(army_size.begin(), army_size.end(), 0);
-
-        current_player->getRessource(food, gold);
-        cout << "player" << current_player->getPlayerId() << "'s current gold is " << gold << endl;
-        cout << "player" << current_player->getPlayerId() << "'s current food is " << food << endl;
-
         //récupération de la valeur finale du gain pour le deep, puis remet le state à l'état d'avant
         int accumulated_point = army_advantage[update_count] + attack_point[update_count]
                                 + creation_point[update_count] + movement_point[update_count];
@@ -554,8 +544,8 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
         }
         else if(update_count == 0){
             true_commands.clear();
-            for(int j = 1; j <= current_commands.size(); j++){
-                true_commands.push_back(current_commands[current_commands.size() - j]);
+            for(int j = 0; j < current_commands.size(); j++){
+                true_commands.push_back(current_commands[j]);
             }
         }
         engine.execute(state); //mutexs

@@ -48,6 +48,47 @@ bool State::initializePlayer(unsigned int player_count, unsigned int npc_count) 
     return true;
 }
 
+bool State::killPlayer(unsigned int player_id) {
+    int player_index = -1;
+
+    for(int i = 0; i < list_player.size(); i++) {
+        if (list_player[i].get()->getPlayerId() == player_id) {
+            player_index = i;
+            break;
+        }
+    }
+    if(player_index == -1){
+        cout << "unexpected index for the deleting player" << endl;
+        return false;
+    }
+    int map_list_size = game_map.get()->getListGameObject().size();
+    int j = 0;
+    while(j < map_list_size) {
+        cout << "object no " << j << endl;
+        GameObject *object_i = game_map.get()->getListGameObject()[j].get();
+        cout << "size of the object list " << game_map.get()->getListGameObject().size() << endl;
+        cout << "l'objet " << object_i->getProperty()->getStringType() << " de player id " << object_i->getPlayerId()
+             << " sera peut etre détruit :" << endl;
+        if(object_i->getPlayerId() == player_id){
+            game_map.get()->deleteGameObject(object_i);
+            if(object_i->getProperty()->isStatic())// utile seulement pour le record à l'envers, lors d'un mode de jeu supérieur à 2 players
+                list_player[player_index].get()->deletePlayerBuilding((Building *)object_i);
+            else
+                list_player[player_index].get()->deletePlayerUnit((Unit *)object_i);
+        }
+        else
+            j++;
+        map_list_size = game_map.get()->getListGameObject().size();
+    }
+    if(list_player[player_index].get()->getPlayerUnitList().size())
+        cout << "error, the size of unit list is not 0 but " <<list_player[player_index].get()->getPlayerUnitList().size() << endl;
+    if(list_player[player_index].get()->getPlayerBuildingList().size())
+        cout << "error, the size of building list is not 0 but "<< list_player[player_index].get()->getPlayerBuildingList().size() << endl;
+    list_dead_player.push_back(list_player[player_index]);
+    list_player.erase(list_player.begin() + player_index);
+}
+
+
 bool State::addUnit(shared_ptr<Unit> unit) {
     //stock l'unité crée dans la liste list_game_object de Map
     game_map.get()->addGameObject(unit);
@@ -189,13 +230,28 @@ bool State::setPlayerDead(unsigned int player_id){
     return true;
 }
 
+bool State::setPlayerAlive(unsigned int player_id) {
+    for(shared_ptr<Player> reviving_p : this->list_player){
+        if(player_id == reviving_p.get()->getPlayerId())
+            reviving_p.get()->setIsAlive();
+    }
+    this->remaining_players++;
+    if(!current_player_id == player_nbr)
+        this->current_player_id ++;
+    return true;
+}
+
+bool State::revivePlayer(unsigned int player_id) {
+    return true;
+}
+
 //met à jour l'id de joueur courant après un fin de tour
 bool State::setCurrentPlayerId(bool increment) {
     if(!increment)//hacky stuff to decrement the player id when rolling back without modifying any existing code
     {
         if(this->current_player_id==0)
         {
-            this->current_player_id=this->player_nbr-1;
+            this->current_player_id=this->remaining_players-1;
             Event event = Event(EventTypeId::UNIT_CHANGED);
             notifyObservers(event);
             return true;
@@ -205,7 +261,7 @@ bool State::setCurrentPlayerId(bool increment) {
         notifyObservers(event);
         return true;
     }
-    if(this->current_player_id == this->player_nbr - 1){ //le player_id commence à 0 tandis que le player_nbr commence à 1
+    if(this->current_player_id == this->remaining_players - 1){ //le player_id commence à 0 tandis que le player_nbr commence à 1
         this->current_player_id = 0;
         Event event = Event(EventTypeId::UNIT_CHANGED);
         notifyObservers(event);
@@ -230,7 +286,7 @@ bool State::setCurrentPlayer() {
 bool State::setDay(bool increment) {
     if(!increment)
     {
-        if(this->current_player_id==this->player_nbr-1) this->day --;
+        if(this->current_player_id==this->remaining_players-1) this->day --;
         Event event = Event(EventTypeId::UNIT_CHANGED);
         notifyObservers(event);
         return true;
@@ -261,6 +317,14 @@ std::shared_ptr<GameObject> State::getGameObject(unsigned int game_object_id) {
     return this->game_map.get()->getGameObject(game_object_id);
 }
 
-bool State::reviveGameObject(unsigned int game_object_id) {
-    return this->getMap()->revive(game_object_id);
+bool State::reviveGameObject(unsigned int game_object_id, unsigned int player_id, bool is_static) {
+    this->getMap()->revive(game_object_id);
+    for(shared_ptr<Player> players: list_player){
+        if(players.get()->getPlayerId() == player_id){
+            if(is_static)
+                players.get()->revivePlayerBuilding(game_object_id);
+            else
+                players.get()->revivePlayerUnit(game_object_id);
+        }
+    }
 }

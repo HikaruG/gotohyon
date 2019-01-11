@@ -39,11 +39,13 @@ bool Player::addPlayerBuilding(shared_ptr<Building> building) {
 }
 
 
-bool Player::deletePlayerBuilding(state::Building* deleting_building) {
+bool Player::deletePlayerBuilding(state::Building* deleting_building, bool keep_track) {
     size_t list_size =player_building_list.size();
     for(int i=0; (int)list_size; i++) {
         if(deleting_building->getGame_object_id()==player_building_list[i].get()->getGame_object_id()){
             //détruit le pointeur associé au batiment situé à la position i
+            if(keep_track)
+                    player_dead_building_list.push_back(player_building_list[i]);
             player_building_list.erase(player_building_list.begin() + i);
             break;
         }
@@ -55,16 +57,28 @@ bool Player::deletePlayerBuilding(state::Building* deleting_building) {
     return false;
 }
 
-bool Player::deletePlayerUnit(state::Unit* deleting_unit) {
+bool Player::revivePlayerBuilding(unsigned int game_object_id) {
+    for(int i = 0; i < player_dead_building_list.size(); i++){
+        if(player_dead_building_list[i].get()->getGame_object_id() == game_object_id){
+            player_building_list.push_back(player_dead_building_list[i]);
+            player_dead_building_list.erase(player_dead_building_list.begin() + i);
+            return true;
+        }
+    }
+    return false;
+}
+
+bool Player::deletePlayerUnit(state::Unit* deleting_unit,bool keep_track) {
     size_t list_size = player_unit_list.size();
     for(int i=0; i<(int)player_unit_list.size(); i++) {
         if(deleting_unit->getGame_object_id()==player_unit_list[i].get()->getGame_object_id()){
             //détruit le pointeur associé à l'unité située à la position i
+            if(keep_track)
+                player_dead_unit_list.push_back(player_unit_list[i]);
             player_unit_list.erase(player_unit_list.begin() + i);
             break;
         }
     }
-
     if(list_size == player_unit_list.size() + 1) {
         return true;
     }
@@ -72,6 +86,16 @@ bool Player::deletePlayerUnit(state::Unit* deleting_unit) {
     return false;
 }
 
+bool Player::revivePlayerUnit(unsigned int game_object_id) {
+    for(int i = 0; i < player_dead_unit_list.size(); i++){
+        if(player_dead_unit_list[i].get()->getGame_object_id() == game_object_id){
+            player_unit_list.push_back(player_dead_unit_list[i]);
+            player_dead_unit_list.erase(player_dead_unit_list.begin() + i);
+            return true;
+        }
+    }
+    return false;
+}
 
 bool Player::checkAvailability(){
     for(shared_ptr<Building> b: this->player_building_list){
@@ -133,6 +157,11 @@ bool Player::getIsDead() {
 
 bool Player::setIsDead() {
     this->is_dead = true;
+    return true;
+}
+
+bool Player::setIsAlive() {
+    this->is_dead = false;
     return true;
 }
 

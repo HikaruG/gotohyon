@@ -38,8 +38,8 @@ bool HandleCanAttack::execute(state::State& state ) {
     int distance = 0;
     bool canattack = false;
 
-    vector<shared_ptr<GameObject>> list_ennemies_object;
-    vector<shared_ptr<GameObject>> in_range_list;
+    vector<shared_ptr<GameObject>> list_ennemies_object = {};
+    vector<shared_ptr<GameObject>> in_range_list = {};
 
     // liste des unités/bâtiments des ennemis
     for(int i =0;i < (int)state.getMap().get()->getListGameObject().size(); i++){

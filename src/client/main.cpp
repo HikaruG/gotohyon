@@ -163,7 +163,7 @@ bool test_deepAI(){
     HandleStartGame new_game = HandleStartGame(3);
     new_game.execute(*test_state.get(),test_engine);
     test_engine.execute(* test_state.get());
-    cout << "test : 2 npc gamemode created " << endl;
+    cout << "test : 1 player 2 npcs gamemode created " << endl;
 
     //init windows
     size_t x_window = 1024;
@@ -180,6 +180,7 @@ bool test_deepAI(){
     test_state.get()->getMap().get()->addObserver(&testdraw);
 
 
+    cout << "remaining players " << test_state.get()->getRemainingPlayers() << endl;
     cout << "test : new DeepAI instance" << endl;
     ai::DeepAI test_deepAI = ai::DeepAI(0);
 

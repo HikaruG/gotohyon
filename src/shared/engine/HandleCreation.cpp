@@ -98,9 +98,9 @@ bool HandleCreation::execute(state::State &state) {
 
     Property mine = Property("mine",10,10,50,true,false,0);
     Property farm = Property("farm",10,10,50,true,false,0);
-    Property turret = Property("turret",10,10,150,true,false,0);
-    Property town = Property("town",10,10,400,true,false,0);
-    Property barrack = Property("barrack",10,10,200,true,false,0);
+    Property turret = Property("turret",10,10,15,true,false,0);
+    Property town = Property("town",10,10,10,true,false,0);
+    Property barrack = Property("barrack",10,10,20,true,false,0);
 
     std::vector<Property> buildings = {mine,farm,turret,town, barrack};
     std::vector<Property> units = {farmer,archer,infantry};
