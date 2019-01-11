@@ -439,6 +439,8 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                     attack_point[update_count] += 5;
                 } else {
                     movement_point[update_count] += 3;
+                }
+                if(state.getInRange().size() != 0) {
                     shared_ptr<GameObject> ennemy_unit = state.getInRange()[0];
                     int hp = ennemy_unit.get()->getProperty()->getHealth();
                     for (shared_ptr<GameObject> weakest_ennemy : state.getInRange()) {
@@ -556,21 +558,10 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
     }
 
 
-    cout << "these are the real commands " << endl;
-    cout << "these are the real commands " << endl;
-    cout << "these are the real commands " << endl;
-    cout << "these are the real commands " << endl;
-    cout << "these are the real commands " << endl;
-    cout << "these are the real commands " << endl;
-    cout << "these are the real commands " << endl;
-    cout << "these are the real commands " << endl;
-    cout << "these are the real commands " << endl;
-    cout << "these are the real commands " << endl;
-    cout << "these are the real commands " << endl;
+    cout << "---------------- these are the real commands ----------------" << endl;
     for(int i =0; i<true_commands.size(); i++){
         engine.addCommands(true_commands[i]);
     }
-
 
     //commande de fin de tour; préparation pour le joueur suivant
     shared_ptr<engine::HandleTurn> end_turn (new engine::HandleTurn());

@@ -64,11 +64,7 @@ bool State::killPlayer(unsigned int player_id) {
     int map_list_size = game_map.get()->getListGameObject().size();
     int j = 0;
     while(j < map_list_size) {
-        cout << "object no " << j << endl;
         GameObject *object_i = game_map.get()->getListGameObject()[j].get();
-        cout << "size of the object list " << game_map.get()->getListGameObject().size() << endl;
-        cout << "l'objet " << object_i->getProperty()->getStringType() << " de player id " << object_i->getPlayerId()
-             << " sera peut etre détruit :" << endl;
         if(object_i->getPlayerId() == player_id){
             game_map.get()->deleteGameObject(object_i);
             if(object_i->getProperty()->isStatic())// utile seulement pour le record à l'envers, lors d'un mode de jeu supérieur à 2 players

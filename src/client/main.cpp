@@ -156,11 +156,11 @@ bool test_input(){
 
 bool test_deepAI(){
 
-    shared_ptr<state::State> test_state (new state::State(3,2));
+    shared_ptr<state::State> test_state (new state::State(2,2));
     cout << "test : new state instance" << endl;
     Engine test_engine = Engine();
     cout << "test : new engine instance" << endl;
-    HandleStartGame new_game = HandleStartGame(3);
+    HandleStartGame new_game = HandleStartGame(2);
     new_game.execute(*test_state.get(),test_engine);
     test_engine.execute(* test_state.get());
     cout << "test : 1 player 2 npcs gamemode created " << endl;

@@ -33,8 +33,10 @@ bool HandleTurn::execute(state::State &state) {
                 state.killPlayer(state.getListPlayer()[i].get()->getPlayerId());
             }
         }
+        if(state.isGameFinished()){
+            return true;
+        }
         if ((int)state.getListPlayer().size() != state.getRemainingPlayers()) {
-            cout << state.getListPlayer().size() << "different than the remaining "<< state.getRemainingPlayers() << endl;
             throw invalid_argument("error deleting a player ");
         }
         else {
