@@ -124,7 +124,7 @@ Map::Map() {
 }
 
 std::shared_ptr<GameObject> Map::getGameObject (unsigned int game_object_id){
-    for(int i = 0; i<list_game_object.size();i++)
+    for(unsigned int i = 0; i<list_game_object.size();i++)
     {
         if(list_game_object.at(i).get()->getGame_object_id()==game_object_id)
         {

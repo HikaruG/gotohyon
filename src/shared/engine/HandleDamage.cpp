@@ -81,12 +81,16 @@ void HandleDamage::serialize (Json::Value& out) const{
 bool HandleDamage::undo(state::State &state) {
     if (!this->selected_target) {
         this->selected_target = state.getGameObject(selected_target_id).get();
-
-        if (this->selected_target) {
-            this->selected_target->getProperty()->takeDamage(-this->selected_unit->getProperty()->getAttack());
-            return true;
-        } else{// à finir, attendre le keeptrack
+    }
+    if (this->selected_target) {
+        this->selected_target->getProperty()->regenHealth(this->selected_unit->getProperty()->getAttack());
+        return true;
+    } else{// l'unité avait été tué
+        if(state.reviveGameObject(selected_unit_id))
+        {
+            return this->undo(state);//cette fois il sera dans getGameObject
         }
+        return false;
     }
 
 }
