@@ -135,6 +135,7 @@ bool update_points(State& state){
 
 bool DeepAI::run(engine::Engine &engine, state::State &state) {
     for(update_count; update_count < depth; update_count ++) {
+        engine.cleanExecuted();
         vector<shared_ptr<Command>> current_commands;
 
         //récupération du joueur courant
@@ -147,8 +148,6 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
         //mise à jour de l'économie
         shared_ptr<engine::HandleGrowth> growth_check(new engine::HandleGrowth(food, gold));
         engine.addCommands(growth_check);
-        //11 01 : for debugpurpose
-        engine.execute(state);
         current_commands.push_back(growth_check);
 
         unsigned int new_food, new_gold;
@@ -248,8 +247,6 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                 new_y = old_y + dis_y(randgen);
                 shared_ptr<engine::HandleMovement> movement_farmer(new engine::HandleMovement(new_x, new_y, unit_i));
                 engine.addCommands(movement_farmer);
-                //11 01 : for debugpurpose
-                engine.execute(state);
                 current_commands.push_back(movement_farmer);
                 cout << " player" << unit_i->getPlayerId() << unit_i->getProperty()->getStringType()
                      << "'s current position x : " << unit_i->getPosition().getX() << endl;
@@ -326,8 +323,6 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                         shared_ptr<engine::HandleCreation> create_building(
                                 new engine::HandleCreation(new_x, new_y, building_type, true));
                         engine.addCommands(create_building);
-                        //11 01 : for debugpurpose
-                        engine.execute(state);
                         current_commands.push_back(create_building);
                         unit_i->getProperty()->setAvailability(false);
                     }
@@ -356,8 +351,8 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                     shared_ptr<engine::HandleDamage> damage_archer(new engine::HandleDamage(unit_i, ennemy_unit.get()));
                     engine.addCommands(damage_archer);
                     current_commands.push_back(damage_archer);
-                    engine.execute(state); //mutex en multi
                     attack_point[update_count]++;
+                    continue; //les unités qui ont attaqués deviennent indisponibles donc leur tour est terminé
                 }
 
                 /*** cas général : Infantry || Archer qui n'a pas attaqué ***/
@@ -411,8 +406,6 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                     }
                     shared_ptr<engine::HandleMovement> movement_unit(new engine::HandleMovement(new_x, new_y, unit_i));
                     engine.addCommands(movement_unit);
-                    //11 01 : for debugpurpose
-                    engine.execute(state);
                     current_commands.push_back(movement_unit);
 
                     //prise en compte des états futurs : partie Deep
@@ -463,8 +456,6 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                          << ennemy_unit->getProperty()->getStringType() << endl;
                     shared_ptr<engine::HandleDamage> damage_unit(new engine::HandleDamage(unit_i, ennemy_unit.get()));
                     engine.addCommands(damage_unit);
-                    //11 01 : for debugpurpose
-                    engine.execute(state);
                     current_commands.push_back(damage_unit);
                 }
             }
@@ -504,8 +495,6 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                 shared_ptr<engine::HandleCreation> create_unit(
                         new engine::HandleCreation(pos_x, pos_y, unit_type, false));
                 engine.addCommands(create_unit);
-                //11 01 : for debugpurpose
-                engine.execute(state);
                 current_commands.push_back(create_unit);
             }
                 //barrack : création d'unités offensives
@@ -521,8 +510,6 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                 if (food < 200 || gold < 200) {
                     if (ai_farmers <= 2) {
                         engine.addCommands(create_unit);
-                        //11 01 : for debugpurpose
-                        engine.execute(state);
                         current_commands.push_back(create_unit);
                     }
 
@@ -531,16 +518,12 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                 if (food < 1500 || gold < 1500) {
                     if (ai_farmers <= 4) {
                         engine.addCommands(create_unit);
-                        //11 01 : for debugpurpose
-                        engine.execute(state);
                         current_commands.push_back(create_unit);
                     }
 
                 } else {
                     if (ai_farmers <= 5) {
                         engine.addCommands(create_unit);
-                        //11 01 : for debugpurpose
-                        engine.execute(state);
                         current_commands.push_back(create_unit);
                     }
                 }
@@ -561,11 +544,11 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
         cout << "accumulated point = " << accumulated_point << endl;
 
         if(accumulated_point > total_point){
-            total_point = accumulated_point;
             true_commands.clear();
             for(int j = 1; j <= current_commands.size(); j++){
                 true_commands.push_back(current_commands[current_commands.size() - j]);
             }
+            total_point = accumulated_point;
         }
         else if(update_count == 0){
             true_commands.clear();
@@ -574,9 +557,21 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
             }
         }
         engine.execute(state); //mutexs
-        //engine.undo(state);
+        engine.undo(state);
     }
 
+
+    cout << "these are the real commands " << endl;
+    cout << "these are the real commands " << endl;
+    cout << "these are the real commands " << endl;
+    cout << "these are the real commands " << endl;
+    cout << "these are the real commands " << endl;
+    cout << "these are the real commands " << endl;
+    cout << "these are the real commands " << endl;
+    cout << "these are the real commands " << endl;
+    cout << "these are the real commands " << endl;
+    cout << "these are the real commands " << endl;
+    cout << "these are the real commands " << endl;
     for(int i =0; i<true_commands.size(); i++){
         engine.addCommands(true_commands[i]);
     }
@@ -585,6 +580,7 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
     //commande de fin de tour; préparation pour le joueur suivant
     shared_ptr<engine::HandleTurn> end_turn (new engine::HandleTurn());
     engine.addCommands(end_turn);
+    this->update_count = 0;
     return true;
 }
 

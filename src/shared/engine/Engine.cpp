@@ -107,6 +107,10 @@ bool Engine::undo(state::State& state) {
     }
 }
 
+bool Engine::cleanExecuted() {
+    this->executed_commands.clear();
+}
+
 bool Engine::update() {
     return true;
 }
