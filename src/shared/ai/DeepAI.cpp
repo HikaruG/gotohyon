@@ -147,6 +147,8 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
         //mise à jour de l'économie
         shared_ptr<engine::HandleGrowth> growth_check(new engine::HandleGrowth(food, gold));
         engine.addCommands(growth_check);
+        //11 01 : for debugpurpose
+        engine.execute(state);
         current_commands.push_back(growth_check);
 
         unsigned int new_food, new_gold;
@@ -223,15 +225,21 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
         /*** AI pour les unités ***/
         for (int i = 0; i < (int) my_list_unit.size(); i++) {
             Unit *unit_i = my_list_unit[i].get();
+            cout << "l'unité choisie est 1 " << unit_i->getProperty()->getStringType() << endl;
 
             /*** cas d'un farmeur : il n'attaque pas, ne peut que construire***/
             if (unit_i->getUnitType() == farmer) {
+                cout << "l'unité choisie est un farmer" << endl;
                 //phase de déplacement:
                 //son déplacement est pour le moment aléatoire, l'important étant sa phase de construction
                 int distance_x, distance_y;
                 state::Position position_unit = unit_i->getPosition();
                 old_y = (int) position_unit.getY();
                 old_x = (int) position_unit.getX();
+                cout << " player" << unit_i->getPlayerId() << unit_i->getProperty()->getStringType()
+                     << "'s current position x : " << old_x << endl;
+                cout << " player" << unit_i->getPlayerId() << unit_i->getProperty()->getStringType()
+                     << "'s current position y : " << old_y << endl;
                 distance_x = unit_i->getMovementRange();
                 std::uniform_int_distribution<int> dis_x(-distance_x, distance_x);
                 new_x = old_x + dis_x(randgen);
@@ -240,7 +248,13 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                 new_y = old_y + dis_y(randgen);
                 shared_ptr<engine::HandleMovement> movement_farmer(new engine::HandleMovement(new_x, new_y, unit_i));
                 engine.addCommands(movement_farmer);
+                //11 01 : for debugpurpose
+                engine.execute(state);
                 current_commands.push_back(movement_farmer);
+                cout << " player" << unit_i->getPlayerId() << unit_i->getProperty()->getStringType()
+                     << "'s current position x : " << unit_i->getPosition().getX() << endl;
+                cout << " player" << unit_i->getPlayerId() << unit_i->getProperty()->getStringType()
+                     << "'s current position y : " << unit_i->getPosition().getY()<< endl;
 
 
                 //phase de construction:
@@ -312,14 +326,17 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                         shared_ptr<engine::HandleCreation> create_building(
                                 new engine::HandleCreation(new_x, new_y, building_type, true));
                         engine.addCommands(create_building);
+                        //11 01 : for debugpurpose
+                        engine.execute(state);
                         current_commands.push_back(create_building);
                         unit_i->getProperty()->setAvailability(false);
                     }
                 }
             }
 
-            /*** cas d'un archer: il attaque à distance, sinon il se déplace et attaque***/
-            if (unit_i->getUnitType() == archer) {
+            /*** cas d'une unité offensive: elle attaque sans bouger si elle peut, sinon elle se déplace puis attaque***/
+            else {
+                cout << "l'unité choisie est soit un archer soit une infanterie" << endl;
                 //attaque à distance
                 state.resetInRange(); //s'assure de pas avoir une liste d'unités pré-remplie
                 shared_ptr<engine::HandleCanAttack> canattack_archers(new engine::HandleCanAttack(my_list_unit[i]));
@@ -342,9 +359,8 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                     engine.execute(state); //mutex en multi
                     attack_point[update_count]++;
                 }
-            }
-            /*** cas général : Infantry || Archer qui n'a pas attaqué ***/
-            if (unit_i->getProperty()->getAvailability()) {
+
+                /*** cas général : Infantry || Archer qui n'a pas attaqué ***/
                 //phase de déplacement:
                 int range = unit_i->getMovementRange();
                 state::Position position_unit = unit_i->getPosition();
@@ -357,16 +373,19 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                 //tant que l'unité peut se déplacer il se dirige vers le centre-ville ennemi de manière aléatoire
                 while (range > 0) {
                     //  début de l'implémentation des déplacements
-                    int distance_x, distance_y;
+                    int distance_x = 0, distance_y = 0, mvt_length = 0, mvt_direction = 0;
                     state::Position position_unit = unit_i->getPosition();
                     old_y = (int) position_unit.getY();
                     old_x = (int) position_unit.getX();
                     distance_x = unit_i->getMovementRange();
-                    std::uniform_int_distribution<int> dis_x(-distance_x, distance_x);
-                    new_x = old_x + dis_x(randgen);
-                    distance_y = distance_x - abs(old_x - new_x);
-                    std::uniform_int_distribution<int> dis_y(-distance_y, distance_y);
-                    new_y = old_y + dis_y(randgen);
+                    std::uniform_int_distribution<int> dis_length(-1, 1);
+                    mvt_length = dis_length(randgen);
+                    std::uniform_int_distribution<int> dis_direction(0, 1);
+                    mvt_direction = dis_direction(randgen);
+                    if(mvt_direction)
+                        new_y = old_y + mvt_length;
+                    else
+                        new_x = old_x + mvt_length;
 
                     //si il y a collision, l'objet le dévie (en x si le déplacement initial était en y, et en y si le mvt initial était en x)
                     if (collision_object_DeepAI(new_x, new_y, unit_i, state)) {
@@ -374,24 +393,26 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                         int dogde = dis_side(randgen);
                         if (dogde < 5) {
                             if (new_x == old_x) { //le déplacement initial était celui en y:
-                                new_x -= 1;
+                                new_x -= mvt_length;
                                 new_y = old_y; //le déplacement problématique est annulé
                             } else { //le déplacement intial était celui en x:
-                                new_y -= 1;
+                                new_y -= mvt_length;
                                 new_x = old_x; //le déplacement problématique est annulé
                             }
                         } else {
                             if (new_x == old_x) { //le déplacement initial était celui en y:
-                                new_x += 1;
+                                new_x += mvt_length;
                                 new_y = old_y; //le déplacement problématique est annulé
                             } else { //le déplacement intial était celui en x:
-                                new_y += 1;
+                                new_y += mvt_length;
                                 new_x = old_x; //le déplacement problématique est annulé
                             }
                         }
                     }
                     shared_ptr<engine::HandleMovement> movement_unit(new engine::HandleMovement(new_x, new_y, unit_i));
                     engine.addCommands(movement_unit);
+                    //11 01 : for debugpurpose
+                    engine.execute(state);
                     current_commands.push_back(movement_unit);
 
                     //prise en compte des états futurs : partie Deep
@@ -401,8 +422,17 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                     else
                         movement_point[update_count]--;
 
-                    range--;
+                    range = range - abs(mvt_length);
+                    if (range < 0)
+                        cout << "wtf c'est pas possible " << range << endl;
+
+                    cout << " player" << unit_i->getPlayerId() << unit_i->getProperty()->getStringType()
+                         << "'s current position x : " << unit_i->getPosition().getX() << endl;
+                    cout << " player" << unit_i->getPlayerId() << unit_i->getProperty()->getStringType()
+                         << "'s current position y : " << unit_i->getPosition().getY()<< endl;
+
                 }
+
 
                 /***  début de l'implémentation des attaques pour les unités en général  ***/
                 state.resetInRange();
@@ -433,6 +463,8 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                          << ennemy_unit->getProperty()->getStringType() << endl;
                     shared_ptr<engine::HandleDamage> damage_unit(new engine::HandleDamage(unit_i, ennemy_unit.get()));
                     engine.addCommands(damage_unit);
+                    //11 01 : for debugpurpose
+                    engine.execute(state);
                     current_commands.push_back(damage_unit);
                 }
             }
@@ -472,6 +504,8 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                 shared_ptr<engine::HandleCreation> create_unit(
                         new engine::HandleCreation(pos_x, pos_y, unit_type, false));
                 engine.addCommands(create_unit);
+                //11 01 : for debugpurpose
+                engine.execute(state);
                 current_commands.push_back(create_unit);
             }
                 //barrack : création d'unités offensives
@@ -487,6 +521,8 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                 if (food < 200 || gold < 200) {
                     if (ai_farmers <= 2) {
                         engine.addCommands(create_unit);
+                        //11 01 : for debugpurpose
+                        engine.execute(state);
                         current_commands.push_back(create_unit);
                     }
 
@@ -495,12 +531,16 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                 if (food < 1500 || gold < 1500) {
                     if (ai_farmers <= 4) {
                         engine.addCommands(create_unit);
+                        //11 01 : for debugpurpose
+                        engine.execute(state);
                         current_commands.push_back(create_unit);
                     }
 
                 } else {
                     if (ai_farmers <= 5) {
                         engine.addCommands(create_unit);
+                        //11 01 : for debugpurpose
+                        engine.execute(state);
                         current_commands.push_back(create_unit);
                     }
                 }
@@ -534,7 +574,7 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
             }
         }
         engine.execute(state); //mutexs
-        engine.undo(state);
+        //engine.undo(state);
     }
 
     for(int i =0; i<true_commands.size(); i++){
