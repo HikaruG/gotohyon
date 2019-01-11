@@ -139,6 +139,7 @@ HandleMovement* HandleMovement::deserialize (Json::Value& out){
     this->old_x=out.get("old_x",0).asUInt();
     this->old_y=out.get("old_y",0).asUInt();
     this->selected_unit_id=out.get("selected_unit_id",0).asUInt();
+    return this;
 }
 
 
