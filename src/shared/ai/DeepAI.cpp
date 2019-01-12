@@ -82,6 +82,55 @@ bool collision_object_DeepAI(int pos_x, int pos_y, Unit* unit, State& state){
     return false;
 }
 
+Building * search_target_town(State& state){
+    /*** recherche du centre-ville ennemi ***/
+    //récupération des villes ennemies
+    Building *ennemy_town(new Building());
+    Building *my_town(new Building());
+    vector<Building *> towns;
+    int my_x = -1, my_y = -1; //coord de la ville du joueur
+    unsigned int town_playerid; //id du joueur possédant la ville que le joueur courant attaque
+
+    for (shared_ptr<Player> players : state.getListPlayer()) {
+        if (players.get()->getPlayerId() != state.getCurrentPlayer().get()->getPlayerId()) {
+            for (int i = 0; i < (int) players.get()->getPlayerBuildingList().size(); i++) {
+                ennemy_town = players.get()->getPlayerBuildingList()[i].get();
+                if (ennemy_town->getBuildingType() == town) {
+                    towns.push_back(ennemy_town);
+                    break;
+                }
+            }
+        } else { //liste de buildings du joueur courant
+            for (int i = 0; i < (int) players.get()->getPlayerBuildingList().size(); i++) {
+                my_town = players.get()->getPlayerBuildingList()[i].get();
+                if (my_town->getBuildingType() == town) {
+                    my_x = my_town->getPosition().getX();
+                    my_y = my_town->getPosition().getY();
+                    break;
+                }
+            }
+        }
+    }
+    int town_x, town_y;
+    int town_distance = 4000;
+    //récupération de la ville ennemie la plus proche
+    for (Building *closest_town : towns) {
+        int ennemy_x = closest_town->getPosition().getX();
+        int ennemy_y = closest_town->getPosition().getY();
+        if (town_distance > distance_position_DeepAI(ennemy_x, my_x, ennemy_y, my_y)) {
+            town_x = ennemy_x;
+            town_y = ennemy_y;
+            town_distance = distance_position_DeepAI(town_x, my_x, town_y, my_y);
+            ennemy_town = closest_town;
+        }
+    }
+    if (town_distance == 4000) {
+        cout << "error, no ennemy town found !" << endl;
+        return nullptr;
+    }
+    return ennemy_town;
+}
+
 
 
 vector<int> disadvantage(State& state){
@@ -145,7 +194,9 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
     for(update_count; update_count < depth; update_count ++) {
         engine.cleanExecuted();
 
-        cout << "deepAI thinking ... depth number : " << update_count << endl;
+        cout << "---------------- deepAI thinking ----------------" << endl;
+
+        cout << "depth number : " << update_count << endl;
         vector<shared_ptr<Command>> current_commands;
 
         //récupération du joueur courant
@@ -160,51 +211,12 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
         engine.addCommands(growth_check);
         current_commands.push_back(growth_check);
 
-        /*** recherche du centre-ville ennemi ***/
-        //récupération des villes ennemies
-        Building *ennemy_town(new Building());
-        Building *my_town(new Building());
-        vector<Building *> towns;
-        int my_x = -1, my_y = -1; //coord de la ville du joueur
-        unsigned int town_playerid; //id du joueur possédant la ville que le joueur courant attaque
+        //récupération du joueur à attaquer
+        Building * ennemy_town = search_target_town(state);
+        Player *ennemy = state.getPlayer(ennemy_town->getPlayerId()).get();
+        if(!ennemy)
+            throw invalid_argument(" can't find the ennemy ! aborting");
 
-        for (shared_ptr<Player> players : state.getListPlayer()) {
-            if (players.get()->getPlayerId() != current_player->getPlayerId()) {
-                for (int i = 0; i < (int) players.get()->getPlayerBuildingList().size(); i++) {
-                    ennemy_town = players.get()->getPlayerBuildingList()[i].get();
-                    if (ennemy_town->getBuildingType() == town) {
-                        towns.push_back(ennemy_town);
-                        break;
-                    }
-                }
-            } else { //liste de buildings du joueur courant
-                for (int i = 0; i < (int) players.get()->getPlayerBuildingList().size(); i++) {
-                    my_town = players.get()->getPlayerBuildingList()[i].get();
-                    if (my_town->getBuildingType() == town) {
-                        my_x = my_town->getPosition().getX();
-                        my_y = my_town->getPosition().getY();
-                        break;
-                    }
-                }
-            }
-        }
-        int town_x, town_y;
-        int town_distance = 4000;
-        //récupération de la ville ennemie la plus proche
-        for (Building *closest_town : towns) {
-            int ennemy_x = closest_town->getPosition().getX();
-            int ennemy_y = closest_town->getPosition().getY();
-            if (town_distance > distance_position_DeepAI(ennemy_x, my_x, ennemy_y, my_y)) {
-                town_playerid = closest_town->getPlayerId();
-                town_x = ennemy_x;
-                town_y = ennemy_y;
-                town_distance = distance_position_DeepAI(town_x, my_x, town_y, my_y);
-            }
-        }
-        if (town_distance == 4000)
-            cout << "error, no ennemy town found !" << endl;
-        cout << "ennemy player id is : " << town_playerid << endl;
-        Player *ennemy = state.getListPlayer()[town_playerid].get();
 
         //récupération de la liste des bâtiments du joueur courant
         vector<shared_ptr<Building>> my_list_building = current_player->getPlayerBuildingList();
@@ -229,21 +241,16 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
         /*** AI pour les unités ***/
         for (int i = 0; i < (int) my_list_unit.size(); i++) {
             Unit *unit_i = my_list_unit[i].get();
-            cout << "l'unité choisie est 1 " << unit_i->getProperty()->getStringType() << endl;
+            cout << "- selected unit is " << unit_i->getProperty()->getStringType() << endl;
 
             /*** cas d'un farmeur : il n'attaque pas, ne peut que construire***/
             if (unit_i->getUnitType() == farmer) {
-                cout << "l'unité choisie est un farmer" << endl;
                 //phase de déplacement:
                 //son déplacement est pour le moment aléatoire, l'important étant sa phase de construction
                 int distance_x, distance_y;
                 state::Position position_unit = unit_i->getPosition();
                 old_y = (int) position_unit.getY();
                 old_x = (int) position_unit.getX();
-                cout << " player" << unit_i->getPlayerId() << unit_i->getProperty()->getStringType()
-                     << "'s current position x : " << old_x << endl;
-                cout << " player" << unit_i->getPlayerId() << unit_i->getProperty()->getStringType()
-                     << "'s current position y : " << old_y << endl;
                 distance_x = unit_i->getMovementRange();
                 std::uniform_int_distribution<int> dis_x(-distance_x, distance_x);
                 new_x = old_x + dis_x(randgen);
@@ -253,10 +260,6 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                 shared_ptr<engine::HandleMovement> movement_farmer(new engine::HandleMovement(new_x, new_y, unit_i));
                 engine.addCommands(movement_farmer);
                 current_commands.push_back(movement_farmer);
-                cout << " player" << unit_i->getPlayerId() << unit_i->getProperty()->getStringType()
-                     << "'s current position x : " << unit_i->getPosition().getX() << endl;
-                cout << " player" << unit_i->getPlayerId() << unit_i->getProperty()->getStringType()
-                     << "'s current position y : " << unit_i->getPosition().getY()<< endl;
 
 
                 //phase de construction:
@@ -323,7 +326,6 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                 }
                 for (shared_ptr<GameObject> obstacle: my_list_building) {
                     if (obstacle.get()->getPosition() == unit_i->getPosition()) {
-                        //cout<< "cannot build here, already a constructed building present!" <<endl;
                     } else {
                         shared_ptr<engine::HandleCreation> create_building(
                                 new engine::HandleCreation(new_x, new_y, building_type, true));
@@ -336,7 +338,6 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
 
             /*** cas d'une unité offensive: elle attaque sans bouger si elle peut, sinon elle se déplace puis attaque***/
             else {
-                cout << "l'unité choisie est soit un archer soit une infanterie" << endl;
                 //attaque à distance
                 state.resetInRange(); //s'assure de pas avoir une liste d'unités pré-remplie
                 shared_ptr<engine::HandleCanAttack> canattack_archers(new engine::HandleCanAttack(my_list_unit[i]));
@@ -345,6 +346,7 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                 engine.execute(state);
                 if (state.getInRange().size() != 0) {
                     shared_ptr<GameObject> ennemy_unit = state.getInRange()[0];
+                    string ennemy_string_type =  ennemy_unit->getProperty()->getStringType();
                     int hp = ennemy_unit.get()->getProperty()->getHealth();
                     for (shared_ptr<GameObject> weakest_ennemy : state.getInRange()) {
                         if (hp > weakest_ennemy.get()->getProperty()->getHealth()) {
@@ -352,11 +354,21 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                         }
                     }
                     cout << "the chosen ennemy unit is : " << ennemy_unit->getPlayerId()
-                         << ennemy_unit->getProperty()->getStringType() << endl;
+                         << ennemy_string_type << endl;
+                    attack_point[update_count] += 2;
+                    if(ennemy_unit.get()->getProperty()->isStatic()) {
+                        attack_point[update_count]+= 3;
+                        if(ennemy_string_type == "town")
+                            attack_point[update_count] += 5;
+                    }
                     shared_ptr<engine::HandleDamage> damage_archer(new engine::HandleDamage(unit_i, ennemy_unit.get()));
                     engine.addCommands(damage_archer);
                     current_commands.push_back(damage_archer);
-                    attack_point[update_count]++;
+                    if(!ennemy_unit) {
+                        if (ennemy_string_type == "town")
+                            attack_point[update_count] += 40;
+                        attack_point[update_count] += 10;
+                    }
                     continue; //les unités qui ont attaqués deviennent indisponibles donc leur tour est terminé
                 }
 
@@ -366,10 +378,6 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                 state::Position position_unit = unit_i->getPosition();
                 old_y = (int) position_unit.getY();
                 old_x = (int) position_unit.getX();
-                cout << " player" << unit_i->getPlayerId() << unit_i->getProperty()->getStringType()
-                     << "'s current position x : " << old_x << endl;
-                cout << " player" << unit_i->getPlayerId() << unit_i->getProperty()->getStringType()
-                     << "'s current position y : " << old_y << endl;
                 //tant que l'unité peut se déplacer il se dirige vers le centre-ville ennemi de manière aléatoire
                 while (range > 0) {
                     //  début de l'implémentation des déplacements
@@ -414,8 +422,8 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                     current_commands.push_back(movement_unit);
 
                     //prise en compte des états futurs : partie Deep
-                    if (distance_position_DeepAI(new_x, town_x, new_y, town_y) <
-                        distance_position_DeepAI(old_x, town_x, old_y, town_y))
+                    if (distance_position_DeepAI(new_x, ennemy_town->getPosition().getX(), new_y, ennemy_town->getPosition().getY()) <
+                        distance_position_DeepAI(old_x, ennemy_town->getPosition().getX(), old_y, ennemy_town->getPosition().getY()))
                         movement_point[update_count]++;
                     else
                         movement_point[update_count]--;
@@ -423,12 +431,6 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                     range = range - abs(mvt_length);
                     if (range < 0)
                         cout << "wtf c'est pas possible " << range << endl;
-
-                    cout << " player" << unit_i->getPlayerId() << unit_i->getProperty()->getStringType()
-                         << "'s current position x : " << unit_i->getPosition().getX() << endl;
-                    cout << " player" << unit_i->getPlayerId() << unit_i->getProperty()->getStringType()
-                         << "'s current position y : " << unit_i->getPosition().getY()<< endl;
-
                 }
 
 
@@ -441,10 +443,8 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                 //prise en compte des états futurs : partie Deep
                 if (state.getInRange().size() == 0) {
                     movement_point[update_count]--;
-                    attack_point[update_count] -= 3;
                 } else if (state.getInRange().size() == 1) {
-                    movement_point[update_count]++;
-                    attack_point[update_count] += 5;
+                    movement_point[update_count]+= 5;
                 } else {
                     movement_point[update_count] += 3;
                 }
@@ -456,15 +456,19 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                             ennemy_unit = weakest_ennemy;
                         }
                     }
-                    if (ennemy_unit.get()->getProperty()->isStatic()) {
-                        movement_point[update_count] += 7;
+                    attack_point[update_count] += 2;
+                    if(ennemy_unit.get()->getProperty()->isStatic()) {
+                        attack_point[update_count]+= 3;
+                        if(ennemy_unit.get()->getProperty()->getStringType() == "town")
+                            attack_point[update_count] += 5;
                     }
                     cout << "the chosen ennemy unit is : " << ennemy_unit->getPlayerId()
                          << ennemy_unit->getProperty()->getStringType() << endl;
                     shared_ptr<engine::HandleDamage> damage_unit(new engine::HandleDamage(unit_i, ennemy_unit.get()));
                     engine.addCommands(damage_unit);
                     current_commands.push_back(damage_unit);
-                }
+                } else
+                    attack_point[update_count]-= 2;
             }
         }
 
@@ -561,13 +565,11 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
         }
         engine.execute(state); //mutexs
         engine.undo(state);
-
-        cout << "deepAI thinking ... depth number : " << update_count <<" finished" << endl;
-
+        cout << "depth number : " << update_count << " finished"<< endl;
     }
 
 
-    cout << "---------------- these are the real commands ----------------" << endl;
+    cout << "---------------- DeepAI found the best solution ! ----------------" << endl;
     cout << "The chosen branch is the branch number : " << best_state << endl;
     cout << "with a score of : " << total_point << endl;
     for(int i =0; i<true_commands.size(); i++){

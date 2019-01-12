@@ -164,7 +164,7 @@ bool test_deepAI(){
     new_game.execute(*test_state.get(),test_engine);
     test_engine.execute(* test_state.get());
     cout << "test : 1 player 2 npcs gamemode created " << endl;
-
+    
     //init windows
     size_t x_window = 1024;
     size_t y_window = 512;

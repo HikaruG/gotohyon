@@ -60,8 +60,6 @@ bool Engine::execute(state::State & state) {
                 list_commands.front().get()->serialize(thisCmd);
                 list_commands.front().get()->execute(state);
                 state.getCurrentPlayer().get()->getRessource(food, gold);
-                cout << "player" << state.getCurrentPlayer().get()->getPlayerId() << "'s current gold is " << gold << endl;
-                cout << "player" << state.getCurrentPlayer().get()->getPlayerId() << "'s current food is " << food << endl;
                 break;
             case HANDLE_TURN:
                 list_commands.front().get()->serialize(thisCmd);
@@ -80,7 +78,7 @@ bool Engine::execute(state::State & state) {
         executed_commands.push_back(list_commands.front());
         pop_front(list_commands);
         if (list_size != (int)list_commands.size() + 1)
-            throw invalid_argument(" error executingthe command, aborting !");
+            throw invalid_argument(" error executing the command, aborting !");
         list_size = list_commands.size();
         record["commands"].append(thisCmd);
         //cout<<"###JSON###\n"<<record<<"\n###END JSON###"<<endl;
@@ -96,16 +94,19 @@ bool Engine::addCommands(shared_ptr<Command> command)
 }
 
 bool Engine::undo(state::State& state) {
+    cout << "---------------- deepAI thinking twice ----------------" << endl;
+    cout << "----------------       rollback        ----------------" << endl;
     int list_size = executed_commands.size();
     unsigned int food, gold;
     if (list_size == 0)
         return true;
 
     while (executed_commands.size() != 0) {
-        executed_commands.front().get()->undo(state);
+        if(!executed_commands.front().get()->undo(state))
+            return false;
     pop_front(executed_commands);
     if (list_size != (int)executed_commands.size() + 1)
-        return false;
+        throw invalid_argument(" error undo-ing the command, aborting !");
     list_size = executed_commands.size();
     }
 }

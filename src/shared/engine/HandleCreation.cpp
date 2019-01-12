@@ -96,10 +96,10 @@ bool HandleCreation::execute(state::State &state) {
     Property infantry = Property("infantry",10,20,120,false,false,1);
     Property archer = Property("archer",10,10,100,false,false,2);
 
-    Property mine = Property("mine",10,10,50,true,false,0);
-    Property farm = Property("farm",10,10,50,true,false,0);
+    Property mine = Property("mine",10,10,10,true,false,0);
+    Property farm = Property("farm",10,10,10,true,false,0);
     Property turret = Property("turret",10,10,15,true,false,0);
-    Property town = Property("town",10,10,10,true,false,0);
+    Property town = Property("town",10,10,31,true,false,0);
     Property barrack = Property("barrack",10,10,20,true,false,0);
 
     std::vector<Property> buildings = {mine,farm,turret,town, barrack};
@@ -179,6 +179,7 @@ bool HandleCreation::execute(state::State &state) {
                 state.addBuilding(move(new_building));
                 state.getCurrentPlayer().get()->setRessource(-req_gold, -req_food);
                 cout << "created new building : " << debug_info << endl;
+                cout << "cost : " << req_food << " food and " << req_gold << " gold " << endl;
                 for(shared_ptr<GameObject> objects : state.getMap().get()->getGameObject(new_x,new_y)){
                     objects.get()->getProperty()->setAvailability(false); //rend inaccessible le villageois et le batiment après la création du batiment
                 }
@@ -245,6 +246,7 @@ bool HandleCreation::execute(state::State &state) {
                                                           (state::UnitType) this->object_type));
                 state.addUnit(move(new_unit));
                 cout << "created new unit : " << debug_info << endl;
+                cout << "cost : " << req_food << " food and " << req_gold << " gold " << endl;
                 state.getCurrentPlayer().get()->setRessource(-req_gold, -req_food);
                 return true;
             }

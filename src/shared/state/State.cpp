@@ -196,6 +196,15 @@ vector<shared_ptr<Player> >& State::getListPlayer () {
     return this->list_player;
 }
 
+//renvoit le joueur en fonction du joueur id
+shared_ptr<Player> State::getPlayer(unsigned int player_id) {
+    for(shared_ptr<Player> players : list_player){
+        if(players.get()->getPlayerId() == player_id)
+            return players;
+    }
+    return nullptr;
+}
+
 //renvoie le nombre de joueurs total
 unsigned int State::getPlayerNbr(){
     return this->player_nbr;
@@ -220,11 +229,10 @@ bool State::setPlayerDead(unsigned int player_id){
         if(player_id == killed_p.get()->getPlayerId())
             killed_p.get()->setIsDead();
     }
+
     cout << "remaining players before change " << this->remaining_players << endl;
     this->remaining_players--;
     cout << "remaining players after change " << this->remaining_players << endl;
-    if(!current_player_id == 0)
-        this->current_player_id --;
     return true;
 }
 
@@ -254,7 +262,7 @@ bool State::setCurrentPlayerId(bool increment) {
     {
         if(this->current_player_id==0)
         {
-            this->current_player_id=this->remaining_players-1;
+            this->current_player_id=this->player_nbr-1;
             Event event = Event(EventTypeId::UNIT_CHANGED);
             notifyObservers(event);
             return true;
@@ -264,13 +272,22 @@ bool State::setCurrentPlayerId(bool increment) {
         notifyObservers(event);
         return true;
     }
-    if(this->current_player_id == this->remaining_players - 1){ //le player_id commence à 0 tandis que le player_nbr commence à 1
+
+    if(this->current_player_id == this->player_nbr - 1) //le player_id commence à 0 tandis que le player_nbr commence à 1
         this->current_player_id = 0;
-        Event event = Event(EventTypeId::UNIT_CHANGED);
-        notifyObservers(event);
-        return true;
+    else
+        this->current_player_id ++;
+
+    //incrémente une nouvelle fois si le joueur courant est un joueur mort
+    for(shared_ptr<Player> dead_players : list_dead_player){
+        if(this->current_player_id == dead_players.get()->getPlayerId()){
+            if(this->current_player_id == this->player_nbr - 1)
+                this->current_player_id = 0;
+            else
+                this->current_player_id ++;
+        }
     }
-    this->current_player_id ++;
+
     Event event = Event(EventTypeId::UNIT_CHANGED);
     notifyObservers(event);
     return true;
@@ -278,7 +295,7 @@ bool State::setCurrentPlayerId(bool increment) {
 
 //met à jour le joueur courant : toujours executer après le setCurrentPlayerId
 bool State::setCurrentPlayer() {
-    this->current_player = list_player[this->current_player_id];
+    this->current_player = getPlayer(this->current_player_id);
     Event event = Event(EventTypeId::UNIT_CHANGED);
     notifyObservers(event);
     return true;
@@ -289,7 +306,7 @@ bool State::setCurrentPlayer() {
 bool State::setDay(bool increment) {
     if(!increment)
     {
-        if(this->current_player_id==this->remaining_players-1) this->day --;
+        if(this->current_player_id==this->player_nbr-1) this->day --;
         Event event = Event(EventTypeId::UNIT_CHANGED);
         notifyObservers(event);
         return true;

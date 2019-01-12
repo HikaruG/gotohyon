@@ -80,8 +80,6 @@ void HandleDamage::serialize (Json::Value& out) const{
 
 
 bool HandleDamage::undo(state::State &state) {
-    cout<<"AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH\n"
-          "####################################"<<endl;
     if (!this->selected_target) {
         cout<<"selected traget is empty"<<endl;
         this->selected_target = state.getGameObject(selected_target_id).get();
@@ -97,14 +95,14 @@ bool HandleDamage::undo(state::State &state) {
             }
         }
         state.getGameObject(selected_target_id)->getProperty()->regenHealth(this->selected_unit->getProperty()->getAttack());
-        cout<<"regenerated dead unit : "<<state.getGameObject(selected_target_id)->getProperty()->getAttack()<<endl;
+        cout<<"regenerated wounded unit : "<<state.getGameObject(selected_unit_id)->getProperty()->getAttack()<<endl;
         return true;
     } else{
         if(state.reviveGameObject(selected_target_id, selected_target->getPlayerId(), selected_target->getProperty()->isStatic()))
         {
             this->selected_target = state.getGameObject(selected_target_id).get();
             state.getGameObject(selected_target_id)->getProperty()->regenHealth(this->selected_unit->getProperty()->getAttack());
-            cout<<"regenerated : "<<this->selected_target->getProperty()->getAttack()<<endl;
+            cout<<"regenerated : "<<this->selected_unit->getProperty()->getAttack()<<endl;
             if(this->selected_target->getProperty()->getStringType() == "town"){
                 state.setPlayerAlive(selected_target_id);
             }

@@ -36,7 +36,6 @@ bool HandleMovement::execute(state::State& state) {
 
     //si le mouvement demandé respect la distance de déplacement autorisé à l'unité
     if( (int)(this->selected_unit->getPosition().getX()  + this->selected_unit->getPosition().getY() - abs(((int)this->new_x + (int)this->new_y)) ) <= this->selected_unit->getMovementRange() ){
-
         //si l'objet ne sort pas de la carte
         if(this->new_x >= 0 &&  this->new_x < max_x && this->new_y >= 0 && this->new_y < max_y ) {
             //nouvelle position de l'objet
@@ -45,13 +44,11 @@ bool HandleMovement::execute(state::State& state) {
             //début gestion de la collision d'objets
             vector<shared_ptr<state::Player>> list_player = state.getListPlayer();
             for (int i = 0; i < (int)list_player.size(); i++){
-
                 //si le joueur dans la liste list_player n'est pas le joueur actuel
                 if(list_player[i].get()->getPlayerId() != state.getCurrentPlayerId()){
                     //récupère les listes des batiments et des unités des ennemis
                     vector<shared_ptr<state::Unit>>ennemy_units = list_player[i].get()->getPlayerUnitList();
                     vector<shared_ptr<state::Building>> ennemy_buildings = list_player[i].get()->getPlayerBuildingList();
-
                     //vérifie si il y a pas une unité ennemie déja présente à cette position
                     for(int j = 0; j < (int)ennemy_buildings.size(); j++){
                         // si une unité est déjà présente, le déplacement devient impossible
@@ -61,7 +58,6 @@ bool HandleMovement::execute(state::State& state) {
                             return false;
                         }
                     };
-
                     //vérifie si il n'y a pas un batiment ennemi déjà présent à cette position
                     for(int j = 0; j < (int)ennemy_units.size(); j++){
                         //si un batiment est déjà présent, le déplacement devient impossible
@@ -72,7 +68,6 @@ bool HandleMovement::execute(state::State& state) {
                         }
                     };
                 }
-
                 //si le joueur dans la liste list_player est le joueur actuel
                 else{
                     vector<shared_ptr<state::Unit>>ally_units = list_player[i].get()->getPlayerUnitList();
@@ -87,12 +82,18 @@ bool HandleMovement::execute(state::State& state) {
                 }
             }
             //fin gestion de la collision d'objets
+
             size_t terrain_type = state.getMap().get()->getTerrain(this->new_x,this->new_y).get()->getTerrainType();
             if(terrain_type == state::water){
                 std::cout << "you can't go there, it's water" << std::endl;
                 return false;
             }
-            if (!state.getMap().get()->moveGameObject(this->selected_unit->getGame_object_id(), position))
+            if (state.getMap().get()->moveGameObject(this->selected_unit->getGame_object_id(), position)){
+                cout << " player" <<selected_unit->getPlayerId() << selected_unit->getProperty()->getStringType()
+                     << " moved from " << old_x << " to the new position x = " << selected_unit->getPosition().getX() << endl;
+                cout << " player" << selected_unit->getPlayerId() << selected_unit->getProperty()->getStringType()
+                     << " moved from " << old_y << " to the new position y = " << new_y << endl;
+            } else
                 return false;
         }
         //l'objet se retrouvera en dehors de la carte
