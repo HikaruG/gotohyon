@@ -130,7 +130,15 @@ vector<int> disadvantage(State& state){
 }
 
 
-bool update_points(State& state){
+
+bool DeepAI::reset_points() {
+    this->update_count = 0;
+    this->best_state = -1;
+    this->attack_point = vector<int>(depth,0);
+    this->creation_point = vector<int>(depth,0);
+    this->movement_point = vector<int>(depth,0);
+    this->total_point = -9999;
+
 }
 
 bool DeepAI::run(engine::Engine &engine, state::State &state) {
@@ -543,6 +551,7 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                 true_commands.push_back(current_commands[current_commands.size() - j]);
             }
             total_point = accumulated_point;
+            best_state = update_count;
         }
         else if(update_count == 0){
             true_commands.clear();
@@ -559,6 +568,8 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
 
 
     cout << "---------------- these are the real commands ----------------" << endl;
+    cout << "The chosen branch is the branch number : " << best_state << endl;
+    cout << "with a score of : " << total_point << endl;
     for(int i =0; i<true_commands.size(); i++){
         engine.addCommands(true_commands[i]);
     }
@@ -566,7 +577,7 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
     //commande de fin de tour; préparation pour le joueur suivant
     shared_ptr<engine::HandleTurn> end_turn (new engine::HandleTurn());
     engine.addCommands(end_turn);
-    this->update_count = 0;
+    reset_points();
     return true;
 }
 

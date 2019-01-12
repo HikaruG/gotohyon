@@ -66,21 +66,21 @@ bool Engine::execute(state::State & state) {
             case HANDLE_TURN:
                 list_commands.front().get()->serialize(thisCmd);
                 if(!list_commands.front().get()->execute(state))
-                    return true;
+                    return false;
                 break;
             case HANDLE_ENDGAME:
                 list_commands.front().get()->serialize(thisCmd);
                 list_commands.front().get()->execute(state);
                 list_commands.clear();
-                return true;
-            default:
                 return false;
+            default:
+                throw invalid_argument(" can't find the command, aborting !");
         }
         //add serialised command to array
         executed_commands.push_back(list_commands.front());
         pop_front(list_commands);
         if (list_size != (int)list_commands.size() + 1)
-            return false;
+            throw invalid_argument(" error executingthe command, aborting !");
         list_size = list_commands.size();
         record["commands"].append(thisCmd);
         //cout<<"###JSON###\n"<<record<<"\n###END JSON###"<<endl;

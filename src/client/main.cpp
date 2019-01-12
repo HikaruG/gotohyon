@@ -189,7 +189,8 @@ bool test_deepAI(){
     testdraw.forceRefresh(test_state);
 
     while(window.get()->isOpen()) {
-        test_engine.execute(* test_state.get());
+        if(!test_engine.execute(* test_state.get()))
+            return true;
         if(test_state.get()->getCurrentPlayer().get()->getIsNpc()) {
             test_deepAI.run(test_engine, *test_state.get());
             testdraw.forceRefresh(test_state);

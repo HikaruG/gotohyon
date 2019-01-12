@@ -220,9 +220,16 @@ bool State::setPlayerDead(unsigned int player_id){
         if(player_id == killed_p.get()->getPlayerId())
             killed_p.get()->setIsDead();
     }
+    cout << "remaining players before change " << this->remaining_players << endl;
     this->remaining_players--;
+    cout << "remaining players after change " << this->remaining_players << endl;
     if(!current_player_id == 0)
         this->current_player_id --;
+    return true;
+}
+
+bool State::setRemainingPlayer(int remaining_players) {
+    this->remaining_players = remaining_players;
     return true;
 }
 

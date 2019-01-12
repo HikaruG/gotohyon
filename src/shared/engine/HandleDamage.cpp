@@ -52,8 +52,9 @@ bool HandleDamage::execute(state::State& state) {
         //commande delete
         if(this->selected_target->getProperty()->isStatic()){
             //tue le player si sa centre ville est détruite
-            if(this->selected_target->getProperty()->getStringType() == "town")
+            if(this->selected_target->getProperty()->getStringType() == "town") {
                 state.setPlayerDead(selected_target->getPlayerId());
+            }
 
             //ensuite, détruit le batiment
             state::Building * ptr_destroyed_building = (state::Building * )this->selected_target;
