@@ -241,7 +241,7 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
         /*** AI pour les unités ***/
         for (int i = 0; i < (int) my_list_unit.size(); i++) {
             Unit *unit_i = my_list_unit[i].get();
-            cout << "- selected unit is " << unit_i->getProperty()->getStringType() << endl;
+            cout << "- selected unit is " << unit_i->getProperty()->getStringType() <<  " whose id is " << unit_i->getGame_object_id() << endl;
 
             /*** cas d'un farmeur : il n'attaque pas, ne peut que construire***/
             if (unit_i->getUnitType() == farmer) {
@@ -339,11 +339,10 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
             /*** cas d'une unité offensive: elle attaque sans bouger si elle peut, sinon elle se déplace puis attaque***/
             else {
                 //attaque à distance
-                state.resetInRange(); //s'assure de pas avoir une liste d'unités pré-remplie
                 shared_ptr<engine::HandleCanAttack> canattack_archers(new engine::HandleCanAttack(my_list_unit[i]));
                 engine.addCommands(canattack_archers);
                 current_commands.push_back(canattack_archers);
-                engine.execute(state);
+                engine.execute(state); //mutex
                 if (state.getInRange().size() != 0) {
                     shared_ptr<GameObject> ennemy_unit = state.getInRange()[0];
                     string ennemy_string_type =  ennemy_unit->getProperty()->getStringType();
@@ -354,7 +353,7 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                         }
                     }
                     cout << "the chosen ennemy unit is : " << ennemy_unit->getPlayerId()
-                         << ennemy_string_type << endl;
+                         << ennemy_string_type <<  " whose id is " << ennemy_unit.get()->getGame_object_id() << endl;
                     attack_point[update_count] += 2;
                     if(ennemy_unit.get()->getProperty()->isStatic()) {
                         attack_point[update_count]+= 3;
@@ -369,6 +368,7 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                             attack_point[update_count] += 40;
                         attack_point[update_count] += 10;
                     }
+                    engine.execute(state); //mutex
                     continue; //les unités qui ont attaqués deviennent indisponibles donc leur tour est terminé
                 }
 
@@ -424,9 +424,9 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                     //prise en compte des états futurs : partie Deep
                     if (distance_position_DeepAI(new_x, ennemy_town->getPosition().getX(), new_y, ennemy_town->getPosition().getY()) <
                         distance_position_DeepAI(old_x, ennemy_town->getPosition().getX(), old_y, ennemy_town->getPosition().getY()))
-                        movement_point[update_count]++;
+                        movement_point[update_count]+= 3;
                     else
-                        movement_point[update_count]--;
+                        movement_point[update_count]-= 3;
 
                     range = range - abs(mvt_length);
                     if (range < 0)
@@ -435,18 +435,17 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
 
 
                 /***  début de l'implémentation des attaques pour les unités en général  ***/
-                state.resetInRange();
                 shared_ptr<engine::HandleCanAttack> canattack_unit(new engine::HandleCanAttack(my_list_unit[i]));
                 engine.addCommands(canattack_unit);
                 current_commands.push_back(canattack_unit);
-                engine.execute(state);
+                engine.execute(state);//mutex
                 //prise en compte des états futurs : partie Deep
                 if (state.getInRange().size() == 0) {
-                    movement_point[update_count]--;
+                    movement_point[update_count]-=2;
                 } else if (state.getInRange().size() == 1) {
-                    movement_point[update_count]+= 5;
+                    movement_point[update_count]+= 3;
                 } else {
-                    movement_point[update_count] += 3;
+                    movement_point[update_count] += 6;
                 }
                 if(state.getInRange().size() != 0) {
                     shared_ptr<GameObject> ennemy_unit = state.getInRange()[0];
@@ -470,6 +469,7 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                 } else
                     attack_point[update_count]-= 2;
             }
+            engine.execute(state);//mutex
         }
 
         /***  implémentation des créations d'unités  ***/

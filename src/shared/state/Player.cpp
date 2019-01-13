@@ -41,7 +41,9 @@ bool Player::addPlayerBuilding(shared_ptr<Building> building) {
 
 bool Player::deletePlayerBuilding(state::Building* deleting_building, bool keep_track) {
     size_t list_size =player_building_list.size();
-    for(int i=0; (int)list_size; i++) {
+    for(int i=0; i < (int)list_size; i++) {
+        cout << " deleting building's type " << deleting_building->getBuildingType() << " with the id " << deleting_building->getGame_object_id() << endl;
+        cout << " player building's type " << player_building_list[i].get()->getBuildingType() <<  " with the id " << player_building_list[i].get()->getGame_object_id() << endl;
         if(deleting_building->getGame_object_id()==player_building_list[i].get()->getGame_object_id()){
             //détruit le pointeur associé au batiment situé à la position i
             if(keep_track)
@@ -54,6 +56,7 @@ bool Player::deletePlayerBuilding(state::Building* deleting_building, bool keep_
         return true;
     }
     cout << "error deleting the building" << endl;
+    cout << "list size = " << list_size << " and player building list size is " << player_building_list.size() << endl;
     return false;
 }
 

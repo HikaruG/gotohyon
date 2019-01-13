@@ -115,13 +115,13 @@ bool State::deleteUnit(state::Unit* deleting_unit, bool keep_track) {
     //recherche du play associé à l'unité détruite
     for(int i= 0; i < (int) player_nbr;i++){
         if(deleting_unit->getPlayerId() == list_player[i].get()->getPlayerId()) {
-            success = list_player[i].get()->deletePlayerUnit(deleting_unit);
+            success = list_player[i].get()->deletePlayerUnit(deleting_unit, keep_track);
             cout << success << endl;
             break;
         }
     }
     //vérifie la suppression du pointeur dans la liste du joueur
-    if(success) success = game_map.get()->deleteGameObject(deleting_unit);
+    if(success) success = game_map.get()->deleteGameObject(deleting_unit, keep_track);
     //retourne true si la suppression * de l'unité dans la liste de map a été effectuée
     cout << success << endl;
     Event event = Event(EventTypeId::UNIT_CHANGED);
@@ -136,11 +136,11 @@ bool State::deleteBuilding(state::Building* deleting_building, bool keep_track) 
     for(int i= 0; i < (int) player_nbr;i++){
         if(deleting_building->getPlayerId() == list_player[i].get()->getPlayerId()) {
             Player * attacked_player = list_player[i].get();
-            success = attacked_player->deletePlayerBuilding(deleting_building);
+            success = attacked_player->deletePlayerBuilding(deleting_building, keep_track);
             break;
         }
     }
-    if(success) success = game_map.get()->deleteGameObject(deleting_building);
+    if(success) success = game_map.get()->deleteGameObject(deleting_building, keep_track);
     Event event = Event(EventTypeId::BUILDING_CHANGED);
     notifyObservers(event);
     return success;
@@ -263,6 +263,7 @@ bool State::setCurrentPlayerId(bool increment) {
         if(this->current_player_id==0)
         {
             this->current_player_id=this->player_nbr-1;
+            this->day --;
             Event event = Event(EventTypeId::UNIT_CHANGED);
             notifyObservers(event);
             return true;
@@ -273,16 +274,21 @@ bool State::setCurrentPlayerId(bool increment) {
         return true;
     }
 
-    if(this->current_player_id == this->player_nbr - 1) //le player_id commence à 0 tandis que le player_nbr commence à 1
+    if(this->current_player_id == this->player_nbr - 1) { //le player_id commence à 0 tandis que le player_nbr commence à 1
         this->current_player_id = 0;
+        this->day++;
+    }
+
     else
         this->current_player_id ++;
 
     //incrémente une nouvelle fois si le joueur courant est un joueur mort
     for(shared_ptr<Player> dead_players : list_dead_player){
         if(this->current_player_id == dead_players.get()->getPlayerId()){
-            if(this->current_player_id == this->player_nbr - 1)
+            if(this->current_player_id == this->player_nbr - 1) {
                 this->current_player_id = 0;
+                this->day++;
+            }
             else
                 this->current_player_id ++;
         }
@@ -311,7 +317,13 @@ bool State::setDay(bool increment) {
         notifyObservers(event);
         return true;
     }
-    if(this->current_player_id == 0) this->day ++;
+    if(this->current_player_id == 0) {
+        for(shared_ptr<Player> dead_players : list_dead_player){
+            if(dead_players.get()->getPlayerId() == current_player_id)
+                this->day ++;
+        }
+        this->day ++;
+    }
     Event event = Event(EventTypeId::UNIT_CHANGED);
     notifyObservers(event);
     return true;

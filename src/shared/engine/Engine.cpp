@@ -83,7 +83,6 @@ bool Engine::execute(state::State & state) {
         record["commands"].append(thisCmd);
         //cout<<"###JSON###\n"<<record<<"\n###END JSON###"<<endl;
     }
-
     return true;
 }
 

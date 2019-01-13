@@ -48,7 +48,7 @@ bool HandleTurn::execute(state::State &state) {
     state.setCurrentPlayerId();
     cout << "prochain joueur id : " << state.getCurrentPlayerId() << endl;
     state.setCurrentPlayer();
-    state.setDay();
+    //state.setDay();
     cout << "le nouveau jour : " << state.getDay() << endl;
     //remet disponible tous les objets du joueur suivant
     state.resetAvailability();
@@ -60,7 +60,7 @@ bool HandleTurn::execute(state::State &state) {
 bool HandleTurn::undo(state::State &state) {
     state.setCurrentPlayerId(false);
     state.setCurrentPlayer();
-    state.setDay(false);
+    //state.setDay(false);
     return true;
 }
 

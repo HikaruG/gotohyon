@@ -27,6 +27,8 @@ CommandTypeId HandleCanAttack::getTypeId() const{
 
 
 bool HandleCanAttack::execute(state::State& state ) {
+    // permet de réinitialiser la liste d'objets à 0
+    state.resetInRange();
 
     //current_x et current_y sont les coordonnées de l'unité considéré
     int current_x, current_y;

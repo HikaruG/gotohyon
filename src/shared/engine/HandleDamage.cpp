@@ -43,9 +43,9 @@ bool HandleDamage::execute(state::State& state) {
     state::Position ennemy_position = this->selected_target->getPosition();
     //state::Terrain * terrain = state.getMap().get()->getTerrain(ennemy_position.getX(), ennemy_position.getY()).get();
 
-    cout << "player n" << this->selected_unit->getPlayerId() << " s " << this->selected_unit->getProperty()->getStringType() << " attacks ! " <<endl;
+    cout << "player n" << this->selected_unit->getPlayerId() << " s " << this->selected_unit->getProperty()->getStringType() << " whose id is " << this->selected_unit->getGame_object_id()  << " attacks ! " <<endl;
     this->selected_target->getProperty()->takeDamage(this->selected_unit->getProperty()->getAttack());
-    cout << "player n" << this->selected_target->getPlayerId() << " s " << this->selected_target->getProperty()->getStringType() << " got hit for " << this->selected_unit->getProperty()->getAttack() <<"hp \n" <<endl;
+    cout << "player n" << this->selected_target->getPlayerId() << " s " << this->selected_target->getProperty()->getStringType()  << " whose id is " << this->selected_target->getGame_object_id() << " got hit for " << this->selected_unit->getProperty()->getAttack() <<"hp \n" <<endl;
 
     if(!this->selected_target->getProperty()->isAlive()){
         cout << "player n" << this->selected_target->getPlayerId() << " s " << this->selected_target->getProperty()->getStringType() <<"'s HP down to 0" << endl;

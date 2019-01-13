@@ -92,26 +92,28 @@ bool HandleCreation::execute(state::State &state) {
     if(this->object_type == -1)
         return false;
 
+
+    if(state.getMap().get()->getListGameObject().size() == 0)
+        all_objects_count =0;
+
     Property farmer = Property("farmer",10,10,80,false,false,1);
     Property infantry = Property("infantry",10,20,120,false,false,1);
     Property archer = Property("archer",10,10,100,false,false,2);
 
-    Property mine = Property("mine",10,10,10,true,false,0);
-    Property farm = Property("farm",10,10,10,true,false,0);
-    Property turret = Property("turret",10,10,15,true,false,0);
-    Property town = Property("town",10,10,31,true,false,0);
-    Property barrack = Property("barrack",10,10,20,true,false,0);
+    Property mine = Property("mine",10,10,100,true,false,0);
+    Property farm = Property("farm",10,10,100,true,false,0);
+    Property turret = Property("turret",10,10,150,true,false,0);
+    Property town = Property("town",10,10,400,true,false,0);
+    Property barrack = Property("barrack",10,10,200,true,false,0);
 
     std::vector<Property> buildings = {mine,farm,turret,town, barrack};
     std::vector<Property> units = {farmer,archer,infantry};
     unsigned int mvt_range= 0;
-
     unsigned int buildings_limit = 6;
     unsigned int units_limit = 5;
     unsigned int current_player_id = state.getCurrentPlayerId();
     unsigned int my_gold = 0, my_food = 0, req_gold, req_food;
     state.getCurrentPlayer().get()->getRessource(my_food, my_gold);
-    //all_objects_count = 0;
 
     string debug_info = "none";
     state::Position position(this->new_x, this->new_y);
@@ -121,6 +123,7 @@ bool HandleCreation::execute(state::State &state) {
 
     if(terrain->getTerrainType() == state::water || terrain->getTerrainType() == mountain){
         cout << "Building cannot be created here, it's the " << terrain->getTerrainType() << endl;
+        this->object_type = -1;
         return false;
     }
 
@@ -128,10 +131,12 @@ bool HandleCreation::execute(state::State &state) {
         if (this->object_type > 5) //il n' y a que 5 batiments
         {
             cout << " can't find the building ! " << endl;
+            this->object_type = -1;
             return false;
         }
         if (state.getCurrentPlayer().get()->getPlayerBuildingList().size() > buildings_limit) {
             //cout << " can't build more buildings !" <<endl;
+            this->object_type = -1;
             return false;
         }
 
@@ -164,6 +169,7 @@ bool HandleCreation::execute(state::State &state) {
                 break;
             default:
                 cout << "unknown building type" << endl;
+                this->object_type = -1;
                 return false;
         }
         if (my_food > req_food && my_gold > req_food) {
@@ -171,22 +177,23 @@ bool HandleCreation::execute(state::State &state) {
             if (collisionHandler(state, this->new_x, this->new_y, this->is_static)) {
                 //Building::Building (unsigned int gameobject_id, unsigned int player_id, state::Position pos, state::Property prop, state::BuildingType build_type)
                 shared_ptr<state::Building> new_building(
-                        new Building((unsigned int) state.getMap().get()->getListGameObject().size(),
+                        new Building((unsigned int)state.getMap().get()->getListGameObject().size(),
                                      current_player_id,
                                      position,
                                      buildings[this->object_type],
                                      (state::BuildingType) this->object_type));
+
+                cout << "created new building : " << debug_info << " with an id " << new_building.get()->getGame_object_id() << endl;
+                cout << "cost : " << req_food << " food and " << req_gold << " gold " << endl;
                 state.addBuilding(move(new_building));
                 state.getCurrentPlayer().get()->setRessource(-req_gold, -req_food);
-                cout << "created new building : " << debug_info << endl;
-                cout << "cost : " << req_food << " food and " << req_gold << " gold " << endl;
                 for(shared_ptr<GameObject> objects : state.getMap().get()->getGameObject(new_x,new_y)){
                     objects.get()->getProperty()->setAvailability(false); //rend inaccessible le villageois et le batiment après la création du batiment
                 }
-
                 return true;
             } else {
                 cout << "couldn't build here" << endl;
+                this->object_type = -1;
                 return false;
             }
         }
@@ -194,9 +201,11 @@ bool HandleCreation::execute(state::State &state) {
         else {
             if (my_food > req_food) {
                 cout << "you lack " << req_gold - my_gold << " gold" << endl;
+                this->object_type = -1;
                 return false;
             } else {
                 cout << "you lack " << req_food - my_food << " food" << endl;
+                this->object_type = -1;
                 return false;
             }
         }
@@ -205,11 +214,13 @@ bool HandleCreation::execute(state::State &state) {
         if(this->object_type > 3)
         {
             cout << "can't find the unit !" << endl;
+            this->object_type = -1;
             return false;
         }
         if(state.getCurrentPlayer().get()->getPlayerUnitList().size() > units_limit){
            // cout << "can't create more units; go fight someone already !" << endl;
-           return false;
+            this->object_type = -1;
+            return false;
         }
 
         switch(this->object_type){
@@ -233,6 +244,7 @@ bool HandleCreation::execute(state::State &state) {
                 break;
             default:
                 cout << "unknown unit type" <<endl;
+                this->object_type = -1;
                 return false;
         }
         if(my_food > req_food && my_gold > req_food) {
@@ -240,18 +252,19 @@ bool HandleCreation::execute(state::State &state) {
             if(collisionHandler(state, this->new_x,this->new_y, this->is_static)) {
                 //Unit::Unit (unsigned int movement_range, unsigned int gameobject_id, unsigned int player_id, state::Position pos, state::Property property, UnitType unit_type)
                 shared_ptr<state::Unit> new_unit(new Unit(mvt_range,
-                                                          (unsigned int) state.getMap().get()->getListGameObject().size(),
+                                                          (unsigned int)state.getMap().get()->getListGameObject().size(),
                                                           current_player_id, position,
                                                           units[this->object_type],
                                                           (state::UnitType) this->object_type));
-                state.addUnit(move(new_unit));
-                cout << "created new unit : " << debug_info << endl;
+                cout << "created new unit : " << debug_info << " with an id " << new_unit.get()->getGame_object_id() << endl;
                 cout << "cost : " << req_food << " food and " << req_gold << " gold " << endl;
+                state.addUnit(move(new_unit));
                 state.getCurrentPlayer().get()->setRessource(-req_gold, -req_food);
                 return true;
             }
             else {
                 cout << "couldn't build here" << endl;
+                this->object_type = -1;
                 return false;
             }
         }
@@ -259,9 +272,11 @@ bool HandleCreation::execute(state::State &state) {
         else {
             if (my_food > req_food) {
                 cout << "you lack " << req_gold - my_gold << " gold" << endl;
+                this->object_type = -1;
                 return false;
             } else {
                 cout << "you lack " << req_food - my_food << " food" << endl;
+                this->object_type = -1;
                 return false;
             }
         }
@@ -270,12 +285,35 @@ bool HandleCreation::execute(state::State &state) {
     return true;
 }
 
-
 bool HandleCreation::undo(state::State &state) {
-    return true;
+    cout << "undo-ing creation " << endl;
+    if(this->object_type == -1) {
+        cout << " cannot undo a creation that failed ! " << endl;
+        return true;
+    }
+    for( shared_ptr<GameObject> unexisting_objects : state.getMap().get()->getGameObject(this->new_x, this->new_y)){
+        cout << unexisting_objects.get()->getProperty()->getStringType() << endl;
+        if(unexisting_objects.get()->getProperty()->isStatic() == this->is_static){
+            if(this->is_static) {
+                Building *unexisting_building = (Building *) unexisting_objects.get();
+                if (unexisting_building->getBuildingType() == this->object_type) {
+                    if (state.deleteBuilding(unexisting_building, false))
+                        return true;
+                    break;
+                }
+            }
+            else {
+                Unit *unexisting_unit = (Unit *) unexisting_objects.get();
+                if (unexisting_unit->getUnitType() == this->object_type) {
+                    if (state.deleteUnit(unexisting_unit, false))
+                        return true;
+                    break;
+                }
+            }
+        }
+    }
+    throw invalid_argument(" can't find the deleting object ! aborting");
 }
-
-
 
 void HandleCreation::serialize (Json::Value& out) const{
     out["CommandId"]=7;
