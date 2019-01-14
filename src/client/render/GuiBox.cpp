@@ -35,3 +35,22 @@ GuiBox::GuiBox (std::string text, int pos_x, int pos_y, int size)
     this->pos_x = pos_x;
 
 }
+
+void GuiBox::changeText (std::string new_text)
+{
+    this->text = new_text;
+}
+void draw ();
+
+void GuiBox::changePosition (int new_pos_x, int new_pos_y){
+    this->pos_x=new_pos_x;
+    this->pos_y=new_pos_y;
+}
+
+void GuiBox::changeSize (int new_size){
+    this->size = new_size;
+}
+std::string GuiBox::getText ()
+{
+    return this->text;
+}
