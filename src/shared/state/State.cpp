@@ -18,6 +18,7 @@ State::State(unsigned int player_number,unsigned int npc_number)
     this->player_nbr = player_number;
     this->remaining_players = player_number;
     this->day = 0;
+    this->object_count = 0;
     initializePlayer(player_number, npc_number);
     cout << " construit " << this << endl;
 }
@@ -140,7 +141,11 @@ bool State::deleteBuilding(state::Building* deleting_building, bool keep_track) 
             break;
         }
     }
-    if(success) success = game_map.get()->deleteGameObject(deleting_building, keep_track);
+    if(success) {
+        success = game_map.get()->deleteGameObject(deleting_building, keep_track);
+           if (!success)
+               return false;
+    }
     Event event = Event(EventTypeId::BUILDING_CHANGED);
     notifyObservers(event);
     return success;
@@ -171,6 +176,13 @@ bool State::isGameFinished(){
     if(remaining_players < 2)
         return true;
     return false;
+}
+
+bool State::incObjectCount(bool inc) {
+    if(inc)
+        this->object_count ++;
+    else
+        this->object_count --;
 }
 
 //obtient la référence de la carte initialisé au dessus
@@ -222,6 +234,10 @@ int State::getRemainingPlayers() {
 
 vector<shared_ptr<GameObject>>& State::getInRange() {
     return this->inrange_ennemies;
+}
+
+unsigned int State::getObjectCount() {
+    return this->object_count;
 }
 
 bool State::setPlayerDead(unsigned int player_id){
@@ -340,6 +356,7 @@ bool State::setInRange(std::vector<std::shared_ptr<state::GameObject>> inrange_e
     }
     return true;
 }
+
 
 State::~State(){
     cout << " détruit " << this << endl;
