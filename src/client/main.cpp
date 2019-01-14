@@ -173,18 +173,13 @@ bool test_deepAI(){
     // create the window
     shared_ptr<sf::RenderWindow> window (new sf::RenderWindow(sf::VideoMode(static_cast<unsigned int>(x_window), static_cast<unsigned int>(y_window)),
                                                               "test engine",sf::Style::Close));
-
     render::DrawManager testdraw = render::DrawManager(test_state, window);
     cout << "test : new drawmanager instance" << endl;
     test_state.get()->addObserver(&testdraw);
     test_state.get()->getMap().get()->addObserver(&testdraw);
-
-
     cout << "remaining players " << test_state.get()->getRemainingPlayers() << endl;
     cout << "test : new DeepAI instance" << endl;
     ai::DeepAI test_deepAI = ai::DeepAI(0);
-
-
     //cout << "test : updates... " << endl;
     testdraw.forceRefresh(test_state);
 
