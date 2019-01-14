@@ -17,6 +17,18 @@ DeepAI::DeepAI(int random_seed){
     this->creation_point = vector<int>(depth,0);
     this->movement_point = vector<int>(depth,0);
     this->total_point = -9999;
+    this->npc_id = -1;
+}
+
+
+DeepAI::DeepAI(int random_seed, unsigned int npc_id){
+    std::mt19937 randgen(random_seed);
+    this->update_count = 0;
+    this->attack_point = vector<int>(depth,0);
+    this->creation_point = vector<int>(depth,0);
+    this->movement_point = vector<int>(depth,0);
+    this->total_point = -9999;
+    this->npc_id = npc_id;
 }
 
 //notre deep AI = un bot ultra aggressif qui réduit le nombre d'unités au max:
@@ -191,6 +203,10 @@ bool DeepAI::reset_points() {
 }
 
 bool DeepAI::run(engine::Engine &engine, state::State &state) {
+    if(npc_id != -1){
+        if(npc_id != state.getCurrentPlayer().get()->getPlayerId())
+            return true;
+    }
     for(update_count; update_count < depth; update_count ++) {
         engine.cleanExecuted();
 
