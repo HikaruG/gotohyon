@@ -183,8 +183,7 @@ bool test_deepAI(){
     //cout << "test : updates... " << endl;
     testdraw.forceRefresh(test_state);
 
-    while(window.get()->isOpen())
-        
+    while(window.get()->isOpen()) {
         if(!test_engine.execute(* test_state.get()))
             return true;
         if(test_state.get()->getCurrentPlayer().get()->getIsNpc()) {
