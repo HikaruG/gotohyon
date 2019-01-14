@@ -190,8 +190,11 @@ bool test_deepAI(){
             test_deepAI.run(test_engine, *test_state.get());
             testdraw.forceRefresh(test_state);
             sf::sleep(delayTime);
-        } else
-            testdraw.user_interact.userTurn(test_engine,*test_state.get());
+        } else {
+            cout << " -------------- les commandes disponibles sont -------------- " << endl;
+            cout << " --------------      espace : fin du tour      --------------" << endl;
+            testdraw.user_interact.userTurn(test_engine, *test_state.get());
+        }
     }
 
     return true;
