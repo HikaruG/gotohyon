@@ -29,7 +29,7 @@ bool HandleSelectedObject::undo(state::State &state) {
 
 
 void HandleSelectedObject::serialize (Json::Value& out) const{
-    out["CommandId"]=8;
+    out["CommandId"]=this->getTypeId();
 }
 
 HandleSelectedObject* HandleSelectedObject::deserialize (Json::Value& out){

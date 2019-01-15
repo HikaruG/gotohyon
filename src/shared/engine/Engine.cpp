@@ -7,6 +7,7 @@
 #include <iostream>
 #include "Command.h"
 #include "HandleStartGame.h"
+#include "HandleSaveGame.h"
 #include <assert.h>
 
 using namespace engine;
@@ -20,6 +21,8 @@ void pop_front(vector<shared_ptr<Command>> & v)
 }
 
 Engine::Engine() {
+    intern_record = true;
+    user_record = true;
     record["commands"] = Json::arrayValue;
 }
 
@@ -77,7 +80,14 @@ bool Engine::execute(state::State & state) {
                 list_commands.clear();
                 return false;
             case SIG_STARTRECORD:
+                intern_record = true;
+                break;
+            case SIG_STOPRECORD:
                 intern_record = false;
+                break;
+            case HANDLE_SAVEGAME:
+                ((HandleSaveGame*)list_commands.front().get())->execute(record);
+                break;
             default:
                 throw invalid_argument(" can't find the command, aborting !");
         }
@@ -96,7 +106,8 @@ bool Engine::execute(state::State & state) {
         }
         */
         list_size = list_commands.size();
-        record["commands"].append(thisCmd);
+        if(intern_record && user_record && !thisCmd.empty())
+            record["commands"].append(thisCmd);
         //cout<<"###JSON###\n"<<record<<"\n###END JSON###"<<endl;
     }
     return true;
