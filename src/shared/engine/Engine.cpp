@@ -81,6 +81,9 @@ bool Engine::execute(state::State & state) {
             default:
                 throw invalid_argument(" can't find the command, aborting !");
         }
+        sf::Time client_engineTime = sf::milliseconds(50);
+        sf::sleep(client_engineTime);
+
         //add serialised command to array
         if(list_commands.front().get()->getTypeId() == HANDLE_STARTGAME)
             list_size = list_commands.size();

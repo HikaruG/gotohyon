@@ -43,6 +43,7 @@ shared_ptr<Engine> client_engine (new Engine());
 size_t client_x_window = 1024;
 size_t client_y_window = 512;
 sf::Time client_delayTime = sf::milliseconds(1000);
+sf::Time client_refreshTime = sf::milliseconds(1);
 shared_ptr<sf::RenderWindow> client_window (new sf::RenderWindow(sf::VideoMode(static_cast<unsigned int>(client_x_window), static_cast<unsigned int>(client_y_window)),
                                                           "test engine",sf::Style::Close));
 shared_ptr<render::DrawManager> client_draw;
@@ -183,7 +184,7 @@ bool test_input(){
 
 void t_moteur(){
     while(client_window.get()->isOpen()){
-        cout << " je suis dans le thread du moteur dans la boucle while " << endl;
+        //cout << " je suis dans le thread du moteur dans la boucle while " << endl;
         m_client.lock();
         client_engine.get()->execute(*client_state.get());
         sf::sleep(client_delayTime);
@@ -196,7 +197,7 @@ void t_ai1(){
     ai::DeepAI npc_1 = ai::DeepAI(0,0);
     while(client_window.get()->isOpen()){
             if(client_state.get()->getCurrentPlayer().get()->getPlayerId() == 0){
-                cout << " je suis dans le thread de l'IA1 " << endl;
+                //cout << " je suis dans le thread de l'IA1 " << endl;
                 m_client.lock();
                 npc_1.run(* client_engine.get(),* client_state.get());
                 m_client.unlock();
@@ -209,7 +210,7 @@ void t_ai2(){
     ai::DeepAI npc_2 = ai::DeepAI(0,1);
     while(client_window.get()->isOpen()){
         if(client_state.get()->getCurrentPlayer().get()->getPlayerId() == 1){
-            cout << " je suis dans le thread de l'IA2 " << endl;
+           // cout << " je suis dans le thread de l'IA2 " << endl;
             m_client.lock();
             npc_2.run(* client_engine.get(),* client_state.get());
             m_client.unlock();
@@ -220,12 +221,13 @@ void t_ai2(){
 
 void t_render(){
     while(client_window.get()->isOpen()) {
-        cout << " je suis dans le thread du rendu dans la boucle while " << endl;
-        m_client.lock();
+        //cout << " je suis dans le thread du rendu dans la boucle while " << endl;
+        //m_client.lock();
         client_draw.get()->forceRefresh(client_state);
-        sf::sleep(client_delayTime);
-        m_client.unlock();
-        sf::sleep(client_delayTime);
+        sf::sleep(client_refreshTime);
+        //m_client.unlock();
+        sf::Event event;
+        while(client_window.get()->pollEvent(event)){}
     }
 }
 
@@ -236,8 +238,8 @@ void init_game(){
     client_engine.get()->execute(* client_state.get());
     client_draw = shared_ptr<render::DrawManager> (new render::DrawManager(client_state, client_window));
     client_engine.get()->cleanExecuted();
-    client_state.get()->addObserver(client_draw.get());
-    client_state.get()->getMap().get()->addObserver(client_draw.get());
+    //client_state.get()->addObserver(client_draw.get());
+    //client_state.get()->getMap().get()->addObserver(client_draw.get());
     client_draw.get()->forceRefresh(client_state);
     cout << "test : 2 npcs gamemode created " << endl;
 }
