@@ -76,6 +76,8 @@ bool Engine::execute(state::State & state) {
                 list_commands.front().get()->execute(state);
                 list_commands.clear();
                 return false;
+            case SIG_STARTRECORD:
+                intern_record = false;
             default:
                 throw invalid_argument(" can't find the command, aborting !");
         }
