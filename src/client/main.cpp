@@ -57,6 +57,7 @@ void parseCommand(Json::Value& game_unwrap, vector<shared_ptr<engine::Command>>&
 
 int main(int argc,char* argv[])
 {
+    client_window.get()->setActive(false); // cf: https://en.sfml-dev.org/forums/index.php?topic=5673.0
     if ( argc > 1 ){
 
         if ( !strcmp(argv[1],"hello") ){

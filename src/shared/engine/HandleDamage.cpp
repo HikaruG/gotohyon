@@ -50,7 +50,7 @@ bool HandleDamage::execute(state::State& state) {
     {
         this->selected_target = state.getGameObject(selected_target_id).get();
         if(!this->selected_target)
-            cout<<"target not found, woll crash"<<endl;
+            cout<<"target not found, will crash"<<endl;
     }
 
     state::Position ennemy_position = this->selected_target->getPosition();

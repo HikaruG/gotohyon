@@ -17,6 +17,11 @@ using namespace std;
 void pop_front(vector<shared_ptr<Command>> & v)
 {
     assert(!v.empty());
+    if(v.empty())
+    {
+        cout<<"wtf"<<endl;
+        return;
+    }
     v.erase(v.begin());
 }
 
@@ -38,6 +43,7 @@ bool Engine::execute(state::State & state) {
     while (list_commands.size() != 0) {
         list_size = list_commands.size();
         Json::Value thisCmd;
+        cout<<"list command size : "<<list_commands.size()<<endl;
         switch (list_commands.front().get()->getTypeId()) {
             case HANDLE_STARTGAME:
                 {
@@ -49,9 +55,6 @@ bool Engine::execute(state::State & state) {
             case HANDLE_GROWTH:
                 list_commands.front().get()->execute(state);
                 list_commands.front().get()->serialize(thisCmd);
-                state.getCurrentPlayer().get()->getRessource(food, gold);
-                cout << "player" << state.getCurrentPlayer().get()->getPlayerId() << "'s current gold is " << gold << endl;
-                cout << "player" << state.getCurrentPlayer().get()->getPlayerId() << "'s current food is " << food << endl;
                 break;
             case HANDLE_MOVEMENT:
                 list_commands.front().get()->execute(state);

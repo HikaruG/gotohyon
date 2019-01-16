@@ -35,6 +35,7 @@ bool HandleMovement::execute(state::State& state) {
         }
         else{
             cout<<"selected unit not found"<<endl;
+            return false;
         }
     }
     if(this->new_x == (int)this->selected_unit->getPosition().getX() && this->new_y == (int)this->selected_unit->getPosition().getY()) {
