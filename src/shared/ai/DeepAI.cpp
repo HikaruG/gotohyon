@@ -201,8 +201,8 @@ bool DeepAI::reset_points() {
 }
 
 bool DeepAI::run(engine::Engine &engine, state::State &state) {
-    //shared_ptr<SignalStopRecord> signal_stop (new SignalStopRecord());
-    //engine.addCommands(signal_stop);
+    shared_ptr<SignalStopRecord> signal_stop (new SignalStopRecord());
+    engine.addCommands(signal_stop);
     for(update_count; update_count < depth; update_count ++) {
         engine.cleanExecuted();
 
@@ -584,8 +584,8 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
     cout << "---------------- DeepAI found the best solution ! ----------------" << endl;
     cout << "The chosen branch is the branch number : " << best_state << endl;
     cout << "with a score of : " << total_point << endl;
-    //shared_ptr<SignalStartRecord> signal_start (new SignalStartRecord());
-    //engine.addCommands(signal_start);
+    shared_ptr<SignalStartRecord> signal_start (new SignalStartRecord());
+    engine.addCommands(signal_start);
     for(int i =0; i<true_commands.size(); i++){
         engine.addCommands(true_commands[i]);
     }

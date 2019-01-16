@@ -14,7 +14,7 @@ HandleTurn::HandleTurn() = default;
 HandleTurn::~HandleTurn() = default;
 
 CommandTypeId HandleTurn::getTypeId() const {
-    return CommandTypeId ::HANDLE_TURN;
+    return CommandTypeId::HANDLE_TURN;
 }
 
 //pour le moment, le tour se finit automatiquement dés qu'on lance cette commande
@@ -67,12 +67,8 @@ bool HandleTurn::undo(state::State &state) {
 
 void HandleTurn::serialize (Json::Value& out) const{
     out["CommandId"]=this->getTypeId();
-    out["CurrentPlayerId"]=(int) this->current_player_id;
-    out["CurrentDay"]=(int) this->current_day;
 }
 
 HandleTurn* HandleTurn::deserialize (Json::Value& out){
-    this->current_player_id=(unsigned int)out.get("CurrentPlayerId","error").asInt();
-    this->current_day=(unsigned int)out.get("CurrentDay","error").asInt();
     return this;
 }

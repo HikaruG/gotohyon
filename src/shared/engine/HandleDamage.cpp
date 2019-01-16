@@ -39,7 +39,28 @@ CommandTypeId HandleDamage::getTypeId() const {
 }
 
 bool HandleDamage::execute(state::State& state) {
-    
+
+    if(!this->selected_unit)
+    {
+        if(this->selected_unit_id)
+        {
+            this->selected_unit = (state::Unit *) state.getGameObject(this->selected_unit_id).get();
+        }
+        else{
+            cout<<"selected unit not found"<<endl;
+        }
+    }
+    if(!this->selected_target)
+    {
+        if(this->selected_target_id)
+        {
+            this->selected_target = state.getGameObject(selected_target_id).get();
+        }
+        else{
+            cout<<"target not found, woll crash"<<endl;
+        }
+    }
+
     state::Position ennemy_position = this->selected_target->getPosition();
     //state::Terrain * terrain = state.getMap().get()->getTerrain(ennemy_position.getX(), ennemy_position.getY()).get();
 
@@ -115,8 +136,8 @@ bool HandleDamage::undo(state::State &state) {
 HandleDamage* HandleDamage::deserialize (Json::Value& out){
     this->selected_target = nullptr;
     this->selected_unit = nullptr;
-    this->selected_unit_id = out.get("selected_unit_id",0).asUInt();
-    this->selected_target_id = out.get("selected_target_id",0).asUInt();
+    this->selected_unit_id = out.get("selected_unit_id",-1).asUInt();
+    this->selected_target_id = out.get("selected_target_id",-1).asUInt();
     return this;
 
 }

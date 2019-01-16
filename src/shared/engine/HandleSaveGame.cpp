@@ -25,7 +25,7 @@ bool HandleSaveGame::execute (Json::Value& json_file){
 
     std::cout<<"saving game ... ";
     std::ofstream new_save;
-    new_save.open ("bin/replay.json", std::ios::out);
+    new_save.open ("res/replay.json", std::ios::out);
     if (new_save.is_open()) {
         Json::StyledWriter styledWriter;
         new_save << styledWriter.write(json_file);

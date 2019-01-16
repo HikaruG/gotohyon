@@ -27,6 +27,16 @@ CommandTypeId HandleMovement::getTypeId() const {
 
 bool HandleMovement::execute(state::State& state) {
 
+    if(!this->selected_unit)
+    {
+        if(this->selected_unit_id)
+        {
+            this->selected_unit = (state::Unit *) state.getGameObject(this->selected_unit_id).get();
+        }
+        else{
+            cout<<"selected unit not found"<<endl;
+        }
+    }
     if(this->new_x == (int)this->selected_unit->getPosition().getX() && this->new_y == (int)this->selected_unit->getPosition().getY()) {
         cout << this->selected_unit->getProperty()->getStringType() << " didn't move" << endl;
         return true;

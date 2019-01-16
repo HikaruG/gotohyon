@@ -6,6 +6,8 @@
 #include "Engine.h"
 #include "HandleCreation.h"
 #include "HandleTurn.h"
+#include "SignalStartRecord.h"
+#include "SignalStopRecord.h"
 
 using namespace engine;
 using namespace std;
@@ -59,7 +61,12 @@ bool HandleStartGame::execute(state::State &state, engine::Engine &engine) {
         test_terrain.push_back(terrain_int[i]);
     }
     state.initializeMap(16,16,test_terrain);
-
+    shared_ptr<SignalStartRecord> start_rec (new SignalStartRecord());
+    shared_ptr<SignalStopRecord> stop_rec (new SignalStopRecord());
+    Json::Value thisCmd;
+    this->serialize(thisCmd);
+    engine.registerJsonCommand(thisCmd);
+    engine.addCommands(stop_rec);
     switch(player_count) {
         case 2: {
             shared_ptr<engine::HandleCreation> create_starter1(new engine::HandleCreation(7, 5, farmer, false));
@@ -126,6 +133,7 @@ bool HandleStartGame::execute(state::State &state, engine::Engine &engine) {
         default:
             return false;
     }
+    engine.addCommands(start_rec);
     return true;
 }
 
@@ -143,10 +151,14 @@ bool HandleStartGame::undo(state::State &state) {
 
 void HandleStartGame::serialize (Json::Value& out) const{
     out["CommandId"]=this->getTypeId();
-    out["Count"]=this->starters_count;
+    out["s_count"]=this->starters_count;
+    out["p_count"]=this->player_count;
+    out["npc_count"]=this->npc_count;
 }
 
 HandleStartGame* HandleStartGame::deserialize (Json::Value& out){
-    this->starters_count=out.get("Count",0).asInt();
+    this->starters_count=out.get("s_count",0).asInt();
+    this->player_count=out.get("p_count",0).asUInt();
+    this->npc_count=out.get("npc_count",0).asUInt();
     return this;
 }

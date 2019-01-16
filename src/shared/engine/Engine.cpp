@@ -41,42 +41,42 @@ bool Engine::execute(state::State & state) {
         switch (list_commands.front().get()->getTypeId()) {
             case HANDLE_STARTGAME:
                 {
-                list_commands.front().get()->serialize(thisCmd);
                 HandleStartGame *front_cmd = (HandleStartGame *) list_commands.front().get();
                 front_cmd->execute(state, *this);
-            }
-            case HANDLE_GROWTH:
                 list_commands.front().get()->serialize(thisCmd);
+
+                }
+            case HANDLE_GROWTH:
                 list_commands.front().get()->execute(state);
+                list_commands.front().get()->serialize(thisCmd);
                 state.getCurrentPlayer().get()->getRessource(food, gold);
                 cout << "player" << state.getCurrentPlayer().get()->getPlayerId() << "'s current gold is " << gold << endl;
                 cout << "player" << state.getCurrentPlayer().get()->getPlayerId() << "'s current food is " << food << endl;
                 break;
             case HANDLE_MOVEMENT:
-                list_commands.front().get()->serialize(thisCmd);
                 list_commands.front().get()->execute(state);
+                list_commands.front().get()->serialize(thisCmd);
                 break;
             case HANDLE_CANATTACK:
-                list_commands.front().get()->serialize(thisCmd);
                 list_commands.front().get()->execute(state);
                 break;
             case HANDLE_DAMAGE:
-                list_commands.front().get()->serialize(thisCmd);
                 list_commands.front().get()->execute(state);
+                list_commands.front().get()->serialize(thisCmd);
                 break;
             case HANDLE_CREATION:
-                list_commands.front().get()->serialize(thisCmd);
                 list_commands.front().get()->execute(state);
+                list_commands.front().get()->serialize(thisCmd);
                 state.getCurrentPlayer().get()->getRessource(food, gold);
                 break;
             case HANDLE_TURN:
-                list_commands.front().get()->serialize(thisCmd);
                 if(!list_commands.front().get()->execute(state))
                     return false;
+                list_commands.front().get()->serialize(thisCmd);
                 break;
             case HANDLE_ENDGAME:
-                list_commands.front().get()->serialize(thisCmd);
                 list_commands.front().get()->execute(state);
+                list_commands.front().get()->serialize(thisCmd);
                 list_commands.clear();
                 return false;
             case SIG_STARTRECORD:
@@ -108,6 +108,7 @@ bool Engine::execute(state::State & state) {
         list_size = list_commands.size();
         if(intern_record && user_record && !thisCmd.empty())
             record["commands"].append(thisCmd);
+
         //cout<<"###JSON###\n"<<record<<"\n###END JSON###"<<endl;
     }
     return true;
@@ -143,4 +144,8 @@ bool Engine::cleanExecuted() {
 
 bool Engine::update() {
     return true;
+}
+
+void Engine::registerJsonCommand(Json::Value cmd) {
+    record["commands"].append(cmd);
 }
