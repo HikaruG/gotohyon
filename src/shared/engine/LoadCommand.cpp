@@ -24,7 +24,7 @@ LoadCommand::LoadCommand() = default;
 LoadCommand::~LoadCommand() = default;
 
 void LoadCommand::serialize (Json::Value& out) const{
-    out["CommandId"]=2;
+    out["CommandId"]=this->getTypeId();
     out["String"]=this->file_name;
 }
 

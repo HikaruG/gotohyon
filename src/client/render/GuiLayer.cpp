@@ -16,6 +16,7 @@ void GuiLayer::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
     states.texture = &texture_to_apply;
     target.draw(quads,states.texture);
+
     if(this->nextLayer) {
         this->nextLayer->draw(target, states);
     }

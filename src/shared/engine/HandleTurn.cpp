@@ -66,13 +66,13 @@ bool HandleTurn::undo(state::State &state) {
 
 
 void HandleTurn::serialize (Json::Value& out) const{
-    out["CommandId"]=9;
-    out["CurrentPlayerId"]=this->current_player_id;
-    out["CurrentDay"]=this->current_day;
+    out["CommandId"]=this->getTypeId();
+    out["CurrentPlayerId"]=(int) this->current_player_id;
+    out["CurrentDay"]=(int) this->current_day;
 }
 
 HandleTurn* HandleTurn::deserialize (Json::Value& out){
-    this->current_player_id=out.get("CurrentPlayerId","error").asUInt();
-    this->current_day=out.get("CurrentDay","error").asUInt();
+    this->current_player_id=(unsigned int)out.get("CurrentPlayerId","error").asInt();
+    this->current_day=(unsigned int)out.get("CurrentDay","error").asInt();
     return this;
 }

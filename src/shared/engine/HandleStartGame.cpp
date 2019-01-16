@@ -16,6 +16,13 @@ HandleStartGame::HandleStartGame(int player_count){
     this->starters_count = 3;
 }
 
+
+HandleStartGame::HandleStartGame(unsigned int player_nbr, unsigned int npc_count){
+    this->player_count = player_nbr;
+    this->npc_count = npc_count;
+    this->starters_count = 3;
+}
+
 HandleStartGame::~HandleStartGame() = default;
 
 CommandTypeId HandleStartGame::getTypeId() const {
@@ -27,6 +34,7 @@ bool HandleStartGame::execute(state::State &state) {
 }
 
 bool HandleStartGame::execute(state::State &state, engine::Engine &engine) {
+    state.initializePlayer(player_count, npc_count);
 
     static int const terrain_int [] = {
             0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -134,7 +142,7 @@ bool HandleStartGame::undo(state::State &state) {
 
 
 void HandleStartGame::serialize (Json::Value& out) const{
-    out["CommandId"]=1;
+    out["CommandId"]=this->getTypeId();
     out["Count"]=this->starters_count;
 }
 

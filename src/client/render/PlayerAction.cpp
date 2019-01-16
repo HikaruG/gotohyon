@@ -18,6 +18,7 @@ void PlayerAction::userTurn (engine::Engine& engine, state::State& state){
     std::cout<<"new player started a turn"<<std::endl;//aucune action ne doit etre fait sur le state sans passer par le moteur
 
     std::shared_ptr<engine::HandleGrowth> commande_growth (new engine::HandleGrowth(food, gold));
+    std::shared_ptr<engine::HandleSaveGame> command_save (new engine::HandleSaveGame());
     //rajout des ressources
     engine.addCommands(commande_growth);
 
@@ -103,6 +104,7 @@ void PlayerAction::userTurn (engine::Engine& engine, state::State& state){
             }
             if(event.type == sf::Event::KeyPressed)
             {
+                //move on map
                 if(event.key.code == sf::Keyboard::Space)
                 {
                     endturn = true;
@@ -123,6 +125,12 @@ void PlayerAction::userTurn (engine::Engine& engine, state::State& state){
                 else if(event.key.code == sf::Keyboard::Left)
                 {
                     x_move = 1;
+                }
+                //stuff
+                if(event.key.code == sf::Keyboard::S)
+                {
+                    engine.addCommands(command_save);
+                    engine.execute(state);
                 }
             }
             if(event.type == sf::Event::KeyReleased)

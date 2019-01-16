@@ -6,6 +6,8 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include "Command.h"
+#include "HandleStartGame.h"
+#include "HandleSaveGame.h"
 #include <assert.h>
 
 using namespace engine;
@@ -19,6 +21,8 @@ void pop_front(vector<shared_ptr<Command>> & v)
 }
 
 Engine::Engine() {
+    intern_record = true;
+    user_record = true;
     record["commands"] = Json::arrayValue;
 }
 
@@ -32,11 +36,15 @@ bool Engine::execute(state::State & state) {
         return true;
 
     while (list_commands.size() != 0) {
+        list_size = list_commands.size();
         Json::Value thisCmd;
         switch (list_commands.front().get()->getTypeId()) {
             case HANDLE_STARTGAME:
+                {
                 list_commands.front().get()->serialize(thisCmd);
-                list_commands.front().get()->execute(state);
+                HandleStartGame *front_cmd = (HandleStartGame *) list_commands.front().get();
+                front_cmd->execute(state, *this);
+            }
             case HANDLE_GROWTH:
                 list_commands.front().get()->serialize(thisCmd);
                 list_commands.front().get()->execute(state);
@@ -71,16 +79,35 @@ bool Engine::execute(state::State & state) {
                 list_commands.front().get()->execute(state);
                 list_commands.clear();
                 return false;
+            case SIG_STARTRECORD:
+                intern_record = true;
+                break;
+            case SIG_STOPRECORD:
+                intern_record = false;
+                break;
+            case HANDLE_SAVEGAME:
+                ((HandleSaveGame*)list_commands.front().get())->execute(record);
+                break;
             default:
                 throw invalid_argument(" can't find the command, aborting !");
         }
+        sf::Time client_engineTime = sf::milliseconds(50);
+        sf::sleep(client_engineTime);
+
         //add serialised command to array
+        if(list_commands.front().get()->getTypeId() == HANDLE_STARTGAME)
+            list_size = list_commands.size();
         executed_commands.push_back(list_commands.front());
         pop_front(list_commands);
-        if (list_size != (int)list_commands.size() + 1)
+        /* cette méthode de vérification ne fonctionne plus en multi threads
+        if (list_size != (int)list_commands.size() + 1) {
+            cout << "la variable list size " << list_size << " et la size de la liste " << list_commands.size() << endl;
             throw invalid_argument(" error executing the command, aborting !");
+        }
+        */
         list_size = list_commands.size();
-        record["commands"].append(thisCmd);
+        if(intern_record && user_record && !thisCmd.empty())
+            record["commands"].append(thisCmd);
         //cout<<"###JSON###\n"<<record<<"\n###END JSON###"<<endl;
     }
     return true;

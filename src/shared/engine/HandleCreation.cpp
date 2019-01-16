@@ -341,12 +341,11 @@ bool HandleCreation::undo(state::State &state) {
 }
 
 void HandleCreation::serialize (Json::Value& out) const{
-    out["CommandId"]=7;
+    out["CommandId"]=this->getTypeId();
     out["new_x"]=this->new_x;
     out["new_y"]=this->new_y;
     out["object_type"]=this->object_type;
     out["is_static"]=this->is_static;
-    out["all_object_counts"]=this->all_objects_count;
 }
 
 HandleCreation* HandleCreation::deserialize (Json::Value& out){
@@ -355,7 +354,6 @@ HandleCreation* HandleCreation::deserialize (Json::Value& out){
         this->new_y = out.get("new_y", 0).asUInt();
         this->object_type = out.get("object_type", 0).asInt();
         this->is_static = out.get("is_static", false).asBool();
-        this->all_objects_count=out.get("all_object_counts",0).asUInt();
         return this;
     }
 

@@ -163,9 +163,7 @@ bool DrawManager::stateChanged(const state::Event &event) {
             break;
         default: std::cout<<"invalid event from state received"<<endl;
     }
-
-
+    sf::sleep(sf::milliseconds(50));
     //call the right to update
-
     return true;
 }

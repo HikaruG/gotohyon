@@ -8,7 +8,10 @@
 using namespace state;
 using namespace std;
 
-State::State() {}
+State::State() {
+    this->day = 0;
+    this->object_count = 0;
+}
 
 //constructeur de l'état qui prend en entrée le nombre de joueurs
 State::State(unsigned int player_number,unsigned int npc_number)
@@ -46,6 +49,8 @@ bool State::initializePlayer(unsigned int player_count, unsigned int npc_count) 
         }
     }
     this->current_player = list_player[0];
+    this->player_nbr = player_count;
+    this->remaining_players = player_count;
     return true;
 }
 

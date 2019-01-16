@@ -125,12 +125,12 @@ bool HandleMovement::undo(state::State &state) {
 }
 
 void HandleMovement::serialize (Json::Value& out) const{
-    out["CommandId"]=4;
+    out["CommandId"]=this->getTypeId();
     out["new_x"]=this->new_x;
     out["new_y"]=this->new_y;
     out["old_x"]=this->old_x;
     out["old_y"]=this->old_y;
-    out["selected_unit_id"]=this->selected_unit->getGame_object_id();
+    out["selected_unit_id"]=(int) this->selected_unit->getGame_object_id();
 }
 
 HandleMovement* HandleMovement::deserialize (Json::Value& out){
@@ -139,7 +139,7 @@ HandleMovement* HandleMovement::deserialize (Json::Value& out){
     this->new_y=out.get("new_y",0).asUInt();
     this->old_x=out.get("old_x",0).asUInt();
     this->old_y=out.get("old_y",0).asUInt();
-    this->selected_unit_id=out.get("selected_unit_id",0).asUInt();
+    this->selected_unit_id=(unsigned int) out.get("selected_unit_id",0).asInt();
     return this;
 }
 

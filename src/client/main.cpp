@@ -1,6 +1,9 @@
 #include <iostream>
 #include <stdio.h>
 #include <string.h>
+#include <thread>
+#include <mutex>
+#include <condition_variable>
 
 // Les lignes suivantes ne servent qu'à vérifier que la compilation avec SFML fonctionne
 #include <SFML/Graphics.hpp>
@@ -26,8 +29,27 @@ bool test_engine();
 bool test_randomAI();
 bool test_heuristicAI();
 bool test_deepAI();
+bool test_thread();
 bool test_input();
 
+//pour le 4.1 client side
+void t_moteur();
+void t_ai1();
+void t_ai2();
+void t_render();
+void init_game();
+shared_ptr<State> client_state (new State());
+shared_ptr<Engine> client_engine (new Engine());
+size_t client_x_window = 1024;
+size_t client_y_window = 512;
+sf::Time client_delayTime = sf::milliseconds(1000);
+sf::Time client_refreshTime = sf::milliseconds(1);
+shared_ptr<sf::RenderWindow> client_window (new sf::RenderWindow(sf::VideoMode(static_cast<unsigned int>(client_x_window), static_cast<unsigned int>(client_y_window)),
+                                                          "test engine",sf::Style::Close));
+shared_ptr<render::DrawManager> client_draw;
+//bool render_free= false, engine_free = true;
+mutex m_client, m_client_ai;
+condition_variable cv_engine_render, cv_ais;
 
 int main(int argc,char* argv[])
 {
@@ -75,6 +97,12 @@ int main(int argc,char* argv[])
                 cout << "test deep_ai successful" << endl;
             }
         }
+        if( !strcmp(argv[1],"thread") ) {
+            cout << "test thread activated . . ." << endl;
+            if (test_thread()) {
+                cout << "test thread successful" << endl;
+            }
+        }
         if( !strcmp(argv[1],"input") ) {
             cout << "test input activated . . ." << endl;
             if (test_input()) {
@@ -116,16 +144,11 @@ bool test_input(){
     //init map terrain
     test_state->initializeMap(16, 16, test_terrain);
 
-    //Map * thisMap = test_state.getMap().get();
 
-    //init windows
-    size_t x_window = 1024;
-    size_t y_window = 512;
 
     //sf::Time delayTime = sf::milliseconds(1000);
     // create the window
-    shared_ptr<sf::RenderWindow> window (new sf::RenderWindow(sf::VideoMode(static_cast<unsigned int>(x_window), static_cast<unsigned int>(y_window)),
-                                                              "test engine",sf::Style::Close));
+
 
 
 
@@ -134,7 +157,7 @@ bool test_input(){
 
 
     cout << "test : new drawmanager instance" << endl;
-    render::DrawManager testdraw = render::DrawManager(test_state, window);
+    render::DrawManager testdraw = render::DrawManager(test_state, client_window);
     test_state.get()->addObserver(&testdraw);
     test_state.get()->getMap().get()->addObserver(&testdraw);
 
@@ -154,26 +177,105 @@ bool test_input(){
 
 }
 
+void t_moteur(){
+    while(client_window.get()->isOpen()){
+        //cout << " je suis dans le thread du moteur dans la boucle while " << endl;
+        m_client.lock();
+        client_engine.get()->execute(*client_state.get());
+        sf::sleep(client_delayTime);
+        m_client.unlock();
+        sf::sleep(client_delayTime);
+    }
+}
+
+void t_ai1(){
+    ai::DeepAI npc_1 = ai::DeepAI(0,0);
+    while(client_window.get()->isOpen()){
+            if(client_state.get()->getCurrentPlayer().get()->getPlayerId() == 0){
+                //cout << " je suis dans le thread de l'IA1 " << endl;
+                m_client.lock();
+                npc_1.run(* client_engine.get(),* client_state.get());
+                m_client.unlock();
+                sf::sleep(client_delayTime);
+            }
+        }
+}
+
+void t_ai2(){
+    ai::DeepAI npc_2 = ai::DeepAI(0,1);
+    while(client_window.get()->isOpen()){
+        if(client_state.get()->getCurrentPlayer().get()->getPlayerId() == 1){
+           // cout << " je suis dans le thread de l'IA2 " << endl;
+            m_client.lock();
+            npc_2.run(* client_engine.get(),* client_state.get());
+            m_client.unlock();
+            sf::sleep(client_delayTime);
+        }
+    }
+}
+
+void t_render(){
+    while(client_window.get()->isOpen()) {
+        //cout << " je suis dans le thread du rendu dans la boucle while " << endl;
+        //m_client.lock();
+        client_draw.get()->forceRefresh(client_state);
+        sf::sleep(client_refreshTime);
+        //m_client.unlock();
+        sf::Event event;
+        while(client_window.get()->pollEvent(event)){
+            if (event.type == sf::Event::Closed) {
+                client_window.get()->close();
+            }
+
+        }
+    }
+}
+
+
+void init_game(){
+    shared_ptr<HandleStartGame> new_game (new HandleStartGame(2,2));
+    client_engine.get()->addCommands(new_game);
+    client_engine.get()->execute(* client_state.get());
+    client_draw = shared_ptr<render::DrawManager> (new render::DrawManager(client_state, client_window));
+    client_engine.get()->cleanExecuted();
+    //client_state.get()->addObserver(client_draw.get());
+    //client_state.get()->getMap().get()->addObserver(client_draw.get());
+    client_draw.get()->forceRefresh(client_state);
+    cout << "test : 2 npcs gamemode created " << endl;
+}
+
+bool test_thread(){
+    init_game();
+    thread th_engine(t_moteur);
+    cout << "test : new thread_engine instance" << endl;
+    thread th_render(t_render);
+    cout << "test : new thread_render instance" << endl;
+    thread th_ai1(t_ai1);
+    cout << "test : new thread_npc1 instance" << endl;
+    thread th_ai2(t_ai2);
+    cout << "test : new thread_npc2 instance" << endl;
+
+    th_render.join();
+    th_engine.join();
+    th_ai1.join();
+    th_ai2.join();
+
+    return true;
+}
+
 bool test_deepAI(){
 
-    shared_ptr<state::State> test_state (new state::State(3,2));
+    shared_ptr<state::State> test_state (new state::State());
     cout << "test : new state instance" << endl;
     Engine test_engine = Engine();
     cout << "test : new engine instance" << endl;
-    HandleStartGame new_game = HandleStartGame(3);
+    HandleStartGame new_game = HandleStartGame(3,2);
     new_game.execute(*test_state.get(),test_engine);
     test_engine.execute(* test_state.get());
     cout << "test : 1 player 2 npcs gamemode created " << endl;
 
-    //init windows
-    size_t x_window = 1024;
-    size_t y_window = 512;
-
     sf::Time delayTime = sf::milliseconds(1000);
-    // create the window
-    shared_ptr<sf::RenderWindow> window (new sf::RenderWindow(sf::VideoMode(static_cast<unsigned int>(x_window), static_cast<unsigned int>(y_window)),
-                                                              "test engine",sf::Style::Close));
-    render::DrawManager testdraw = render::DrawManager(test_state, window);
+    render::DrawManager testdraw = render::DrawManager(test_state, client_window);
     cout << "test : new drawmanager instance" << endl;
     test_state.get()->addObserver(&testdraw);
     test_state.get()->getMap().get()->addObserver(&testdraw);
@@ -183,7 +285,7 @@ bool test_deepAI(){
     //cout << "test : updates... " << endl;
     testdraw.forceRefresh(test_state);
 
-    while(window.get()->isOpen()) {
+    while(client_window.get()->isOpen()) {
         if(!test_engine.execute(* test_state.get()))
             return true;
         if(test_state.get()->getCurrentPlayer().get()->getIsNpc()) {
@@ -213,16 +315,10 @@ bool test_heuristicAI(){
     test_engine.execute(* test_state.get());
     cout << "test : 2 npc gamemode created " << endl;
 
-    //init windows
-    size_t x_window = 1024;
-    size_t y_window = 512;
 
     sf::Time delayTime = sf::milliseconds(1000);
     // create the window
-    shared_ptr<sf::RenderWindow> window (new sf::RenderWindow(sf::VideoMode(static_cast<unsigned int>(x_window), static_cast<unsigned int>(y_window)),
-                                                              "test engine",sf::Style::Close));
-
-    render::DrawManager testdraw = render::DrawManager(test_state, window);
+    render::DrawManager testdraw = render::DrawManager(test_state, client_window);
     cout << "test : new drawmanager instance" << endl;
     test_state.get()->addObserver(&testdraw);
     test_state.get()->getMap().get()->addObserver(&testdraw);
@@ -262,16 +358,10 @@ bool test_randomAI() {
     cout << "test : 1  player vs 1 npc gamemode created " << endl;
 
 
-    //init windows
-    size_t x_window = 1024;
-    size_t y_window = 512;
 
     sf::Time delayTime = sf::milliseconds(1000);
-    // create the window
-    shared_ptr<sf::RenderWindow> window (new sf::RenderWindow(sf::VideoMode(static_cast<unsigned int>(x_window), static_cast<unsigned int>(y_window)),
-                                                              "test engine",sf::Style::Close));
 
-    render::DrawManager testdraw = render::DrawManager(test_state, window);
+    render::DrawManager testdraw = render::DrawManager(test_state, client_window);
     cout << "test : new drawmanager instance" << endl;
     test_state.get()->addObserver(&testdraw);
     test_state.get()->getMap().get()->addObserver(&testdraw);

@@ -73,7 +73,7 @@ bool HandleDamage::execute(state::State& state) {
 }
 
 void HandleDamage::serialize (Json::Value& out) const{
-    out["CommandId"] = 6;
+    out["CommandId"] = this->getTypeId();
     out["selected_unit_id"] = this->selected_unit->getGame_object_id();
     out["selected_target_id"] = this->selected_target->getGame_object_id();
 }

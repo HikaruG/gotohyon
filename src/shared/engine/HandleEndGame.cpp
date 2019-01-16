@@ -26,7 +26,7 @@ bool HandleEndGame::undo(state::State &state) {
 
 
 void HandleEndGame::serialize (Json::Value& out) const{
-    out["CommandId"]=10;
+    out["CommandId"]=this->getTypeId();
 }
 
 HandleEndGame* HandleEndGame::deserialize (Json::Value& out){
