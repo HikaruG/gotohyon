@@ -27,12 +27,13 @@ using namespace render;
 
 
 
-GuiBox::GuiBox (std::string text, int pos_x, int pos_y, int size)
+GuiBox::GuiBox (std::string text, int pos_x, int pos_y, int size, std::string id)
 {
     this->text = text;
     this->size=size;
     this->pos_y=pos_y;
     this->pos_x = pos_x;
+    this->box_id=id;
 
 }
 
@@ -40,7 +41,6 @@ void GuiBox::changeText (std::string new_text)
 {
     this->text = new_text;
 }
-void draw ();
 
 void GuiBox::changePosition (int new_pos_x, int new_pos_y){
     this->pos_x=new_pos_x;
