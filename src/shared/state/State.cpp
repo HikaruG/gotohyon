@@ -48,9 +48,10 @@ bool State::initializePlayer(unsigned int player_count, unsigned int npc_count) 
             this->list_player.push_back(move(new_player));
         }
     }
-    this->current_player = list_player[0];
     this->player_nbr = player_count;
     this->remaining_players = player_count;
+    this->current_player_id = 0;
+    this->current_player = list_player[current_player_id];
     return true;
 }
 

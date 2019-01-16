@@ -184,7 +184,6 @@ bool test_input(){
 
     }
     return true;
-
 }
 
 void t_moteur(){
