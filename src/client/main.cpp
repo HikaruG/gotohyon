@@ -222,7 +222,12 @@ void t_render(){
         sf::sleep(client_refreshTime);
         //m_client.unlock();
         sf::Event event;
-        while(client_window.get()->pollEvent(event)){}
+        while(client_window.get()->pollEvent(event)){
+            if (event.type == sf::Event::Closed) {
+                client_window.get()->close();
+            }
+
+        }
     }
 }
 
