@@ -10,3 +10,4 @@ src/shared/*.h
 src/client/*.h
 .idea
 cmake-build-debug/
+res/replay.json
