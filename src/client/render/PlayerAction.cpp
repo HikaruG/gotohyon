@@ -88,7 +88,7 @@ void PlayerAction::userTurn (engine::Engine& engine, state::State& state){
             if(event.type == sf::Event::MouseWheelScrolled)
             {
                 float zoom_max = 16;
-                float zoom_min = 0;
+                float zoom_min = -25;
                 int zoom_level_temp = OnMapLayer::zoom_level;
                 if(event.mouseWheelScroll.wheel == sf::Mouse::VerticalWheel) {
                     zoom_level_temp += event.mouseWheelScroll.delta;
@@ -161,8 +161,8 @@ void PlayerAction::userTurn (engine::Engine& engine, state::State& state){
 
         if(x_move || y_move)
         {
-            OnMapLayer::scalar_top_right_y += 8*y_move;
-            OnMapLayer::scalar_top_right_x += 8*x_move;
+            OnMapLayer::scalar_top_right_y += 12*y_move;
+            OnMapLayer::scalar_top_right_x += 12*x_move;
             state::Event game_event = state::Event(state::EventTypeId::TERRAIN_CHANGED);
             notifyObservers(game_event);
         }
