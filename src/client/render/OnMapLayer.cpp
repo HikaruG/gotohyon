@@ -19,7 +19,7 @@ OnMapLayer::OnMapLayer(std::string sprite_path):DrawLayer(sprite_path)
 {
     this->zoom_level = -20;
     this->scalar_top_right_x = 480;
-    this->scalar_top_right_y = 100;
+    this->scalar_top_right_y = -100;
     quads.setPrimitiveType(sf::Quads);
     nextLayer = nullptr;
     loadTexture(sprite_path);
