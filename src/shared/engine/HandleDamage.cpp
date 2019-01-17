@@ -85,12 +85,6 @@ bool HandleDamage::execute(state::State& state) {
     return true;
 }
 
-void HandleDamage::serialize (Json::Value& out) const{
-    out["CommandId"] = this->getTypeId();
-    out["selected_unit_id"] = this->selected_unit->getGame_object_id();
-    out["selected_target_id"] = this->selected_target->getGame_object_id();
-}
-
 
 bool HandleDamage::undo(state::State &state) {
     if (!this->selected_target) {
@@ -124,12 +118,24 @@ bool HandleDamage::undo(state::State &state) {
     }
 }
 
+void HandleDamage::serialize (Json::Value& out) const{
+    out["CommandId"] = this->getTypeId();
+    out["selected_unit_id"] = this->selected_unit->getGame_object_id();
+    out["selected_target_id"] = this->selected_target->getGame_object_id();
+    out["target_x"] = this->target_x;
+    out["target_y"] = this->target_y;
+    out["target_hp"] = this->target_hp;
+}
 
 HandleDamage* HandleDamage::deserialize (Json::Value& out){
     this->selected_target = nullptr;
     this->selected_unit = nullptr;
-    this->selected_unit_id = out.get("selected_unit_id",-1).asUInt();
-    this->selected_target_id = out.get("selected_target_id",-1).asUInt();
+    this->selected_unit_id = out.get("selected_unit_id",0).asUInt();
+    this->selected_target_id = out.get("selected_target_id",0).asUInt();
+    this->target_x = out.get("target_x",0).asUInt();
+    this->target_y = out.get("target_y",0).asUInt();
+    this->target_hp = out.get("target_hp",0).asUInt();
+
     return this;
 
 }

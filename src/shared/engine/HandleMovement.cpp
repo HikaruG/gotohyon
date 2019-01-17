@@ -32,6 +32,9 @@ bool HandleMovement::execute(state::State& state) {
         if(this->selected_unit_id)
         {
             this->selected_unit = (state::Unit *) state.getGameObject(this->selected_unit_id).get();
+            if(!this->selected_unit){
+                throw std::invalid_argument("unit-id exist but is not valid");
+            }
         }
         else{
             cout<<"selected unit not found"<<endl;
