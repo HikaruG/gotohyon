@@ -19,9 +19,11 @@ void PlayerAction::userTurn (engine::Engine& engine, state::State& state){
 
     std::shared_ptr<engine::HandleGrowth> commande_growth (new engine::HandleGrowth(food, gold));
     std::shared_ptr<engine::HandleSaveGame> command_save (new engine::HandleSaveGame());
+    //std::shared_ptr<engine::HandleMovement> move (new engine::HandleMovement());
+    //std::shared_ptr<engine::HandleCreation> create (new engine::HandleCreation());
     //rajout des ressources
     engine.addCommands(commande_growth);
-
+    state::Unit * selected_unit;
     bool endturn = false;
 
     int x_on_map = 0, y_on_map = 0;
@@ -34,6 +36,7 @@ void PlayerAction::userTurn (engine::Engine& engine, state::State& state){
 
     int x_move = 0;
     int y_move = 0;
+    std::shared_ptr<state::GameObject> objSel;
 
     while(!endturn) {
         sf::Event event;
@@ -41,7 +44,6 @@ void PlayerAction::userTurn (engine::Engine& engine, state::State& state){
 
 
         std::vector<std::shared_ptr<state::GameObject>> objs;
-        std::shared_ptr<state::GameObject> objSel;
         while (window.get()->pollEvent(event)) {
             if (event.type == sf::Event::MouseButtonPressed)
             {
@@ -63,22 +65,52 @@ void PlayerAction::userTurn (engine::Engine& engine, state::State& state){
                     {
                         std::cout<<"on this location there is "<<objs.at(i).get()->getProperty()->getStringType()<<std::endl;
                     }
-                    if(objs.size()>1 && x_on_map == x_on_map_old && y_on_map == y_on_map_old)
-                    {
-                        objSel = objs[0].get()->getProperty()->isStatic()?objs[0]:objs[1];
-                    }
-                    else if(objs.size()>1)
-                    {
-                        objSel = objs[0].get()->getProperty()->isStatic()?objs[1]:objs[0];
+
+                    //if new loc empty + obj not static sel: new movement
+
+                    if(objSel.get()) {
+                        if (objSel.get() && !objSel.get()->getProperty()->isStatic() && objs.size() == 0) {
+                            if (state.getCurrentPlayerId() == objSel.get()->getPlayerId()) {
+                                std::cout << "Moving" << std::endl;
+                                std::shared_ptr<engine::HandleMovement> move(
+                                        new engine::HandleMovement(x_on_map, y_on_map, (state::Unit *) objSel.get()));
+                                engine.addCommands(move);
+                                engine.execute(state);
+                            } else {
+                                std::cout << "not your units ! " << std::endl;
+                            }
+                            objSel = nullptr;
+                        }
+
+                        //attack
+
+                        if (objSel.get() && objs.size() > 0 && !objSel.get()->getProperty()->isStatic()) {
+                            if (state.getCurrentPlayerId() == objSel.get()->getPlayerId() &&
+                                objs.at(0).get()->getPlayerId() != state.getCurrentPlayerId()) {
+                                std::shared_ptr<engine::HandleDamage> damage(
+                                        new engine::HandleDamage((state::Unit *) objSel.get(), objs.at(0).get()));
+                                engine.addCommands(damage);
+                                engine.execute(state);
+                            } else {
+                                std::cout << "not your unit or not an enemy unit" << std::endl;
+                            }
+                            objSel = nullptr;
+                        }
+
 
                     }
-                    else if(objs.size() == 1)
-                    {
-                        objSel = objs[0];
-                    }
-                    if(objSel)
-                    {
-                        std::cout<<"selected obj : "<< objSel->getProperty()->getStringType()<<std::endl;
+                    else {
+                        if (objs.size() > 1 && x_on_map == x_on_map_old && y_on_map == y_on_map_old) {
+                            objSel = objs[0].get()->getProperty()->isStatic() ? objs[0] : objs[1];
+                        } else if (objs.size() > 1) {
+                            objSel = objs[0].get()->getProperty()->isStatic() ? objs[1] : objs[0];
+
+                        } else if (objs.size() == 1) {
+                            objSel = objs[0];
+                        }
+                        if (objSel) {
+                            std::cout << "selected obj : " << objSel->getProperty()->getStringType() << std::endl;
+                        }
                     }
                     x_on_map_old = x_on_map;
                     y_on_map_old = y_on_map;
