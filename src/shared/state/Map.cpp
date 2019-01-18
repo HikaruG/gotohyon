@@ -42,6 +42,7 @@ bool Map::deleteGameObject(state::GameObject* deleting_game_object, bool keep_tr
             //détruit l'objet situé à la position i
             if(keep_track)
             {
+                cout<<"kill but kept track"<<endl;
                 list_dead_game_object.push_back(this->list_game_object.at(i));
             }
             list_game_object.erase(list_game_object.begin() + i);
@@ -129,6 +130,14 @@ std::shared_ptr<GameObject> Map::getGameObject (unsigned int game_object_id){
         if(list_game_object.at(i).get()->getGame_object_id()==game_object_id)
         {
             return list_game_object.at(i);
+        }
+    }
+    //look into dead ones
+    for(unsigned int i = 0; i<list_dead_game_object.size();i++)
+    {
+        if(list_dead_game_object.at(i).get()->getGame_object_id()==game_object_id)
+        {
+            return list_dead_game_object.at(i);
         }
     }
     return nullptr;

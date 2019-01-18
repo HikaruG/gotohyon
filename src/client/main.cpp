@@ -4,6 +4,7 @@
 #include <thread>
 #include <mutex>
 #include <condition_variable>
+#include <fstream>
 
 // Les lignes suivantes ne servent qu'à vérifier que la compilation avec SFML fonctionne
 #include <SFML/Graphics.hpp>
@@ -31,28 +32,34 @@ bool test_heuristicAI();
 bool test_deepAI();
 bool test_thread();
 bool test_input();
+bool replay();
 
 //pour le 4.1 client side
 void t_moteur();
 void t_ai1();
 void t_ai2();
+void t_ai3();
 void t_render();
 void init_game();
 shared_ptr<State> client_state (new State());
 shared_ptr<Engine> client_engine (new Engine());
 size_t client_x_window = 1024;
 size_t client_y_window = 512;
-sf::Time client_delayTime = sf::milliseconds(1000);
-sf::Time client_refreshTime = sf::milliseconds(1);
+sf::Time client_delayTime = sf::milliseconds(500);
+sf::Time client_refreshTime = sf::milliseconds(17);
 shared_ptr<sf::RenderWindow> client_window (new sf::RenderWindow(sf::VideoMode(static_cast<unsigned int>(client_x_window), static_cast<unsigned int>(client_y_window)),
                                                           "test engine",sf::Style::Close));
 shared_ptr<render::DrawManager> client_draw;
 //bool render_free= false, engine_free = true;
-mutex m_client, m_client_ai;
-condition_variable cv_engine_render, cv_ais;
+mutex m_client;
+//unique_lock <mutex> m_client;
+condition_variable cv_ai2, cv_ai1;
+
+void parseCommand(Json::Value& game_unwrap, vector<shared_ptr<engine::Command>>& game_commands);
 
 int main(int argc,char* argv[])
 {
+    client_window.get()->setActive(false); // cf: https://en.sfml-dev.org/forums/index.php?topic=5673.0
     if ( argc > 1 ){
 
         if ( !strcmp(argv[1],"hello") ){
@@ -107,6 +114,12 @@ int main(int argc,char* argv[])
             cout << "test input activated . . ." << endl;
             if (test_input()) {
                 cout << "test input successful" << endl;
+            }
+        }
+        if( !strcmp(argv[1],"replay") ) {
+            cout << "test replay activated . . ." << endl;
+            if (replay()) {
+                cout << "test replay successful" << endl;
             }
         }
     }
@@ -174,7 +187,6 @@ bool test_input(){
 
     }
     return true;
-
 }
 
 void t_moteur(){
@@ -189,25 +201,34 @@ void t_moteur(){
 }
 
 void t_ai1(){
-    ai::DeepAI npc_1 = ai::DeepAI(0,0);
+    ai::DeepAI npc_1 = ai::DeepAI(0);
     while(client_window.get()->isOpen()){
-            if(client_state.get()->getCurrentPlayer().get()->getPlayerId() == 0){
-                //cout << " je suis dans le thread de l'IA1 " << endl;
-                m_client.lock();
-                npc_1.run(* client_engine.get(),* client_state.get());
-                m_client.unlock();
-                sf::sleep(client_delayTime);
-            }
+        if(client_state.get()->getCurrentPlayer().get()->getPlayerId() == 1){
+            m_client.lock();
+            npc_1.run(* client_engine.get(),* client_state.get());
+            m_client.unlock();
+            sf::sleep(client_delayTime);
         }
+    }
 }
 
 void t_ai2(){
-    ai::DeepAI npc_2 = ai::DeepAI(0,1);
+    ai::HeuristicAI npc_2 = ai::HeuristicAI(0);
     while(client_window.get()->isOpen()){
-        if(client_state.get()->getCurrentPlayer().get()->getPlayerId() == 1){
-           // cout << " je suis dans le thread de l'IA2 " << endl;
+        if(client_state.get()->getCurrentPlayer().get()->getPlayerId() == 2){
             m_client.lock();
             npc_2.run(* client_engine.get(),* client_state.get());
+            m_client.unlock();
+            sf::sleep(client_delayTime);
+        }
+    }
+}
+void t_ai3(){
+    ai::RandomAI npc_3 = ai::RandomAI(0);
+    while(client_window.get()->isOpen()){
+        if(client_state.get()->getCurrentPlayer().get()->getPlayerId() == 3){
+            m_client.lock();
+            npc_3.run(* client_engine.get(),* client_state.get());
             m_client.unlock();
             sf::sleep(client_delayTime);
         }
@@ -216,24 +237,28 @@ void t_ai2(){
 
 void t_render(){
     while(client_window.get()->isOpen()) {
-        //cout << " je suis dans le thread du rendu dans la boucle while " << endl;
-        //m_client.lock();
-        client_draw.get()->forceRefresh(client_state);
-        sf::sleep(client_refreshTime);
-        //m_client.unlock();
-        sf::Event event;
-        while(client_window.get()->pollEvent(event)){
-            if (event.type == sf::Event::Closed) {
-                client_window.get()->close();
+        if(client_state->getMap().get()){
+            client_draw.get()->forceRefresh(client_state);
+            sf::sleep(client_refreshTime);
+            sf::Event event;
+            if(client_state.get()->getCurrentPlayer().get()->getPlayerId() == 0){
+                m_client.lock();
+                client_draw.get()->user_interact.userTurn(*client_engine.get(),*client_state.get());
+                m_client.unlock();
+                sf::sleep(client_delayTime);
             }
-
+            while(client_window.get()->pollEvent(event)){
+                if (event.type == sf::Event::Closed) {
+                    client_window.get()->close();
+                }
+            }
         }
     }
 }
 
 
 void init_game(){
-    shared_ptr<HandleStartGame> new_game (new HandleStartGame(2,2));
+    shared_ptr<HandleStartGame> new_game (new HandleStartGame(3,2));
     client_engine.get()->addCommands(new_game);
     client_engine.get()->execute(* client_state.get());
     client_draw = shared_ptr<render::DrawManager> (new render::DrawManager(client_state, client_window));
@@ -241,7 +266,7 @@ void init_game(){
     //client_state.get()->addObserver(client_draw.get());
     //client_state.get()->getMap().get()->addObserver(client_draw.get());
     client_draw.get()->forceRefresh(client_state);
-    cout << "test : 2 npcs gamemode created " << endl;
+    cout << "test : 3 npcs gamemode created " << endl;
 }
 
 bool test_thread(){
@@ -251,14 +276,17 @@ bool test_thread(){
     thread th_render(t_render);
     cout << "test : new thread_render instance" << endl;
     thread th_ai1(t_ai1);
-    cout << "test : new thread_npc1 instance" << endl;
+    cout << "test : new thread_npc1 instance : deep_ai" << endl;
     thread th_ai2(t_ai2);
-    cout << "test : new thread_npc2 instance" << endl;
+    cout << "test : new thread_npc2 instance : heuristic_ai" << endl;
+    //thread th_ai3(t_ai3);
+    //cout << "test : new thread_npc3 instance : random_ai" << endl;
 
     th_render.join();
     th_engine.join();
     th_ai1.join();
     th_ai2.join();
+    //th_ai3.join();
 
     return true;
 }
@@ -705,4 +733,147 @@ bool test_render(){
     }
     return true;
 
+}
+
+
+// ######################REPLAY
+
+bool replay()
+{
+    std::ifstream saved_game;
+    saved_game.open ("res/replay.json", std::ios::in);
+    bool render_ready = false;
+    engine::Engine replay_engine = Engine();
+    if (saved_game.is_open()) {
+        Json::Value game;
+        saved_game >> game;
+        saved_game.close();
+        cout<<"loaded existing save ..."<<endl;
+
+
+        shared_ptr<render::DrawManager> replay_draw (new render::DrawManager(client_state, client_window));
+
+        //thread th_engine(t_moteur);
+        cout << "new thread_engine instance" << endl;
+        thread th_render(t_render);
+
+        vector<shared_ptr<engine::Command>> all_commands;
+        parseCommand(game,all_commands);
+        for(unsigned int command_idx = 0; command_idx < all_commands.size();command_idx++)
+        {
+            replay_engine.addCommands(all_commands[command_idx]);
+            replay_engine.execute(* client_state.get());
+            cout<<"                                                           command executed : "<<all_commands[command_idx]->getTypeId()<<endl;
+            if(all_commands[command_idx].get()->getTypeId()==HANDLE_STARTGAME && !render_ready)
+            {
+
+                cout << "thread_render go !" << endl;
+                render_ready = true;
+            }
+        }
+
+        while (client_window.get()->isOpen())
+        {
+            replay_draw.get()->forceRefresh(client_state);
+
+            sf::Event event;
+            while (client_window.get()->pollEvent(event))
+            {
+                // "close requested" event: we close the window
+                if (event.type == sf::Event::Closed)
+                    client_window.get()->close();
+            }
+
+        }
+
+        //th_render.join();
+        //th_engine.join();
+    }
+    std::cout<<" error ! can't open saved file in res/replay.json"<<std::endl;
+    return false;
+}
+
+void parseCommand(Json::Value& game_unwrap, vector<shared_ptr<engine::Command>>& game_commands)
+{
+    game_unwrap = game_unwrap.get("commands", Json::nullValue);
+    if(game_unwrap.empty())
+    {
+        cout<<"game save is corrupted or empty"<<endl;
+        exit(1);
+    }
+    for (Json::Value::ArrayIndex i = 0; i != game_unwrap.size(); i++)
+    {
+        Json::Value command = game_unwrap[i];
+        switch(command.get("CommandId",-1).asInt()) {
+            case -1:
+                cout << "bad Json ! \n" << command << endl;
+                exit(1);
+            case HANDLE_STARTGAME: {
+                unsigned int player_count = command.get("p_count", 0).asUInt();
+                unsigned int npc_count = command.get("npc_count", 0).asUInt();
+                shared_ptr<HandleStartGame> new_game(new HandleStartGame(player_count, npc_count));
+                game_commands.push_back(new_game);
+                break;
+            }
+            case LOAD:{
+                shared_ptr<LoadCommand> cmd_obj (new LoadCommand());
+                game_commands.push_back(cmd_obj);
+                break;
+            }
+            case HANDLE_GROWTH:{
+                shared_ptr<HandleGrowth> cmd_obj (new HandleGrowth());
+                cmd_obj.get()->deserialize(command);
+                game_commands.push_back(cmd_obj);
+                break;
+            }
+            case HANDLE_MOVEMENT:{
+                shared_ptr<HandleMovement> cmd_obj (new HandleMovement());
+                cmd_obj.get()->deserialize(command);
+                game_commands.push_back(cmd_obj);
+                break;
+            }
+            case HANDLE_CANATTACK:{
+                shared_ptr<HandleCanAttack> cmd_obj (new HandleCanAttack());
+                cmd_obj.get()->deserialize(command);
+                //game_commands.push_back(cmd_obj);
+                break;
+            }
+            case HANDLE_DAMAGE:{
+                shared_ptr<HandleDamage> cmd_obj (new HandleDamage());
+                cmd_obj.get()->deserialize(command);
+                game_commands.push_back(cmd_obj);
+                break;
+            }
+            case HANDLE_CREATION:{
+                shared_ptr<HandleCreation> cmd_obj (new HandleCreation());
+                cmd_obj.get()->deserialize(command);
+                game_commands.push_back(cmd_obj);
+                break;
+            }
+            case HANDLE_SELECTEDOBJECT:{
+                shared_ptr<HandleSelectedObject> cmd_obj (new HandleSelectedObject());
+                cmd_obj.get()->deserialize(command);
+                game_commands.push_back(cmd_obj);
+                break;
+            }
+            case HANDLE_SAVEGAME:{
+                break;
+            }
+            case HANDLE_TURN:{
+                shared_ptr<HandleTurn> cmd_obj (new HandleTurn());
+                cmd_obj.get()->deserialize(command);
+                game_commands.push_back(cmd_obj);
+                break;
+            }
+            case HANDLE_ENDGAME:{
+                shared_ptr<HandleEndGame> cmd_obj (new HandleEndGame());
+                cmd_obj.get()->deserialize(command);
+                game_commands.push_back(cmd_obj);
+                break;
+            }
+            default:
+                cout<<"command unknown"<<endl;
+                exit(1);
+        }
+    }
 }

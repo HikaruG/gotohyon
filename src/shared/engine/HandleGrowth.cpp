@@ -52,3 +52,5 @@ HandleGrowth* HandleGrowth::deserialize (Json::Value& out){
 }
 
 HandleGrowth::~HandleGrowth() = default;
+
+HandleGrowth::HandleGrowth() = default;

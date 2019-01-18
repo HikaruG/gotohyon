@@ -18,8 +18,9 @@ unit_layer(OnMapLayer("res/tileset_unit.png")),user_interact(PlayerAction(window
     this->window = window;
     int tmp_x = 0;
     int tmp_y = 0;
-    current_state.get()->getMap().get()->getSize(tmp_x,tmp_y);
-
+    if(current_state.get()->getMap().get()) {
+        current_state.get()->getMap().get()->getSize(tmp_x, tmp_y);
+    }
     this->map_size_x = (unsigned int) tmp_x;
     this->map_size_y = (unsigned int) tmp_y;
 

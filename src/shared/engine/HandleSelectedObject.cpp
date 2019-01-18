@@ -37,3 +37,5 @@ HandleSelectedObject* HandleSelectedObject::deserialize (Json::Value& out){
 }
 
 HandleSelectedObject::~HandleSelectedObject() = default;
+
+HandleSelectedObject::HandleSelectedObject() = default;

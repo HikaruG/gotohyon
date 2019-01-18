@@ -36,7 +36,7 @@ bool State::initializeMap (int size_x, int size_y, vector<int>& terrain){
 
 //instancie les joueurs et les npcs
 bool State::initializePlayer(unsigned int player_count, unsigned int npc_count) {
-    for(int i = 0; i < (int)player_count; i++){
+    for(unsigned int i = 0; i < player_count; i++){
         //création des joueurs
         if(i<((int)player_count - (int)npc_count)) {
             unique_ptr<Player> new_player(new Player(i, false));
@@ -48,9 +48,10 @@ bool State::initializePlayer(unsigned int player_count, unsigned int npc_count) 
             this->list_player.push_back(move(new_player));
         }
     }
-    this->current_player = list_player[0];
     this->player_nbr = player_count;
     this->remaining_players = player_count;
+    this->current_player_id = 0;
+    this->current_player = list_player[current_player_id];
     return true;
 }
 
