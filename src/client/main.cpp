@@ -38,14 +38,15 @@ bool replay();
 void t_moteur();
 void t_ai1();
 void t_ai2();
+void t_ai3();
 void t_render();
 void init_game();
 shared_ptr<State> client_state (new State());
 shared_ptr<Engine> client_engine (new Engine());
 size_t client_x_window = 1024;
 size_t client_y_window = 512;
-sf::Time client_delayTime = sf::milliseconds(1000);
-sf::Time client_refreshTime = sf::milliseconds(1);
+sf::Time client_delayTime = sf::milliseconds(500);
+sf::Time client_refreshTime = sf::milliseconds(17);
 shared_ptr<sf::RenderWindow> client_window (new sf::RenderWindow(sf::VideoMode(static_cast<unsigned int>(client_x_window), static_cast<unsigned int>(client_y_window)),
                                                           "test engine",sf::Style::Close));
 shared_ptr<render::DrawManager> client_draw;
@@ -199,9 +200,9 @@ void t_moteur(){
 }
 
 void t_ai1(){
-    ai::DeepAI npc_1 = ai::DeepAI(0,0);
+    ai::DeepAI npc_1 = ai::DeepAI(0);
     while(client_window.get()->isOpen()){
-            if(client_state.get()->getCurrentPlayer().get()->getPlayerId() == 0){
+            if(client_state.get()->getCurrentPlayer().get()->getPlayerId() == 1){
                 //cout << " je suis dans le thread de l'IA1 " << endl;
                 m_client.lock();
                 npc_1.run(* client_engine.get(),* client_state.get());
@@ -212,9 +213,9 @@ void t_ai1(){
 }
 
 void t_ai2(){
-    ai::DeepAI npc_2 = ai::DeepAI(0,1);
+    ai::HeuristicAI npc_2 = ai::HeuristicAI(0);
     while(client_window.get()->isOpen()){
-        if(client_state.get()->getCurrentPlayer().get()->getPlayerId() == 1){
+        if(client_state.get()->getCurrentPlayer().get()->getPlayerId() == 2){
            // cout << " je suis dans le thread de l'IA2 " << endl;
             m_client.lock();
             npc_2.run(* client_engine.get(),* client_state.get());
@@ -223,18 +224,31 @@ void t_ai2(){
         }
     }
 }
+void t_ai3(){
+    ai::RandomAI npc_3 = ai::RandomAI(0);
+    while(client_window.get()->isOpen()){
+        if(client_state.get()->getCurrentPlayer().get()->getPlayerId() == 3){
+           // cout << " je suis dans le thread de l'IA2 " << endl;
+            m_client.lock();
+            npc_3.run(* client_engine.get(),* client_state.get());
+            m_client.unlock();
+            sf::sleep(client_delayTime);
+        }
+    }
+}
 
 void t_render(){
-
     while(client_window.get()->isOpen()) {
-
         if(client_state->getMap().get()){
-            //cout << " je suis dans le thread du rendu dans la boucle while " << endl;
-            //m_client.lock();
             client_draw.get()->forceRefresh(client_state);
             sf::sleep(client_refreshTime);
-            //m_client.unlock();
             sf::Event event;
+            if(client_state.get()->getCurrentPlayer().get()->getPlayerId() == 0){
+                m_client.lock();
+                client_draw.get()->user_interact.userTurn(*client_engine.get(),*client_state.get());
+                m_client.unlock();
+                sf::sleep(client_delayTime);
+            }
             while(client_window.get()->pollEvent(event)){
                 if (event.type == sf::Event::Closed) {
                     client_window.get()->close();
@@ -246,7 +260,7 @@ void t_render(){
 
 
 void init_game(){
-    shared_ptr<HandleStartGame> new_game (new HandleStartGame(2,2));
+    shared_ptr<HandleStartGame> new_game (new HandleStartGame(3,2));
     client_engine.get()->addCommands(new_game);
     client_engine.get()->execute(* client_state.get());
     client_draw = shared_ptr<render::DrawManager> (new render::DrawManager(client_state, client_window));
@@ -254,7 +268,7 @@ void init_game(){
     //client_state.get()->addObserver(client_draw.get());
     //client_state.get()->getMap().get()->addObserver(client_draw.get());
     client_draw.get()->forceRefresh(client_state);
-    cout << "test : 2 npcs gamemode created " << endl;
+    cout << "test : 3 npcs gamemode created " << endl;
 }
 
 bool test_thread(){
@@ -264,14 +278,17 @@ bool test_thread(){
     thread th_render(t_render);
     cout << "test : new thread_render instance" << endl;
     thread th_ai1(t_ai1);
-    cout << "test : new thread_npc1 instance" << endl;
+    cout << "test : new thread_npc1 instance : deep_ai" << endl;
     thread th_ai2(t_ai2);
-    cout << "test : new thread_npc2 instance" << endl;
+    cout << "test : new thread_npc2 instance : heuristic_ai" << endl;
+    //thread th_ai3(t_ai3);
+    //cout << "test : new thread_npc3 instance : random_ai" << endl;
 
     th_render.join();
     th_engine.join();
     th_ai1.join();
     th_ai2.join();
+    //th_ai3.join();
 
     return true;
 }
@@ -725,6 +742,7 @@ bool replay()
     std::ifstream saved_game;
     saved_game.open ("res/replay.json", std::ios::in);
     bool render_ready = false;
+    engine::Engine replay_engine = Engine();
     if (saved_game.is_open()) {
         Json::Value game;
         saved_game >> game;
@@ -732,9 +750,9 @@ bool replay()
         cout<<"loaded existing save ..."<<endl;
 
 
-        client_draw = shared_ptr<render::DrawManager> (new render::DrawManager(client_state, client_window));
+        shared_ptr<render::DrawManager> replay_draw (new render::DrawManager(client_state, client_window));
 
-        thread th_engine(t_moteur);
+        //thread th_engine(t_moteur);
         cout << "new thread_engine instance" << endl;
         thread th_render(t_render);
 
@@ -742,8 +760,8 @@ bool replay()
         parseCommand(game,all_commands);
         for(unsigned int command_idx = 0; command_idx < all_commands.size();command_idx++)
         {
-            client_engine.get()->addCommands(all_commands[command_idx]);
-            client_engine.get()->execute(* client_state.get());
+            replay_engine.addCommands(all_commands[command_idx]);
+            replay_engine.execute(* client_state.get());
             cout<<"                                                           command executed : "<<all_commands[command_idx]->getTypeId()<<endl;
             if(all_commands[command_idx].get()->getTypeId()==HANDLE_STARTGAME && !render_ready)
             {
@@ -753,8 +771,22 @@ bool replay()
             }
         }
 
-        th_render.join();
-        th_engine.join();
+        while (client_window.get()->isOpen())
+        {
+            replay_draw.get()->forceRefresh(client_state);
+
+            sf::Event event;
+            while (client_window.get()->pollEvent(event))
+            {
+                // "close requested" event: we close the window
+                if (event.type == sf::Event::Closed)
+                    client_window.get()->close();
+            }
+
+        }
+
+        //th_render.join();
+        //th_engine.join();
     }
     std::cout<<" error ! can't open saved file in res/replay.json"<<std::endl;
     return false;

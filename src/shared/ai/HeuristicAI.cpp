@@ -95,8 +95,6 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
     engine.addCommands(growth_check);
     unsigned int new_food, new_gold;
     current_player->getRessource(new_food, new_gold);
-    cout << "player"<< current_player->getPlayerId() << "'s current gold is " << new_gold << endl;
-    cout << "player"<< current_player->getPlayerId() << "'s current food is " << new_food << endl;
 
 
     //récupération de la liste des bâtiments du joueur courant
@@ -261,7 +259,6 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
             }
             for (shared_ptr<GameObject> obstacle: my_list_building) {
                 if (obstacle.get()->getPosition() == unit_i->getPosition()) {
-                    //cout<< "cannot build here, already a constructed building present!" <<endl;
                 } else {
                     shared_ptr<engine::HandleCreation> create_building (new engine::HandleCreation(new_x, new_y,building_type,true));
                     engine.addCommands(create_building);
@@ -300,10 +297,6 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
             state::Position position_unit = unit_i->getPosition();
             old_y = (int) position_unit.getY();
             old_x = (int) position_unit.getX();
-            cout << " player" << unit_i->getPlayerId() << unit_i->getProperty()->getStringType()
-                 << "'s current position x : " << old_x << endl;
-            cout << " player" << unit_i->getPlayerId() << unit_i->getProperty()->getStringType()
-                 << "'s current position y : " << old_y << endl;
             distance = unit_i->getMovementRange();
             //tant que l'unité peut se déplacer il se dirige vers le centre-ville ennemi
             while (distance > 0) {
@@ -475,9 +468,6 @@ bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
         }
     }
     current_player->getRessource(food, gold);
-    cout << "player"<< current_player->getPlayerId() << "'s current gold is " << gold << endl;
-    cout << "player"<< current_player->getPlayerId() << "'s current food is " << food << endl;
-    //commande de fin de tour; préparation pour le joueur suivant
 
     shared_ptr<engine::HandleTurn> end_turn (new engine::HandleTurn());
     engine.addCommands(end_turn);

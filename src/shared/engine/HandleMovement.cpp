@@ -144,6 +144,7 @@ void HandleMovement::serialize (Json::Value& out) const{
     out["new_y"]=this->new_y;
     out["old_x"]=this->old_x;
     out["old_y"]=this->old_y;
+
     out["selected_unit_id"]=(int) this->selected_unit->getGame_object_id();
 }
 

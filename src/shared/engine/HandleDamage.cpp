@@ -43,14 +43,16 @@ bool HandleDamage::execute(state::State& state) {
     if(!this->selected_unit)
     {
         this->selected_unit = (state::Unit *) state.getGameObject(this->selected_unit_id).get();
-        if(!this->selected_target)
-            cout<<"selected unit not found"<<endl;
+        cout << " selected unit is " << this->selected_unit->getProperty()->getStringType() << endl;
+        if(!this->selected_unit)
+            throw std::invalid_argument("selected unit not found");
     }
     if(!this->selected_target)
     {
         this->selected_target = state.getGameObject(selected_target_id).get();
+        cout << " selected target is " << this->selected_target->getProperty()->getStringType() << endl;
         if(!this->selected_target)
-            cout<<"target not found, will crash"<<endl;
+            throw std::invalid_argument("selected target not found");
     }
 
     state::Position ennemy_position = this->selected_target->getPosition();

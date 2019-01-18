@@ -441,8 +441,6 @@ bool DeepAI::run(engine::Engine &engine, state::State &state) {
                         movement_point[update_count]-= 3;
 
                     range = range - abs(mvt_length);
-                    if (range < 0)
-                        cout << "wtf c'est pas possible " << range << endl;
                 }
 
 

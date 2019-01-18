@@ -33,8 +33,6 @@ bool RandomAI::run(engine::Engine &engine, state::State& state) {
     engine.addCommands(growth_check);
     unsigned int new_food, new_gold;
     current_player->getRessource(new_food, new_gold);
-    cout << "player"<< current_player->getPlayerId() << "'s current gold is " << new_gold << endl;
-    cout << "player"<< current_player->getPlayerId() << "'s current food is " << new_food << endl;
 
 
     //récupération de la liste des bâtiments du pc
@@ -91,7 +89,7 @@ bool RandomAI::run(engine::Engine &engine, state::State& state) {
                  << state.getInRange()[i_object]->getProperty()->getStringType() << endl;
             shared_ptr<engine::HandleDamage> damage_archer (new engine::HandleDamage(unit_i, state.getInRange()[i_object].get()));
             engine.addCommands(damage_archer);
-            engine.execute(state);
+            //engine.execute(state);
         }
 
         //si le farmeur n'a pas attaqué, il peut créer un batiment
@@ -101,7 +99,6 @@ bool RandomAI::run(engine::Engine &engine, state::State& state) {
                 int pos_y = unit_i->getPosition().getY();
                 for(shared_ptr<GameObject> obstacle: list_building){
                     if(obstacle.get()->getPosition() == unit_i->getPosition()){
-                        //cout<< "cannot build here, already a constructed building present!" <<endl;
                     }
                     else{
                         building_type = dis_buildings(randgen);

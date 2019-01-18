@@ -14,6 +14,7 @@ Player::Player(size_t player_id, bool is_npc){
     this->in_food = 2000;
     this->in_gold = 2000;
     this->is_dead = false;
+    cout << "new player created : id " << this->player_id << endl;
 }
 
 
