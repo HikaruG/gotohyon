@@ -10,16 +10,16 @@ using namespace render;
 
 unsigned int OnMapLayer::map_size_x;
 unsigned int OnMapLayer::map_size_y;
-unsigned int OnMapLayer::zoom_level;
-unsigned int OnMapLayer::scalar_top_right_x;
-unsigned int OnMapLayer::scalar_top_right_y;
+int OnMapLayer::zoom_level;
+int OnMapLayer::scalar_top_right_x;
+int OnMapLayer::scalar_top_right_y;
 
 
 OnMapLayer::OnMapLayer(std::string sprite_path):DrawLayer(sprite_path)
 {
-    this->zoom_level = 0;
+    this->zoom_level = -20;
     this->scalar_top_right_x = 480;
-    this->scalar_top_right_y = 100;
+    this->scalar_top_right_y = -100;
     quads.setPrimitiveType(sf::Quads);
     nextLayer = nullptr;
     loadTexture(sprite_path);
@@ -114,10 +114,16 @@ bool OnMapLayer::setSpriteTexture() {
     sf::Vertex* quad = &quads[vertex_count*4];
     DrawElement * tile = &draw_array[vertex_count];
 
-    int t_map_x = tile->sprite_x;;
-    int t_map_y = tile->sprite_y;;
-    int tu = (tile->sprite_nbr) % (texture_to_apply.getSize().x / t_map_x);
-
+    int t_map_x = tile->sprite_x;
+    int t_map_y = tile->sprite_y;
+    int tu;
+    if(texture_to_apply.getSize().x / t_map_x == 0)
+    {
+        tu = 0;
+    }
+    else {
+        tu = (tile->sprite_nbr) % (texture_to_apply.getSize().x / t_map_x);
+    }
     int ku = tu*t_map_x + t_map_x/2;
     //std::cout<<"Debug : adding sprite on layer "<<tileset_layer<<" tile id "<<tileset_position_x<<" count "<<count<<std::endl;
 

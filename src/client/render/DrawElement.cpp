@@ -6,8 +6,8 @@
 
 using namespace render;
 
-unsigned int DrawElement::sprite_x=64;
-unsigned int DrawElement::sprite_y=32;
+unsigned int DrawElement::sprite_x=256;
+unsigned int DrawElement::sprite_y=128;
 
 DrawElement::DrawElement (state::Position position, int id)
 {
