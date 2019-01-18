@@ -201,6 +201,7 @@ bool DeepAI::reset_points() {
 }
 
 bool DeepAI::run(engine::Engine &engine, state::State &state) {
+    state.setTurnStatus(false);
     shared_ptr<SignalStopRecord> signal_stop (new SignalStopRecord());
     engine.addCommands(signal_stop);
     for(update_count; update_count < depth; update_count ++) {

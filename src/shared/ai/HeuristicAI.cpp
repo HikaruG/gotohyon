@@ -83,6 +83,7 @@ HeuristicAI::HeuristicAI(int random_seed) {
 HeuristicAI::~HeuristicAI() = default;
 
 bool HeuristicAI::run(engine::Engine &engine, state::State &state) {
+    state.setTurnStatus(false);
 
     //récupération du joueur courant
     Player * current_player = state.getCurrentPlayer().get();

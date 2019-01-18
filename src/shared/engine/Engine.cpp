@@ -75,6 +75,8 @@ bool Engine::execute(state::State & state) {
             case HANDLE_TURN:
                 if(!list_commands.front().get()->execute(state))
                     return false;
+                else
+                    state.setTurnStatus(true);
                 list_commands.front().get()->serialize(thisCmd);
                 break;
             case HANDLE_ENDGAME:

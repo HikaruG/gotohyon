@@ -383,3 +383,12 @@ bool State::reviveGameObject(unsigned int game_object_id, unsigned int player_id
         }
     }
 }
+
+bool State::getTurnStatus() {
+    return turn_end;
+}
+
+bool State::setTurnStatus(bool end) {
+    this->turn_end = end;
+
+}

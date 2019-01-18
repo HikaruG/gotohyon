@@ -157,13 +157,8 @@ bool test_input(){
     //init map terrain
     test_state->initializeMap(16, 16, test_terrain);
 
-
-
     //sf::Time delayTime = sf::milliseconds(1000);
     // create the window
-
-
-
 
     cout << "test : new engine instance" << endl;
     Engine test_engine = Engine();
@@ -176,8 +171,6 @@ bool test_input(){
 
     cout << "test : new randomAI instance" << endl;
     ai::RandomAI test_randomAI = ai::RandomAI(0);
-
-
 
     cout << "test : updates... " << endl;
     testdraw.forceRefresh(test_state);
@@ -203,7 +196,7 @@ void t_moteur(){
 void t_ai1(){
     ai::DeepAI npc_1 = ai::DeepAI(0);
     while(client_window.get()->isOpen()){
-        if(client_state.get()->getCurrentPlayer().get()->getPlayerId() == 1){
+        if(client_state.get()->getCurrentPlayer().get()->getPlayerId() == 1 && client_state.get()->getTurnStatus()){
             m_client.lock();
             npc_1.run(* client_engine.get(),* client_state.get());
             m_client.unlock();
@@ -215,7 +208,7 @@ void t_ai1(){
 void t_ai2(){
     ai::HeuristicAI npc_2 = ai::HeuristicAI(0);
     while(client_window.get()->isOpen()){
-        if(client_state.get()->getCurrentPlayer().get()->getPlayerId() == 2){
+        if(client_state.get()->getCurrentPlayer().get()->getPlayerId() == 2 && client_state.get()->getTurnStatus()){
             m_client.lock();
             npc_2.run(* client_engine.get(),* client_state.get());
             m_client.unlock();
@@ -226,7 +219,7 @@ void t_ai2(){
 void t_ai3(){
     ai::RandomAI npc_3 = ai::RandomAI(0);
     while(client_window.get()->isOpen()){
-        if(client_state.get()->getCurrentPlayer().get()->getPlayerId() == 3){
+        if(client_state.get()->getCurrentPlayer().get()->getPlayerId() == 3 && client_state.get()->getTurnStatus()){
             m_client.lock();
             npc_3.run(* client_engine.get(),* client_state.get());
             m_client.unlock();
@@ -241,7 +234,7 @@ void t_render(){
             client_draw.get()->forceRefresh(client_state);
             sf::sleep(client_refreshTime);
             sf::Event event;
-            if(client_state.get()->getCurrentPlayer().get()->getPlayerId() == 0){
+            if(client_state.get()->getCurrentPlayer().get()->getPlayerId() == 0 && client_state.get()->getTurnStatus()){
                 m_client.lock();
                 client_draw.get()->user_interact.userTurn(*client_engine.get(),*client_state.get());
                 m_client.unlock();
@@ -258,7 +251,7 @@ void t_render(){
 
 
 void init_game(){
-    shared_ptr<HandleStartGame> new_game (new HandleStartGame(3,2));
+    shared_ptr<HandleStartGame> new_game (new HandleStartGame(4,3));
     client_engine.get()->addCommands(new_game);
     client_engine.get()->execute(* client_state.get());
     client_draw = shared_ptr<render::DrawManager> (new render::DrawManager(client_state, client_window));
@@ -279,14 +272,14 @@ bool test_thread(){
     cout << "test : new thread_npc1 instance : deep_ai" << endl;
     thread th_ai2(t_ai2);
     cout << "test : new thread_npc2 instance : heuristic_ai" << endl;
-    //thread th_ai3(t_ai3);
-    //cout << "test : new thread_npc3 instance : random_ai" << endl;
+    thread th_ai3(t_ai3);
+    cout << "test : new thread_npc3 instance : random_ai" << endl;
 
     th_render.join();
     th_engine.join();
     th_ai1.join();
     th_ai2.join();
-    //th_ai3.join();
+    th_ai3.join();
 
     return true;
 }

@@ -19,7 +19,7 @@ RandomAI::RandomAI(int random_seed) {
 RandomAI::~RandomAI() = default;
 
 bool RandomAI::run(engine::Engine &engine, state::State& state) {
-
+    state.setTurnStatus(false);
 
     //récupération du joueur courant
     Player * current_player = state.getCurrentPlayer().get();
