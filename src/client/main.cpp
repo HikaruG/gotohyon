@@ -51,8 +51,9 @@ shared_ptr<sf::RenderWindow> client_window (new sf::RenderWindow(sf::VideoMode(s
                                                           "test engine",sf::Style::Close));
 shared_ptr<render::DrawManager> client_draw;
 //bool render_free= false, engine_free = true;
-mutex m_client, m_client_ai;
-condition_variable cv_engine_render, cv_ais;
+mutex m_client;
+//unique_lock <mutex> m_client;
+condition_variable cv_ai2, cv_ai1;
 
 void parseCommand(Json::Value& game_unwrap, vector<shared_ptr<engine::Command>>& game_commands);
 
@@ -202,21 +203,19 @@ void t_moteur(){
 void t_ai1(){
     ai::DeepAI npc_1 = ai::DeepAI(0);
     while(client_window.get()->isOpen()){
-            if(client_state.get()->getCurrentPlayer().get()->getPlayerId() == 1){
-                //cout << " je suis dans le thread de l'IA1 " << endl;
-                m_client.lock();
-                npc_1.run(* client_engine.get(),* client_state.get());
-                m_client.unlock();
-                sf::sleep(client_delayTime);
-            }
+        if(client_state.get()->getCurrentPlayer().get()->getPlayerId() == 1){
+            m_client.lock();
+            npc_1.run(* client_engine.get(),* client_state.get());
+            m_client.unlock();
+            sf::sleep(client_delayTime);
         }
+    }
 }
 
 void t_ai2(){
     ai::HeuristicAI npc_2 = ai::HeuristicAI(0);
     while(client_window.get()->isOpen()){
         if(client_state.get()->getCurrentPlayer().get()->getPlayerId() == 2){
-           // cout << " je suis dans le thread de l'IA2 " << endl;
             m_client.lock();
             npc_2.run(* client_engine.get(),* client_state.get());
             m_client.unlock();
@@ -228,7 +227,6 @@ void t_ai3(){
     ai::RandomAI npc_3 = ai::RandomAI(0);
     while(client_window.get()->isOpen()){
         if(client_state.get()->getCurrentPlayer().get()->getPlayerId() == 3){
-           // cout << " je suis dans le thread de l'IA2 " << endl;
             m_client.lock();
             npc_3.run(* client_engine.get(),* client_state.get());
             m_client.unlock();
