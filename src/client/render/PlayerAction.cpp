@@ -47,6 +47,13 @@ void PlayerAction::userTurn (engine::Engine& engine, state::State& state){
         while (window.get()->pollEvent(event)) {
             if (event.type == sf::Event::MouseButtonPressed)
             {
+                if(event.mouseButton.button == sf::Mouse::Right)
+                {
+                    std::cout<<"deselect object"<<std::endl;
+                    x_on_map_old = -1;
+                    y_on_map_old = -1;
+                    objSel= nullptr;
+                }
                 if (event.mouseButton.button == sf::Mouse::Left)
                 {
                     _getClickLocation(event,ptr_x,ptr_y);
@@ -96,22 +103,20 @@ void PlayerAction::userTurn (engine::Engine& engine, state::State& state){
                             }
                             objSel = nullptr;
                         }
-
-
                     }
-                    else {
-                        if (objs.size() > 1 && x_on_map == x_on_map_old && y_on_map == y_on_map_old) {
-                            objSel = objs[0].get()->getProperty()->isStatic() ? objs[0] : objs[1];
-                        } else if (objs.size() > 1) {
-                            objSel = objs[0].get()->getProperty()->isStatic() ? objs[1] : objs[0];
 
-                        } else if (objs.size() == 1) {
-                            objSel = objs[0];
-                        }
-                        if (objSel) {
-                            std::cout << "selected obj : " << objSel->getProperty()->getStringType() << std::endl;
-                        }
+                    if (objs.size() > 1 && x_on_map == x_on_map_old && y_on_map == y_on_map_old) {
+                        objSel = objs[0].get()->getProperty()->isStatic() ? objs[0] : objs[1];
+                    } else if (objs.size() > 1) {
+                        objSel = objs[0].get()->getProperty()->isStatic() ? objs[1] : objs[0];
+
+                    } else if (objs.size() == 1) {
+                        objSel = objs[0];
                     }
+                    if (objSel) {
+                        std::cout << "selected obj : " << objSel->getProperty()->getStringType() << std::endl;
+                    }
+
                     x_on_map_old = x_on_map;
                     y_on_map_old = y_on_map;
                 }
@@ -136,6 +141,120 @@ void PlayerAction::userTurn (engine::Engine& engine, state::State& state){
             }
             if(event.type == sf::Event::KeyPressed)
             {
+
+                //farmer create stuff
+                if (objSel.get() && objSel.get()->getProperty()->getStringType() == "farmer")
+                {
+                    std::cout<<"Creation Mode : \nF: new Farm\nT: new town\nB: new Barrack\nM: new mine\nR: Turret\n"<<std::endl;
+                    if(event.key.code == sf::Keyboard::F)
+                    {
+                        unsigned int x;
+                        unsigned int y;
+                        state::Position newPos;
+                        newPos = objSel.get()->getPosition();
+                        x = newPos.getX();
+                        y = newPos.getY();
+                        std::shared_ptr<engine::HandleCreation> creat (new engine::HandleCreation(x,y,state::BuildingType::farm,true));
+                        engine.addCommands(creat);
+                        engine.execute(state);
+                        objSel = nullptr;
+                    }
+                    else if(event.key.code == sf::Keyboard::T)
+                    {
+                        unsigned int x;
+                        unsigned int y;
+                        state::Position newPos;
+                        newPos = objSel.get()->getPosition();
+                        x = newPos.getX();
+                        y = newPos.getY();
+                        std::shared_ptr<engine::HandleCreation> creat (new engine::HandleCreation(x,y,state::BuildingType::town,true));
+                        engine.addCommands(creat);
+                        engine.execute(state);
+                        objSel = nullptr;
+                    }
+                    else if(event.key.code == sf::Keyboard::B)
+                    {
+                        unsigned int x;
+                        unsigned int y;
+                        state::Position newPos;
+                        newPos = objSel.get()->getPosition();
+                        x = newPos.getX();
+                        y = newPos.getY();
+                        std::shared_ptr<engine::HandleCreation> creat (new engine::HandleCreation(x,y,state::BuildingType::barrack,true));
+                        engine.addCommands(creat);
+                        engine.execute(state);
+                        objSel = nullptr;
+                    }
+                    else if(event.key.code == sf::Keyboard::M)
+                    {
+                        unsigned int x;
+                        unsigned int y;
+                        state::Position newPos;
+                        newPos = objSel.get()->getPosition();
+                        x = newPos.getX();
+                        y = newPos.getY();
+                        std::shared_ptr<engine::HandleCreation> creat (new engine::HandleCreation(x,y,state::BuildingType::mine,true));
+                        engine.addCommands(creat);
+                        engine.execute(state);
+                        objSel = nullptr;
+                    }
+                    else if(event.key.code == sf::Keyboard::R)
+                    {
+                        unsigned int x;
+                        unsigned int y;
+                        state::Position newPos;
+                        newPos = objSel.get()->getPosition();
+                        x = newPos.getX();
+                        y = newPos.getY();
+                        std::shared_ptr<engine::HandleCreation> creat (new engine::HandleCreation(x,y,state::BuildingType::turret,true));
+                        engine.addCommands(creat);
+                        engine.execute(state);
+                        objSel = nullptr;
+                    }
+
+                }
+
+                //barrack create stuff
+                if (objSel.get() && objSel.get()->getProperty()->getStringType() == "barrack") {
+                    std::cout << "Creation Mode : \nF: new Farmer\nA: new Archer\nS: new Soldier\n" << std::endl;
+                    if (event.key.code == sf::Keyboard::F) {
+                        unsigned int x;
+                        unsigned int y;
+                        state::Position newPos;
+                        newPos = objSel.get()->getPosition();
+                        x = newPos.getX();
+                        y = newPos.getY();
+                        std::shared_ptr<engine::HandleCreation> creat(
+                                new engine::HandleCreation(x, y, state::UnitType::farmer , false));
+                        engine.addCommands(creat);
+                        engine.execute(state);
+                        objSel = nullptr;
+                    } else if (event.key.code == sf::Keyboard::A) {
+                        unsigned int x;
+                        unsigned int y;
+                        state::Position newPos;
+                        newPos = objSel.get()->getPosition();
+                        x = newPos.getX();
+                        y = newPos.getY();
+                        std::shared_ptr<engine::HandleCreation> creat(
+                                new engine::HandleCreation(x, y, state::UnitType::archer , false));
+                        engine.addCommands(creat);
+                        engine.execute(state);
+                        objSel = nullptr;
+                    } else if (event.key.code == sf::Keyboard::B) {
+                        unsigned int x;
+                        unsigned int y;
+                        state::Position newPos;
+                        newPos = objSel.get()->getPosition();
+                        x = newPos.getX();
+                        y = newPos.getY();
+                        std::shared_ptr<engine::HandleCreation> creat(
+                                new engine::HandleCreation(x, y, state::UnitType::infantry, false));
+                        engine.addCommands(creat);
+                        engine.execute(state);
+                        objSel = nullptr;
+                    }
+                }
                 //move on map
                 if(event.key.code == sf::Keyboard::Space)
                 {
