@@ -127,9 +127,9 @@ bool OnMapLayer::setSpriteTexture() {
     int ku = tu*t_map_x + t_map_x/2;
     //std::cout<<"Debug : adding sprite on layer "<<tileset_layer<<" tile id "<<tileset_position_x<<" count "<<count<<std::endl;
 
-    quad[0].texCoords = sf::Vector2f(ku, 0);
-    quad[1].texCoords = sf::Vector2f(ku + t_map_x/2, t_map_y/2);
-    quad[3].texCoords = sf::Vector2f(ku - t_map_x/2, t_map_y/2);
-    quad[2].texCoords = sf::Vector2f(ku , t_map_y);
+    quad[0].texCoords = sf::Vector2f(ku, tile->sprite_player_id*tile->sprite_y);
+    quad[1].texCoords = sf::Vector2f(ku + t_map_x/2, tile->sprite_player_id*tile->sprite_y + t_map_y/2);
+    quad[3].texCoords = sf::Vector2f(ku - t_map_x/2, tile->sprite_player_id*tile->sprite_y + t_map_y/2);
+    quad[2].texCoords = sf::Vector2f(ku , tile->sprite_player_id*tile->sprite_y + t_map_y);
     return true;
 }

@@ -11,7 +11,7 @@ using namespace std;
 
 DrawManager::DrawManager ( shared_ptr<state::State> current_state, shared_ptr<sf::RenderWindow> window)
 :terrain_layer(OnMapLayer("res/tileset_terrain_new.png")),building_layer(OnMapLayer("res/tileset_building_new.png")),
-unit_layer(OnMapLayer("res/tileset_unit_new.png")),user_interact(PlayerAction(window))
+unit_layer(OnMapLayer("res/tileset_unit_color.png")),user_interact(PlayerAction(window))
 {
 
     this->current_state = current_state;
