@@ -43,7 +43,7 @@ bool Engine::execute(state::State & state) {
     while (list_commands.size() != 0) {
         list_size = list_commands.size();
         Json::Value thisCmd;
-        cout<<"list command size : "<<list_commands.size()<<endl;
+        //cout<<"list command size : "<<list_commands.size()<<endl;
         switch (list_commands.front().get()->getTypeId()) {
             case HANDLE_STARTGAME:
                 {
