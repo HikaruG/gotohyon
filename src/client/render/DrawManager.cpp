@@ -95,7 +95,7 @@ bool DrawManager::setUnit ()
         {
             //cast en pointeur le unique pointeur => on peut utiliser les méthodes de la classe
             state::Unit * units_go = (state::Unit *) current_map->getListGameObject()[i].get();
-            elem.emplace_back(DrawElement(units_go->getPosition(),units_go->getUnitType()));
+            elem.emplace_back(DrawElement(units_go->getPosition(),units_go->getUnitType(),units_go->getPlayerId()));
         }
     }
     unit_layer.updateElements(elem);
