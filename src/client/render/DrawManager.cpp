@@ -154,17 +154,18 @@ bool DrawManager::stateChanged(const state::Event &event) {
     cout<<"stateChanged, redrawing "<<this_event<<endl;
     updateState(current_state);
     switch(this_event) {
-        case 0 : break;
-        case 1 : break;
-        case 2 : forceRefresh(current_state);//only happens at the beginning or when map is moved, refresh everything
+        case state::EventTypeId::PLAYER_CHANGED : break;
+        case state::EventTypeId::UNIT_SELECTED : break;
+        case state::EventTypeId::TERRAIN_CHANGED : forceRefresh(current_state);//only happens at the beginning or when map is moved, refresh everything
             break;
-        case 3 :setBuilding();
+        case state::EventTypeId::BUILDING_CHANGED :setBuilding();
             break;
-        case 4 : setUnit();
+        case state::EventTypeId::UNIT_CHANGED : setUnit();
             break;
         default: std::cout<<"invalid event from state received"<<endl;
     }
     sf::sleep(sf::milliseconds(50));
+    forceRefresh(current_state);
     //call the right to update
     return true;
 }
