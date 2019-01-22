@@ -94,15 +94,15 @@ bool HandleCreation::execute(state::State &state) {
 
     this->object_id = state.getObjectCount();
 
-    Property farmer = Property("farmer",10,10,80,false,false,1);
-    Property infantry = Property("infantry",10,20,120,false,false,1);
-    Property archer = Property("archer",10,10,100,false,false,2);
+    Property farmer = Property("farmer",10,10,50,false,false,1);
+    Property infantry = Property("infantry",10,20,100,false,false,1);
+    Property archer = Property("archer",10,10,70,false,false,2);
 
-    Property mine = Property("mine",10,10,100,true,false,0);
-    Property farm = Property("farm",10,10,100,true,false,0);
-    Property turret = Property("turret",10,10,150,true,false,0);
-    Property town = Property("town",10,10,400,true,false,0);
-    Property barrack = Property("barrack",10,10,200,true,false,0);
+    Property mine = Property("mine",10,10,60,true,false,0);
+    Property farm = Property("farm",10,10,60,true,false,0);
+    Property turret = Property("turret",10,10,100,true,false,0);
+    Property town = Property("town",10,10,200,true,false,0);
+    Property barrack = Property("barrack",10,10,150,true,false,0);
 
     std::vector<Property> buildings = {mine,farm,turret,town, barrack};
     std::vector<Property> units = {farmer,archer,infantry};

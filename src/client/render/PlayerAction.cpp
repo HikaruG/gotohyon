@@ -76,32 +76,35 @@ void PlayerAction::userTurn (engine::Engine& engine, state::State& state){
                     //if new loc empty + obj not static sel: new movement
 
                     if(objSel.get()) {
-                        if (objSel.get() && !objSel.get()->getProperty()->isStatic() && objs.size() == 0) {
-                            if (state.getCurrentPlayerId() == objSel.get()->getPlayerId()) {
-                                std::cout << "Moving" << std::endl;
-                                std::shared_ptr<engine::HandleMovement> move(
-                                        new engine::HandleMovement(x_on_map, y_on_map, (state::Unit *) objSel.get()));
-                                engine.addCommands(move);
-                                engine.execute(state);
-                            } else {
-                                std::cout << "not your units ! " << std::endl;
+                        if(objSel.get()->getProperty()->getAvailability()){
+                            if (objSel.get() && !objSel.get()->getProperty()->isStatic() && objs.size() == 0) {
+                                if (state.getCurrentPlayerId() == objSel.get()->getPlayerId()) {
+                                    std::cout << "Moving" << std::endl;
+                                    std::shared_ptr<engine::HandleMovement> move(
+                                            new engine::HandleMovement(x_on_map, y_on_map, (state::Unit *) objSel.get()));
+                                    engine.addCommands(move);
+                                    engine.execute(state);
+                                } else {
+                                    std::cout << "not your units ! " << std::endl;
+                                }
+                                objSel = nullptr;
                             }
-                            objSel = nullptr;
-                        }
 
-                        //attack
+                            //attack
 
-                        if (objSel.get() && objs.size() > 0 && !objSel.get()->getProperty()->isStatic()) {
-                            if (state.getCurrentPlayerId() == objSel.get()->getPlayerId() &&
-                                objs.at(0).get()->getPlayerId() != state.getCurrentPlayerId()) {
-                                std::shared_ptr<engine::HandleDamage> damage(
-                                        new engine::HandleDamage((state::Unit *) objSel.get(), objs.at(0).get()));
-                                engine.addCommands(damage);
-                                engine.execute(state);
-                            } else {
-                                std::cout << "not your unit or not an enemy unit" << std::endl;
+                            if (objSel.get() && objs.size() > 0 && !objSel.get()->getProperty()->isStatic()) {
+                                if (state.getCurrentPlayerId() == objSel.get()->getPlayerId() &&
+                                    objs.at(0).get()->getPlayerId() != state.getCurrentPlayerId()) {
+                                    std::shared_ptr<engine::HandleDamage> damage(
+                                            new engine::HandleDamage((state::Unit *) objSel.get(), objs.at(0).get()));
+                                    engine.addCommands(damage);
+                                    engine.execute(state);
+                                } else {
+                                    std::cout << "not your unit or not an enemy unit" << std::endl;
+                                }
+                                //objSel.get()->getProperty()->setAvailability(false);
+                                objSel = nullptr;
                             }
-                            objSel = nullptr;
                         }
                     }
 
