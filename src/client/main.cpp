@@ -746,41 +746,41 @@ bool replay()
 
         shared_ptr<render::DrawManager> replay_draw (new render::DrawManager(client_state, client_window));
 
-        //thread th_engine(t_moteur);
+        thread th_engine(t_moteur);
         cout << "new thread_engine instance" << endl;
-        thread th_render(t_render);
 
         vector<shared_ptr<engine::Command>> all_commands;
         parseCommand(game,all_commands);
-        for(unsigned int command_idx = 0; command_idx < all_commands.size();command_idx++)
-        {
-            replay_engine.addCommands(all_commands[command_idx]);
-            replay_engine.execute(* client_state.get());
-            cout<<"                                                           command executed : "<<all_commands[command_idx]->getTypeId()<<endl;
-            if(all_commands[command_idx].get()->getTypeId()==HANDLE_STARTGAME && !render_ready)
-            {
 
-                cout << "thread_render go !" << endl;
-                render_ready = true;
-            }
-        }
 
         while (client_window.get()->isOpen())
         {
-            replay_draw.get()->forceRefresh(client_state);
+
+            for(unsigned int command_idx = 0; command_idx < all_commands.size();command_idx++)
+            {
+                replay_engine.addCommands(all_commands[command_idx]);
+                replay_engine.execute(* client_state.get());
+                cout<<"                                                           command executed : "<<all_commands[command_idx]->getTypeId()<<endl;
+                if(all_commands[command_idx].get()->getTypeId()==HANDLE_STARTGAME && !render_ready)
+                {
+
+                    cout << "thread_render go !" << endl;
+                    render_ready = true;
+                }
+                if(render_ready)
+                    replay_draw.get()->forceRefresh(client_state);
+            }
 
             sf::Event event;
             while (client_window.get()->pollEvent(event))
             {
-                // "close requested" event: we close the window
                 if (event.type == sf::Event::Closed)
                     client_window.get()->close();
             }
 
         }
-
+        th_engine.join();
         //th_render.join();
-        //th_engine.join();
     }
     std::cout<<" error ! can't open saved file in res/replay.json"<<std::endl;
     return false;
